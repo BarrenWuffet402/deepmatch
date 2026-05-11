@@ -26,14 +26,36 @@ export default async function handler(req, res) {
 
   // ── GET: poll status ──────────────────────────────────────────────────────
   if (req.method === "GET") {
-    const { video_id } = req.query;
-    if (!video_id) return res.status(400).json({ error: "video_id required" });
+    const { video_id, session_id } = req.query;
+
+    // Agent session poll: if we have session_id but no video_id yet,
+    // check the agent session to find the video_id once it starts rendering.
+    if (session_id && !video_id) {
+      const r = await fetch(`${AGENT_URL}/${encodeURIComponent(session_id)}`, {
+        headers: { Authorization: `Bearer ${apiKey()}` },
+      });
+      const d = await r.json();
+      if (!r.ok) return res.status(200).json({ status: "processing" });
+
+      const agentStatus = d.data?.status || "generating";
+      const foundVideoId = d.data?.video_id || null;
+
+      if (foundVideoId) {
+        // Hand off: return the video_id so client switches to standard polling
+        return res.status(200).json({ status: "has_video_id", video_id: foundVideoId });
+      }
+      if (agentStatus === "failed") return res.status(200).json({ status: "failed" });
+      return res.status(200).json({ status: "processing", agent_status: agentStatus });
+    }
+
+    // Standard video status poll
+    if (!video_id) return res.status(400).json({ error: "video_id or session_id required" });
 
     const r = await fetch(`${STATUS_URL}?video_id=${encodeURIComponent(video_id)}`, {
       headers: { Authorization: `Bearer ${apiKey()}` },
     });
     const d = await r.json();
-    if (!r.ok) return res.status(r.status).json({ error: d?.message || "Status check failed" });
+    if (!r.ok) return res.status(200).json({ status: "processing" });
 
     return res.status(200).json({
       status:    d.data?.status,
@@ -41,6 +63,14 @@ export default async function handler(req, res) {
       thumbnail: d.data?.thumbnail_url || null,
       duration:  d.data?.duration || null,
     });
+  }
+
+  // ── GET sessions: list recent HeyGen agent sessions for import ────────────
+  // (accessed via GET /api/heygen?action=sessions)
+  if (req.method === "GET" && req.query.action === "sessions") {
+    const r = await fetch(AGENT_URL, { headers: { Authorization: `Bearer ${apiKey()}` } });
+    const d = await r.json();
+    return res.status(200).json({ sessions: d.data || [] });
   }
 
   // ── POST: generate ────────────────────────────────────────────────────────

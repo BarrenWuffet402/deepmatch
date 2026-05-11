@@ -166,6 +166,9 @@
       <button class="tab" onclick="switchTab('seedance')">
         <span class="tab-badge badge-seedance">Seedance</span> Scene
       </button>
+      <button class="tab" onclick="switchTab('import')" id="tab-import">
+        <span class="tab-badge" style="background:rgba(74,44,33,0.10);color:var(--text-soft);border:1px solid var(--line-2);">Import</span>
+      </button>
     </div>
 
     <div class="panel">
@@ -293,6 +296,12 @@
         <button class="btn-generate btn-seedance" onclick="generate('seedance')">Generate scene →</button>
       </div>
 
+      <!-- ── TAB 4: Import from HeyGen ── -->
+      <div class="tab-panel" id="panel-import">
+        <div style="font-size:13px;color:var(--text-soft);margin-bottom:12px;">Recent HeyGen Video Agent sessions. Click to import into library.</div>
+        <div id="sessionList" style="display:grid;gap:8px;"><div style="font-size:13px;color:var(--muted);">Loading sessions…</div></div>
+      </div>
+
       <!-- Progress + message (shared) -->
       <div class="progress-area" id="progressArea">
         <div class="progress-label">
@@ -319,11 +328,61 @@ let activeTab = 'heygen';
 function switchTab(name) {
   activeTab = name;
   document.querySelectorAll('.tab').forEach((t, i) => {
-    t.classList.toggle('active', ['heygen','agent','seedance'][i] === name);
+    t.classList.toggle('active', ['heygen','agent','seedance','import'][i] === name);
   });
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.getElementById(`panel-${name}`).classList.add('active');
   hideMsg();
+  if (name === 'import') loadSessions();
+}
+
+// ── Import from HeyGen sessions ───────────────────────────────────
+async function loadSessions() {
+  const el = document.getElementById('sessionList');
+  el.innerHTML = '<div style="font-size:13px;color:var(--muted);">Loading…</div>';
+  try {
+    const d = await get('/api/heygen-sessions');
+    if (!d.sessions?.length) {
+      el.innerHTML = '<div style="font-size:13px;color:var(--muted);">No sessions found.</div>';
+      return;
+    }
+    el.innerHTML = d.sessions.map(s => {
+      const date = s.created_at ? new Date(s.created_at * 1000).toLocaleDateString() : '';
+      const hasVideo = !!s.video_id;
+      return `
+        <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(s.title)}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:3px;">${date}${hasVideo ? '' : ' · no video yet'}</div>
+          </div>
+          ${hasVideo
+            ? `<button onclick="importSession('${esc(s.session_id)}', '${esc(s.title)}')"
+                style="height:32px;padding:0 14px;background:var(--grad);border:none;border-radius:8px;color:white;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;">
+                Import
+              </button>`
+            : `<span style="font-size:11px;color:var(--muted);">⏳ pending</span>`
+          }
+        </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = `<div style="font-size:13px;color:var(--red);">${e.message}</div>`;
+  }
+}
+
+async function importSession(sessionId, defaultTitle) {
+  const slug = prompt('Slug for this video (e.g. sofia-agent):');
+  if (!slug) return;
+  if (!validSlug(slug)) { showMsg('err', 'Invalid slug'); return; }
+  const title = defaultTitle || slug;
+
+  showMsg('ok', 'Fetching video…');
+  try {
+    const d = await get(`/api/heygen-sessions?session_id=${encodeURIComponent(sessionId)}`);
+    if (!d.video_url) throw new Error('Video not ready yet — check back in a moment');
+    await saveVideo({ video_id: d.video_id, video_url: d.video_url, slug, title, source: 'agent' });
+    showMsg('ok', `✓ Imported — /watch/${slug}`);
+    await loadLibrary();
+  } catch(e) { showMsg('err', e.message); }
 }
 
 // ── Orientation ────────────────────────────────────────────────────────────
@@ -442,8 +501,16 @@ async function generateAgent() {
 
   try {
     const r = await post('/api/heygen', { mode: 'agent', script: prompt, slug, title, portrait: orientState.agent === 'portrait', looks_id: looks, voice_id: voice });
-    setStep(0, 'done'); setStep(1, 'active'); setLabel('Agent rendering… (2–5 min)');
-    await pollHeygenStatus(r.video_id, slug, title, [1, 2, 3]);
+    setStep(0, 'done'); setStep(1, 'active'); setLabel('Agent planning + rendering… (2–5 min)');
+    if (r.video_id) {
+      // Agent returned a video_id immediately — poll standard status
+      await pollHeygenStatus(r.video_id, slug, title, [1, 2, 3]);
+    } else if (r.session_id) {
+      // Agent is still planning — poll session first, then switch to video status
+      await pollAgentSession(r.session_id, slug, title);
+    } else {
+      throw new Error('No video_id or session_id returned from Video Agent');
+    }
   } catch(e) { setGenerating(false); showMsg('err', e.message); }
 }
 
@@ -467,6 +534,35 @@ async function generateSeedance() {
     const r = await post('/api/seedance', { prompt, slug, title, duration, aspect_ratio: ratio, style, style_id: styleId });
     setStep(0, 'done'); setStep(1, 'active'); setLabel('Generating scene… (1–3 min)');
     await pollSeedanceStatus(r.request_id, slug, title, r.status_url, r.response_url);
+  } catch(e) { setGenerating(false); showMsg('err', e.message); }
+}
+
+// ── Agent session polling (when video_id not yet available) ────────────────
+async function pollAgentSession(sessionId, slug, title) {
+  clearTimeout(pollTimer);
+  try {
+    const d = await get(`/api/heygen-sessions?session_id=${encodeURIComponent(sessionId)}`);
+    if (d.error) throw new Error(d.error);
+
+    if (d.video_id && d.video_status === 'completed' && d.video_url) {
+      // Fully done
+      setStep(2, 'done'); setStep(3, 'active'); setLabel('Saving to library…');
+      await saveVideo({ video_id: d.video_id, video_url: d.video_url, slug, title });
+      setStep(3, 'done'); setLabel('Done!');
+      setGenerating(false);
+      showMsg('ok', `✓ Agent video ready — /watch/${slug}`);
+      resetForm('a');
+    } else if (d.video_id && d.video_status !== 'failed') {
+      // Has video_id, still rendering — switch to standard HeyGen poll
+      setLabel('Rendering video…');
+      await pollHeygenStatus(d.video_id, slug, title, [1, 2, 3]);
+    } else if (d.agent_status === 'failed' || d.video_status === 'failed') {
+      throw new Error('Video Agent generation failed.');
+    } else {
+      // Still planning/generating
+      setLabel(`Agent working… (status: ${d.agent_status || 'generating'})`);
+      pollTimer = setTimeout(() => pollAgentSession(sessionId, slug, title), 10000);
+    }
   } catch(e) { setGenerating(false); showMsg('err', e.message); }
 }
 
