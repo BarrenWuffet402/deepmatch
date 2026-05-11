@@ -259,13 +259,14 @@
 
 <!-- ── POST-CALL ── -->
 <div class="screen hidden" id="postcall">
-  <div class="result-icon">🤍</div>
-  <div class="postcall-title">Time's up</div>
-  <div class="postcall-sub">Did you feel something? Let them know.</div>
+  <div class="result-icon" id="postcallIcon">🤍</div>
+  <div class="postcall-title" id="postcallTitle">Time's up</div>
+  <div class="postcall-sub" id="postcallSub">Did you feel something?</div>
   <div class="postcall-btns">
-    <button class="btn-pass2" onclick="passCall()">Pass</button>
-    <button class="btn-connect2" onclick="connectCall()">Connect ✓</button>
+    <button class="btn-pass2" onclick="tryAgain()">Try again</button>
+    <button class="btn-connect2" onclick="connectCall()">Connect ❤</button>
   </div>
+  <a href="/" style="margin-top:16px;font-size:13px;color:var(--text-mute);text-decoration:none;">Back to home</a>
 </div>
 
 <!-- status toast -->
@@ -407,7 +408,20 @@ async function startPeerConnection() {
   localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
 
   pc.ontrack = (e) => {
-    document.getElementById('remoteVideo').srcObject = e.streams[0];
+    const rv = document.getElementById('remoteVideo');
+    // Use the stream from the event if available, otherwise add the track directly.
+    // The explicit .play() is required on iOS Safari which blocks autoplay of unmuted video.
+    if (e.streams && e.streams[0]) {
+      rv.srcObject = e.streams[0];
+    } else {
+      if (!rv.srcObject) rv.srcObject = new MediaStream();
+      rv.srcObject.addTrack(e.track);
+    }
+    rv.play().catch(() => {
+      // iOS may still block — try once on next user interaction
+      const tryPlay = () => { rv.play().catch(() => {}); document.removeEventListener('touchstart', tryPlay); };
+      document.addEventListener('touchstart', tryPlay, { once: true });
+    });
   };
 
   pc.onicecandidate = (e) => {
@@ -503,16 +517,22 @@ function stopMedia() {
 
 // ── Post-call ─────────────────────────────────────────────────────────────
 function connectCall() {
-  document.querySelector('.result-icon').textContent = '💞';
-  document.querySelector('.postcall-title').textContent = 'Connected!';
-  document.querySelector('.postcall-sub').textContent = 'They\'ll see your heart too — if they feel it.';
+  document.getElementById('postcallIcon').textContent = '💞';
+  document.getElementById('postcallTitle').textContent = 'You connected!';
+  document.getElementById('postcallSub').textContent = 'Hope it goes somewhere good.';
   document.querySelector('.postcall-btns').innerHTML =
-    '<button class="btn-connect2" style="flex:1" onclick="location.href=\'/\'">Back to home</button>';
+    '<button class="btn-connect2" style="flex:1" onclick="location.href=\'/'\">Back to home</button>';
 }
 
-function passCall() {
-  showScreen('lobby');
+function tryAgain() {
+  document.getElementById('postcallIcon').textContent = '🤍';
+  document.getElementById('postcallTitle').textContent = "Time's up";
+  document.getElementById('postcallSub').textContent = 'Did you feel something?';
+  document.querySelector('.postcall-btns').innerHTML =
+    '<button class="btn-pass2" onclick="tryAgain()">Try again</button>' +
+    '<button class="btn-connect2" onclick="connectCall()">Connect ❤</button>';
   currentRoom = null;
+  showScreen('lobby');
 }
 
 // ── Status toast ──────────────────────────────────────────────────────────
