@@ -5,7 +5,7 @@
 window.APP = {
   name:    "DeepMatch",
   tagline: "We fall you in love",
-  accent:  "#ff4d6d",       // primary rose/red
-  accentB: "#c2185b",       // deeper variant
-  bg:      "#07060a",       // page background
+  accent:  "#C26F6A",       // dusty rose / terracotta
+  accentB: "#9E4E4A",       // deep rose
+  bg:      "#F7EFE2",       // warm cream
 };
