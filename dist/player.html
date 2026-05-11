@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#000000">
+  <script src="/config.js"></script>
+  <title>DeepMatch</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    /* ── WRAP ────────────────────────────────────────────── */
+    #wrap {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #wrap.cursor-hidden { cursor: none; }
+
+    /* ── VIDEO ───────────────────────────────────────────── */
+    #video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #000;
+    }
+
+    /* ── LOADING ──────────────────────────────────────────── */
+    #loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    /* ── ERROR ────────────────────────────────────────────── */
+    #errorState {
+      display: none;
+      position: absolute;
+      inset: 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 20;
+      color: rgba(255,255,255,0.8);
+      text-align: center;
+      padding: 32px;
+    }
+    #errorState .err-icon {
+      font-size: 48px;
+      opacity: 0.5;
+    }
+    #errorState p {
+      font-size: 16px;
+      max-width: 320px;
+      line-height: 1.5;
+    }
+    #errorState button {
+      margin-top: 4px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      padding: 10px 28px;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    #errorState button:hover { background: rgba(255,255,255,0.18); }
+
+    /* ── SPINNER ──────────────────────────────────────────── */
+    .spinner {
+      width: 38px;
+      height: 38px;
+      border: 3px solid rgba(255,255,255,0.12);
+      border-top-color: rgba(255,255,255,0.7);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── BUFFERING (while playing) ────────────────────────── */
+    #buffering {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 6;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    #buffering.on { opacity: 1; }
+
+    /* ── TAP FLASH ────────────────────────────────────────── */
+    #tapFlash {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      pointer-events: none;
+      z-index: 7;
+      opacity: 0;
+    }
+    #tapFlash.flash {
+      animation: tapPulse 0.4s ease-out forwards;
+    }
+    @keyframes tapPulse {
+      0%   { opacity: 0.6; transform: scale(0.5); }
+      100% { opacity: 0; transform: scale(1.6); }
+    }
+
+    /* ── CENTER PLAY BUTTON ───────────────────────────────── */
+    #centerBtn {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(255,255,255,0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 8;
+      transition: opacity 0.22s, transform 0.22s, background 0.15s;
+    }
+    #centerBtn:hover { background: rgba(0,0,0,0.65); }
+    #centerBtn.hidden { opacity: 0; transform: scale(0.85); pointer-events: none; }
+    #centerBtn svg { width: 32px; height: 32px; color: #fff; }
+
+    /* ── TITLE OVERLAY ────────────────────────────────────── */
+    #titleBar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 22px 22px 80px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, transparent 100%);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      pointer-events: none;
+      z-index: 9;
+      opacity: 1;
+      transition: opacity 0.4s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #titleBar.hide { opacity: 0; }
+
+    /* ── CLICK AREA (transparent, fills video) ────────────── */
+    #clickArea {
+      position: absolute;
+      inset: 0;
+      bottom: 90px;
+      z-index: 5;
+      cursor: pointer;
+    }
+
+    /* ── CONTROLS OVERLAY ─────────────────────────────────── */
+    #controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding-bottom: max(env(safe-area-inset-bottom, 0px), 4px);
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.55) 55%, transparent 100%);
+      z-index: 9;
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+    #controls.hide {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ── PROGRESS BAR ─────────────────────────────────────── */
+    #progressWrap {
+      padding: 10px 16px 8px;
+      cursor: pointer;
+      position: relative;
+    }
+    #progressTrack {
+      position: relative;
+      height: 4px;
+      background: rgba(255,255,255,0.22);
+      border-radius: 2px;
+      transition: height 0.12s;
+    }
+    #progressWrap:hover #progressTrack,
+    #progressWrap.dragging #progressTrack {
+      height: 6px;
+    }
+    #bufferBar {
+      position: absolute;
+      inset: 0;
+      right: auto;
+      background: rgba(255,255,255,0.32);
+      border-radius: 2px;
+      pointer-events: none;
+      width: 0;
+    }
+    #seekBar {
+      position: absolute;
+      inset: 0;
+      right: auto;
+      background: #fff;
+      border-radius: 2px;
+      pointer-events: none;
+      width: 0;
+    }
+    #seekThumb {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border-radius: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.12s;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.45);
+    }
+    #progressWrap:hover #seekThumb,
+    #progressWrap.dragging #seekThumb {
+      opacity: 1;
+    }
+    #hoverTime {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.78);
+      color: #fff;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      padding: 3px 8px;
+      border-radius: 4px;
+      pointer-events: none;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+    #progressWrap:hover #hoverTime { opacity: 1; }
+
+    /* ── CONTROLS ROW ─────────────────────────────────────── */
+    .ctrl-row {
+      display: flex;
+      align-items: center;
+      padding: 2px 8px 10px;
+      gap: 2px;
+    }
+    .btn {
+      background: none;
+      border: none;
+      color: #fff;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 6px;
+      flex-shrink: 0;
+      padding: 0;
+      transition: background 0.12s;
+    }
+    .btn:hover { background: rgba(255,255,255,0.12); }
+    .btn:active { background: rgba(255,255,255,0.2); }
+    .btn svg { width: 20px; height: 20px; flex-shrink: 0; display: block; }
+    .spacer { flex: 1; }
+
+    /* Time */
+    #timeDisplay {
+      color: rgba(255,255,255,0.88);
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      flex-shrink: 0;
+      padding: 0 6px;
+    }
+
+    /* Volume */
+    .vol-group { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+    #volSlider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 72px;
+      height: 3px;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+      background: linear-gradient(
+        to right,
+        rgba(255,255,255,0.78) var(--pct, 100%),
+        rgba(255,255,255,0.25) var(--pct, 100%)
+      );
+    }
+    #volSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 13px;
+      height: 13px;
+      background: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+    #volSlider::-moz-range-thumb {
+      width: 13px;
+      height: 13px;
+      background: #fff;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Keyboard shortcuts hint */
+    #keysHint {
+      position: absolute;
+      bottom: 80px;
+      right: 16px;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.8;
+      z-index: 11;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(6px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    #keysHint.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: none;
+    }
+    #keysHint kbd {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 11px;
+      font-family: inherit;
+    }
+
+    /* ── MOBILE ───────────────────────────────────────────── */
+    @media (max-width: 600px), (pointer: coarse) {
+      .vol-group, #pipBtn, #keysBtn { display: none; }
+      .btn { width: 44px; height: 44px; }
+      .btn svg { width: 22px; height: 22px; }
+      #timeDisplay { font-size: 12px; }
+      #titleBar { font-size: 14px; padding: 16px 16px 64px; }
+      #progressWrap { padding: 12px 12px 8px; }
+      #progressTrack { height: 5px; }
+      #progressWrap:hover #progressTrack { height: 5px; }
+      #centerBtn { width: 86px; height: 86px; }
+      #centerBtn svg { width: 36px; height: 36px; }
+    }
+  </style>
+</head>
+<body>
+<div id="wrap">
+
+  <!-- Loading -->
+  <div id="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Error -->
+  <div id="errorState">
+    <div class="err-icon">⚠</div>
+    <p id="errorMsg">Could not load video.</p>
+    <button onclick="location.reload()">Try again</button>
+  </div>
+
+  <!-- Video -->
+  <video id="video" playsinline preload="metadata"></video>
+
+  <!-- Buffering spinner overlay -->
+  <div id="buffering"><div class="spinner"></div></div>
+
+  <!-- Tap flash circle -->
+  <div id="tapFlash"></div>
+
+  <!-- Center play/pause button -->
+  <div id="centerBtn">
+    <svg id="centerSvg" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21"/></svg>
+  </div>
+
+  <!-- Title -->
+  <div id="titleBar"><span id="titleText"></span></div>
+
+  <!-- Transparent click area -->
+  <div id="clickArea"></div>
+
+  <!-- Controls -->
+  <div id="controls">
+    <!-- Progress bar -->
+    <div id="progressWrap">
+      <div id="hoverTime">0:00</div>
+      <div id="progressTrack">
+        <div id="bufferBar"></div>
+        <div id="seekBar"></div>
+        <div id="seekThumb"></div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="ctrl-row">
+      <button class="btn" id="playBtn" title="Play / Pause  (Space / K)">
+        <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21"/></svg>
+      </button>
+      <button class="btn" id="stopBtn" title="Stop">
+        <svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+      </button>
+      <span id="timeDisplay">0:00 / 0:00</span>
+
+      <div class="spacer"></div>
+
+      <div class="vol-group">
+        <button class="btn" id="muteBtn" title="Mute / Unmute  (M)">
+          <svg id="volSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/>
+            <path d="M15.54,8.46a5,5,0,0,1,0,7.07"/>
+            <path d="M19.07,4.93a10,10,0,0,1,0,14.14"/>
+          </svg>
+        </button>
+        <input type="range" id="volSlider" min="0" max="1" step="0.02" value="1" title="Volume  (↑ ↓)">
+      </div>
+
+      <button class="btn" id="pipBtn" title="Picture in Picture">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="14" rx="2"/>
+          <rect x="12" y="11" width="8" height="5" rx="1"/>
+        </svg>
+      </button>
+
+      <button class="btn" id="keysBtn" title="Keyboard shortcuts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="6" width="20" height="13" rx="2"/>
+          <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/>
+        </svg>
+      </button>
+
+      <button class="btn" id="fsBtn" title="Fullscreen  (F)">
+        <svg id="fsSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15,3 21,3 21,9"/>
+          <polyline points="9,21 3,21 3,15"/>
+          <line x1="21" y1="3" x2="14" y2="10"/>
+          <line x1="3" y1="21" x2="10" y2="14"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Keyboard shortcuts panel -->
+  <div id="keysHint">
+    <kbd>Space</kbd> / <kbd>K</kbd> — play / pause<br>
+    <kbd>←</kbd> <kbd>→</kbd> — seek ±10 s<br>
+    <kbd>↑</kbd> <kbd>↓</kbd> — volume<br>
+    <kbd>M</kbd> — mute<br>
+    <kbd>F</kbd> — fullscreen
+  </div>
+</div>
+
+<script>
+// ── Refs ─────────────────────────────────────────────────
+const wrap       = document.getElementById('wrap');
+const video      = document.getElementById('video');
+const loading    = document.getElementById('loading');
+const errorState = document.getElementById('errorState');
+const errorMsg   = document.getElementById('errorMsg');
+const buffering  = document.getElementById('buffering');
+const tapFlash   = document.getElementById('tapFlash');
+const centerBtn  = document.getElementById('centerBtn');
+const centerSvg  = document.getElementById('centerSvg');
+const titleBar   = document.getElementById('titleBar');
+const titleText  = document.getElementById('titleText');
+const clickArea  = document.getElementById('clickArea');
+const controls   = document.getElementById('controls');
+const progressWrap = document.getElementById('progressWrap');
+const progressTrack = document.getElementById('progressTrack');
+const bufferBar  = document.getElementById('bufferBar');
+const seekBar    = document.getElementById('seekBar');
+const seekThumb  = document.getElementById('seekThumb');
+const hoverTime  = document.getElementById('hoverTime');
+const playBtn    = document.getElementById('playBtn');
+const stopBtn    = document.getElementById('stopBtn');
+const timeDisplay = document.getElementById('timeDisplay');
+const muteBtn    = document.getElementById('muteBtn');
+const volSvg     = document.getElementById('volSvg');
+const volSlider  = document.getElementById('volSlider');
+const pipBtn     = document.getElementById('pipBtn');
+const keysBtn    = document.getElementById('keysBtn');
+const keysHint   = document.getElementById('keysHint');
+const fsBtn      = document.getElementById('fsBtn');
+const fsSvg      = document.getElementById('fsSvg');
+
+// ── SVG paths ─────────────────────────────────────────────
+const I = {
+  play:   `<polygon points="6,3 20,12 6,21"/>`,
+  pause:  `<rect x="5" y="3" width="4" height="18" rx="1"/><rect x="15" y="3" width="4" height="18" rx="1"/>`,
+  volOn:  `<polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><path d="M15.54,8.46a5,5,0,0,1,0,7.07"/><path d="M19.07,4.93a10,10,0,0,1,0,14.14"/>`,
+  volOff: `<polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>`,
+  fsIn:   `<polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>`,
+  fsOut:  `<polyline points="4,14 10,14 10,20"/><polyline points="20,10 14,10 14,4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/>`,
+};
+
+function svgFill(paths)   { return `<svg viewBox="0 0 24 24" fill="currentColor">${paths}</svg>`; }
+function svgStroke(paths) { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`; }
+
+// ── State ─────────────────────────────────────────────────
+let hideTimer = null;
+let titleTimer = null;
+let isDragging = false;
+let ctrlVisible = true;
+let isTouch = false;
+let loaded = false;
+
+// ── Load video from API ───────────────────────────────────
+const slug = window.location.pathname.split('/').filter(Boolean).pop();
+
+(async () => {
+  if (!slug) { showErr('No video specified.'); return; }
+  try {
+    const r = await fetch(`/api/videos?slug=${encodeURIComponent(slug)}`);
+    if (!r.ok) throw new Error('Video not found');
+    const d = await r.json();
+    document.title = `${d.title} — ${window.APP?.name || 'DeepMatch'}`;
+    titleText.textContent = d.title;
+    video.src = d.url;
+    video.load();
+  } catch (e) {
+    showErr(e.message || 'Could not load video.');
+  }
+})();
+
+function showErr(msg) {
+  loading.style.display = 'none';
+  errorMsg.textContent = msg;
+  errorState.style.display = 'flex';
+}
+
+// ── Controls show / hide ──────────────────────────────────
+function showCtrl() {
+  if (!ctrlVisible) {
+    controls.classList.remove('hide');
+    titleBar.classList.remove('hide');
+    wrap.classList.remove('cursor-hidden');
+    ctrlVisible = true;
+  }
+  clearTimeout(hideTimer);
+}
+
+function hideCtrl() {
+  controls.classList.add('hide');
+  titleBar.classList.add('hide');
+  wrap.classList.add('cursor-hidden');
+  ctrlVisible = false;
+}
+
+function schedHide(ms = 3000) {
+  clearTimeout(hideTimer);
+  if (!video.paused && !isDragging) hideTimer = setTimeout(hideCtrl, ms);
+}
+
+function resetHide() { showCtrl(); schedHide(); }
+
+document.addEventListener('mousemove', resetHide, { passive: true });
+document.addEventListener('touchstart', () => { isTouch = true; }, { passive: true });
+
+// ── Click area ────────────────────────────────────────────
+clickArea.addEventListener('click', () => {
+  if (isTouch && !ctrlVisible) { showCtrl(); schedHide(); return; }
+  doPlayPause();
+});
+
+// Double-tap → fullscreen
+let lastTap = 0;
+clickArea.addEventListener('touchend', (e) => {
+  const now = Date.now();
+  if (now - lastTap < 280) { e.preventDefault(); toggleFs(); lastTap = 0; }
+  else lastTap = now;
+}, { passive: false });
+
+// ── Play / Pause ──────────────────────────────────────────
+function doPlayPause() {
+  flashTap();
+  video.paused ? video.play().catch(() => {}) : video.pause();
+}
+
+function flashTap() {
+  tapFlash.classList.remove('flash');
+  void tapFlash.offsetWidth;
+  tapFlash.classList.add('flash');
+}
+
+centerBtn.addEventListener('click', (e) => { e.stopPropagation(); doPlayPause(); });
+playBtn.addEventListener('click', doPlayPause);
+
+stopBtn.addEventListener('click', () => {
+  video.pause();
+  video.currentTime = 0;
+  updatePlay();
+  showCtrl();
+  clearTimeout(hideTimer);
+});
+
+// ── Video events ──────────────────────────────────────────
+video.addEventListener('play', () => { updatePlay(); schedHide(); });
+video.addEventListener('pause', () => { updatePlay(); showCtrl(); clearTimeout(hideTimer); });
+video.addEventListener('ended', () => { updatePlay(); showCtrl(); clearTimeout(hideTimer); });
+
+video.addEventListener('waiting', () => buffering.classList.add('on'));
+video.addEventListener('playing', () => {
+  buffering.classList.remove('on');
+  if (!loaded) { loading.style.display = 'none'; loaded = true; }
+  clearTimeout(titleTimer);
+  titleTimer = setTimeout(() => titleBar.classList.add('hide'), 4000);
+});
+video.addEventListener('canplay', () => { loading.style.display = 'none'; loaded = true; });
+video.addEventListener('loadedmetadata', () => { loading.style.display = 'none'; loaded = true; tick(); });
+video.addEventListener('error', () => showErr('Could not play this video. Try reloading.'));
+
+// ── Icons ──────────────────────────────────────────────────
+function updatePlay() {
+  const playing = !video.paused && !video.ended;
+  playBtn.innerHTML = svgFill(playing ? I.pause : I.play);
+  centerSvg.innerHTML = playing ? I.pause : I.play;
+  if (playing) centerBtn.classList.add('hidden');
+  else centerBtn.classList.remove('hidden');
+}
+
+function updateVol() {
+  const muted = video.muted || video.volume === 0;
+  volSvg.innerHTML = muted ? I.volOff : I.volOn;
+  const pct = `${(muted ? 0 : video.volume) * 100}%`;
+  volSlider.style.setProperty('--pct', pct);
+  volSlider.value = muted ? 0 : video.volume;
+}
+
+function updateFs() {
+  const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  fsSvg.innerHTML = isFs ? I.fsOut : I.fsIn;
+}
+
+// ── Time & progress ────────────────────────────────────────
+function fmt(s) {
+  if (!isFinite(s)) return '0:00';
+  return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+}
+
+function tick() {
+  const cur = video.currentTime, dur = video.duration || 0;
+  timeDisplay.textContent = `${fmt(cur)} / ${fmt(dur)}`;
+  if (!isDragging && dur) {
+    const p = `${(cur / dur) * 100}%`;
+    seekBar.style.width = p;
+    seekThumb.style.left = p;
+  }
+}
+
+video.addEventListener('timeupdate', tick);
+
+video.addEventListener('progress', () => {
+  if (video.buffered.length && video.duration) {
+    bufferBar.style.width = `${(video.buffered.end(video.buffered.length - 1) / video.duration) * 100}%`;
+  }
+});
+
+// ── Progress bar seeking ──────────────────────────────────
+function getPct(cx) {
+  const r = progressTrack.getBoundingClientRect();
+  return Math.max(0, Math.min(1, (cx - r.left) / r.width));
+}
+
+function seek(pct) {
+  if (!video.duration) return;
+  video.currentTime = pct * video.duration;
+  const p = `${pct * 100}%`;
+  seekBar.style.width = p;
+  seekThumb.style.left = p;
+  timeDisplay.textContent = `${fmt(video.currentTime)} / ${fmt(video.duration)}`;
+}
+
+// Hover tooltip (desktop)
+progressWrap.addEventListener('mousemove', (e) => {
+  const rect = progressTrack.getBoundingClientRect();
+  const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  hoverTime.textContent = fmt(pct * (video.duration || 0));
+  hoverTime.style.left = `${e.clientX - progressWrap.getBoundingClientRect().left}px`;
+});
+
+progressWrap.addEventListener('mousedown', (e) => {
+  e.preventDefault();
+  isDragging = true;
+  progressWrap.classList.add('dragging');
+  seek(getPct(e.clientX));
+  const mv = (e) => seek(getPct(e.clientX));
+  const up = () => {
+    isDragging = false;
+    progressWrap.classList.remove('dragging');
+    document.removeEventListener('mousemove', mv);
+    document.removeEventListener('mouseup', up);
+    if (!video.paused) schedHide();
+  };
+  document.addEventListener('mousemove', mv);
+  document.addEventListener('mouseup', up);
+});
+
+progressWrap.addEventListener('touchstart', (e) => {
+  e.stopPropagation();
+  isDragging = true;
+  progressWrap.classList.add('dragging');
+  seek(getPct(e.touches[0].clientX));
+}, { passive: true });
+
+progressWrap.addEventListener('touchmove', (e) => {
+  e.stopPropagation();
+  seek(getPct(e.touches[0].clientX));
+}, { passive: true });
+
+progressWrap.addEventListener('touchend', () => {
+  isDragging = false;
+  progressWrap.classList.remove('dragging');
+  if (!video.paused) schedHide();
+});
+
+// ── Volume ─────────────────────────────────────────────────
+muteBtn.addEventListener('click', () => {
+  if (video.muted) {
+    video.muted = false;
+    if (video.volume === 0) { video.volume = 0.5; }
+  } else {
+    video.muted = true;
+  }
+  updateVol();
+});
+
+volSlider.addEventListener('input', () => {
+  video.volume = parseFloat(volSlider.value);
+  video.muted = video.volume === 0;
+  updateVol();
+});
+
+video.addEventListener('volumechange', updateVol);
+
+// ── Fullscreen ─────────────────────────────────────────────
+function toggleFs() {
+  const el = document.fullscreenElement || document.webkitFullscreenElement;
+  if (el) {
+    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  } else {
+    const req = wrap.requestFullscreen || wrap.webkitRequestFullscreen;
+    if (req) req.call(wrap);
+  }
+}
+fsBtn.addEventListener('click', toggleFs);
+document.addEventListener('fullscreenchange', updateFs);
+document.addEventListener('webkitfullscreenchange', updateFs);
+
+// ── PiP ─────────────────────────────────────────────────────
+if (document.pictureInPictureEnabled) {
+  pipBtn.addEventListener('click', () => {
+    document.pictureInPictureElement
+      ? document.exitPictureInPicture()
+      : video.requestPictureInPicture().catch(() => {});
+  });
+} else {
+  pipBtn.style.display = 'none';
+}
+
+// ── Keyboard shortcuts ──────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.metaKey || e.ctrlKey) return;
+  switch (e.key) {
+    case ' ': case 'k': case 'K':
+      e.preventDefault(); doPlayPause(); resetHide(); break;
+    case 'f': case 'F':
+      e.preventDefault(); toggleFs(); break;
+    case 'm': case 'M':
+      e.preventDefault(); muteBtn.click(); resetHide(); break;
+    case 'ArrowLeft':
+      e.preventDefault();
+      video.currentTime = Math.max(0, video.currentTime - 10);
+      resetHide(); break;
+    case 'ArrowRight':
+      e.preventDefault();
+      video.currentTime = Math.min(video.duration || 0, video.currentTime + 10);
+      resetHide(); break;
+    case 'ArrowUp':
+      e.preventDefault();
+      video.volume = Math.min(1, video.volume + 0.1);
+      video.muted = false;
+      updateVol(); resetHide(); break;
+    case 'ArrowDown':
+      e.preventDefault();
+      video.volume = Math.max(0, video.volume - 0.1);
+      updateVol(); resetHide(); break;
+  }
+});
+
+// ── Keyboard hint toggle ────────────────────────────────────
+let keysOpen = false;
+keysBtn.addEventListener('click', () => {
+  keysOpen = !keysOpen;
+  keysHint.classList.toggle('visible', keysOpen);
+  keysBtn.style.background = keysOpen ? 'rgba(255,255,255,0.15)' : '';
+});
+document.addEventListener('click', (e) => {
+  if (keysOpen && !keysHint.contains(e.target) && e.target !== keysBtn) {
+    keysOpen = false;
+    keysHint.classList.remove('visible');
+    keysBtn.style.background = '';
+  }
+});
+
+// ── Init icon state ─────────────────────────────────────────
+updatePlay();
+updateVol();
+updateFs();
+</script>
+</body>
+</html>
