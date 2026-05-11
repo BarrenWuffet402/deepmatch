@@ -2,13 +2,20 @@
  * /api/seedance — Seedance text-to-video via fal.ai
  *
  * POST { prompt, slug, title, duration?, aspect_ratio?, style?, style_id? }
- *   → { request_id, slug, title, status_url }
+ *   → { request_id, status_url, response_url, slug, title }
  *
- * GET  ?request_id=xxx → poll status → { status, video_url? }
+ * GET  ?request_id=xxx&status_url=<encoded>&response_url=<encoded>
+ *   → { status, video_url? }
+ *
+ * NOTE: fal.ai polling uses a DIFFERENT base path than submission.
+ *   Submit:  POST https://queue.fal.run/bytedance/seedance-2.0/fast/text-to-video
+ *   Poll:    GET  https://queue.fal.run/bytedance/seedance-2.0/requests/{id}/status
+ *   Result:  GET  https://queue.fal.run/bytedance/seedance-2.0/requests/{id}
+ * Always use the status_url / response_url from the submit response directly.
  */
 
-const MODEL    = process.env.SEEDANCE_MODEL || "bytedance/seedance-2.0/fast/text-to-video";
-const BASE_URL = `https://queue.fal.run/${MODEL}`;
+const MODEL = process.env.SEEDANCE_MODEL || "bytedance/seedance-2.0/fast/text-to-video";
+const SUBMIT_URL = `https://queue.fal.run/${MODEL}`;
 
 function falKey() {
   const k = process.env.FAL_KEY;
@@ -23,36 +30,68 @@ export default async function handler(req, res) {
 
   // ── GET: poll status ──────────────────────────────────────────────────────
   if (req.method === "GET") {
-    const { request_id } = req.query;
+    const { request_id, status_url, response_url } = req.query;
     if (!request_id) return res.status(400).json({ error: "request_id required" });
 
-    const statusUrl = `https://queue.fal.run/${MODEL}/requests/${request_id}/status`;
-    const r = await fetch(statusUrl, {
-      headers: { Authorization: `Key ${falKey()}` },
-    });
-    const d = await r.json();
-    if (!r.ok) return res.status(r.status).json({ error: "Status check failed" });
+    // Use the status_url from the initial response (correct fal.ai base path)
+    const pollUrl = status_url
+      ? decodeURIComponent(status_url)
+      : `https://queue.fal.run/bytedance/seedance-2.0/requests/${request_id}/status`;
 
-    // Fal status: IN_QUEUE | IN_PROGRESS | COMPLETED | FAILED
-    if (d.status === "COMPLETED") {
-      // Fetch the actual result
-      const resultUrl = `https://queue.fal.run/${MODEL}/requests/${request_id}`;
-      const rr = await fetch(resultUrl, {
-        headers: { Authorization: `Key ${falKey()}` },
-      });
-      const result = await rr.json();
-      const videoUrl = result?.video?.url || result?.video_url || result?.output?.video?.url || null;
+    let statusData;
+    try {
+      const r = await fetch(pollUrl, { headers: { Authorization: `Key ${falKey()}` } });
+      statusData = await r.json();
+      if (!r.ok) return res.status(200).json({ status: "processing" }); // keep polling on transient errors
+    } catch (e) {
+      return res.status(200).json({ status: "processing" }); // keep polling
+    }
 
+    if (statusData.status !== "COMPLETED") {
+      const qp = statusData.queue_position != null ? statusData.queue_position : null;
       return res.status(200).json({
-        status:    "completed",
-        video_url: videoUrl,
+        status: statusData.status === "FAILED" ? "failed" : "processing",
+        queue_position: qp,
       });
     }
 
-    return res.status(200).json({
-      status: d.status?.toLowerCase() || "processing",
-      queue_position: d.queue_position || null,
-    });
+    // COMPLETED — fetch the actual result
+    const resultUrl = response_url
+      ? decodeURIComponent(response_url)
+      : `https://queue.fal.run/bytedance/seedance-2.0/requests/${request_id}`;
+
+    let result;
+    try {
+      const rr = await fetch(resultUrl, { headers: { Authorization: `Key ${falKey()}` } });
+      result = await rr.json();
+    } catch (e) {
+      return res.status(200).json({ status: "failed", error: "Could not fetch result" });
+    }
+
+    // Check for content policy or other errors in result
+    if (result.detail) {
+      const detail = Array.isArray(result.detail) ? result.detail[0] : result.detail;
+      const msg = detail?.msg || detail?.message || JSON.stringify(detail);
+      return res.status(200).json({ status: "failed", error: `fal.ai: ${msg}` });
+    }
+
+    // Extract video URL — try multiple known field paths
+    const videoUrl =
+      result?.video?.url ||
+      result?.videos?.[0]?.url ||
+      result?.video_url ||
+      result?.output?.video?.url ||
+      result?.output?.url ||
+      null;
+
+    if (!videoUrl) {
+      return res.status(200).json({
+        status: "failed",
+        error: "Video URL not found in result. Fields: " + Object.keys(result).join(", "),
+      });
+    }
+
+    return res.status(200).json({ status: "completed", video_url: videoUrl });
   }
 
   // ── POST: generate ────────────────────────────────────────────────────────
@@ -62,7 +101,7 @@ export default async function handler(req, res) {
       slug,
       title,
       duration     = 5,
-      aspect_ratio = "9:16",   // 9:16 portrait (mobile), 16:9 landscape, 1:1 square
+      aspect_ratio = "9:16",
       style,
       style_id,
     } = req.body || {};
@@ -71,33 +110,36 @@ export default async function handler(req, res) {
     if (!slug || !/^[a-z0-9-]+$/.test(slug))
       return res.status(400).json({ error: "slug must be lowercase letters, numbers, hyphens" });
 
-    // Build the full prompt — append style hints if provided
     let fullPrompt = prompt.trim();
     if (style?.trim())    fullPrompt += `, ${style.trim()}`;
     if (style_id?.trim()) fullPrompt += `, style:${style_id.trim()}`;
 
-    const payload = {
-      prompt:       fullPrompt,
-      duration:     Number(duration),
-      aspect_ratio,
-    };
+    let d;
+    try {
+      const r = await fetch(SUBMIT_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Key ${falKey()}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: fullPrompt,
+          duration: Number(duration),
+          aspect_ratio,
+        }),
+      });
+      d = await r.json();
+      if (!r.ok) return res.status(400).json({ error: d?.detail || `fal.ai error ${r.status}` });
+    } catch (e) {
+      return res.status(500).json({ error: e.message || "Seedance request failed" });
+    }
 
-    const r = await fetch(BASE_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Key ${falKey()}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const d = await r.json();
-    if (!r.ok || d.detail)
-      return res.status(r.status).json({ error: d?.detail || "Seedance generation failed" });
+    if (!d.request_id) return res.status(500).json({ error: "No request_id from fal.ai" });
 
     return res.status(200).json({
-      request_id: d.request_id,
-      status_url: d.status_url,
+      request_id:   d.request_id,
+      status_url:   encodeURIComponent(d.status_url),
+      response_url: encodeURIComponent(d.response_url),
       slug,
       title,
     });

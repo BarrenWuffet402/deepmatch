@@ -466,7 +466,7 @@ async function generateSeedance() {
   try {
     const r = await post('/api/seedance', { prompt, slug, title, duration, aspect_ratio: ratio, style, style_id: styleId });
     setStep(0, 'done'); setStep(1, 'active'); setLabel('Generating scene… (1–3 min)');
-    await pollSeedanceStatus(r.request_id, slug, title);
+    await pollSeedanceStatus(r.request_id, slug, title, r.status_url, r.response_url);
   } catch(e) { setGenerating(false); showMsg('err', e.message); }
 }
 
@@ -490,10 +490,13 @@ async function pollHeygenStatus(videoId, slug, title, steps) {
   } catch(e) { setGenerating(false); showMsg('err', e.message); }
 }
 
-async function pollSeedanceStatus(requestId, slug, title) {
+async function pollSeedanceStatus(requestId, slug, title, statusUrl, responseUrl) {
   clearTimeout(pollTimer);
   try {
-    const d = await get(`/api/seedance?request_id=${encodeURIComponent(requestId)}`);
+    let url = `/api/seedance?request_id=${encodeURIComponent(requestId)}`;
+    if (statusUrl)   url += `&status_url=${statusUrl}`;
+    if (responseUrl) url += `&response_url=${responseUrl}`;
+    const d = await get(url);
     if (d.status === 'completed' && d.video_url) {
       setStep(2, 'done'); setStep(3, 'active'); setLabel('Saving to library…');
       await saveVideo({ video_id: null, video_url: d.video_url, slug, title, source: 'seedance' });
@@ -502,11 +505,11 @@ async function pollSeedanceStatus(requestId, slug, title) {
       showMsg('ok', `✓ Scene ready — /watch/${slug}`);
       resetForm('s');
     } else if (d.status === 'failed') {
-      throw new Error('Seedance generation failed.');
+      throw new Error(d.error || 'Seedance generation failed — try a different prompt.');
     } else {
-      const qp = d.queue_position ? ` (queue: ${d.queue_position})` : '';
+      const qp = d.queue_position != null ? ` (queue pos: ${d.queue_position})` : '';
       setLabel(`Generating${qp}…`);
-      pollTimer = setTimeout(() => pollSeedanceStatus(requestId, slug, title), 8000);
+      pollTimer = setTimeout(() => pollSeedanceStatus(requestId, slug, title, statusUrl, responseUrl), 8000);
     }
   } catch(e) { setGenerating(false); showMsg('err', e.message); }
 }
