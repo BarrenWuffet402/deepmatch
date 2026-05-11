@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#F7EFE2">
+  <script src="/config.js"></script>
+  <title>DeepMatch — Live Call</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F7EFE2;
+      --surface: #FBF6EC;
+      --line: rgba(74,44,33,0.10);
+      --line-2: rgba(74,44,33,0.18);
+      --text: #2A1F1A;
+      --text-soft: #4A3A30;
+      --text-mute: #A89384;
+      --rose: #C26F6A;
+      --rose-deep: #9E4E4A;
+      --grad: linear-gradient(135deg, #9E4E4A 0%, #C26F6A 100%);
+      --green: #5C7050;
+      --sage: #8B9D7E;
+    }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--text); }
+
+    /* ── SCREENS ── */
+    .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; }
+    .screen.hidden { display: none; }
+
+    /* ── LOBBY ── */
+    #lobby { gap: 24px; text-align: center; }
+    .logo-mark { width: 52px; height: 52px; border-radius: 16px; background: var(--grad); box-shadow: 0 8px 24px rgba(158,78,74,0.35); margin: 0 auto; }
+    .lobby-title { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; }
+    .lobby-sub { font-size: 15px; color: var(--text-soft); max-width: 280px; line-height: 1.5; }
+    .btn-connect-main {
+      width: 100%; max-width: 320px; height: 56px;
+      background: var(--grad);
+      border: none; border-radius: 28px;
+      color: white; font-size: 17px; font-weight: 700; letter-spacing: 0.01em;
+      cursor: pointer; font-family: inherit;
+      box-shadow: 0 8px 28px rgba(158,78,74,0.40);
+      animation: pulseShadow 2s ease-in-out infinite;
+      transition: transform .15s;
+    }
+    .btn-connect-main:active { transform: scale(0.97); }
+    @keyframes pulseShadow {
+      0%,100% { box-shadow: 0 8px 28px rgba(158,78,74,0.40); }
+      50%      { box-shadow: 0 8px 40px rgba(158,78,74,0.65); }
+    }
+    .divider { display: flex; align-items: center; gap: 12px; width: 100%; max-width: 320px; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+    .divider span { font-size: 12px; color: var(--text-mute); }
+    .room-input-row { display: flex; gap: 8px; width: 100%; max-width: 320px; }
+    .room-input {
+      flex: 1; height: 46px; padding: 0 14px;
+      background: var(--surface); border: 1px solid var(--line-2);
+      border-radius: 12px; font-size: 14px; font-family: inherit; color: var(--text);
+      outline: none; transition: border-color .2s;
+    }
+    .room-input:focus { border-color: var(--rose); }
+    .room-input::placeholder { color: var(--text-mute); }
+    .btn-join {
+      height: 46px; padding: 0 18px;
+      background: var(--surface); border: 1px solid var(--line-2);
+      border-radius: 12px; font-size: 14px; font-weight: 600; font-family: inherit;
+      color: var(--rose-deep); cursor: pointer; transition: background .15s;
+    }
+    .btn-join:hover { background: var(--bg); }
+
+    /* ── WAITING ── */
+    #waiting { gap: 20px; text-align: center; }
+    .waiting-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--line);
+      border-top-color: var(--rose);
+      animation: spin 1.2s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .room-code-box {
+      background: var(--surface); border: 1px solid var(--line-2);
+      border-radius: 14px; padding: 16px 20px;
+      text-align: center; max-width: 280px; width: 100%;
+    }
+    .room-code-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-mute); margin-bottom: 8px; }
+    .room-code-value { font-size: 28px; font-weight: 700; letter-spacing: 0.18em; color: var(--rose-deep); font-family: 'JetBrains Mono', monospace; }
+    .share-link-btn {
+      height: 40px; padding: 0 18px;
+      background: var(--surface); border: 1px solid var(--line-2);
+      border-radius: 20px; font-size: 13px; font-weight: 600;
+      color: var(--rose-deep); cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; gap: 6px;
+      transition: background .15s;
+    }
+    .share-link-btn:hover { background: var(--bg); }
+
+    /* ── CALL ── */
+    #call { padding: 0; background: #000; }
+
+    /* remote video fills screen */
+    #remoteVideo {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      background: #1a1010;
+    }
+
+    /* local video - small corner */
+    #localVideo {
+      position: absolute;
+      top: max(env(safe-area-inset-top, 0px), 16px);
+      right: 16px;
+      width: 90px;
+      aspect-ratio: 3/4;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #2a1a18;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      z-index: 5;
+    }
+
+    /* timer overlay */
+    #timerBadge {
+      position: absolute;
+      top: max(env(safe-area-inset-top, 0px), 16px);
+      left: 50%; transform: translateX(-50%);
+      z-index: 6;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 20px; padding: 6px 16px;
+      font-size: 14px; font-weight: 700; color: white;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.08em;
+    }
+    #timerBadge.expiring { color: #ffb4ab; border-color: rgba(255,180,171,0.35); }
+
+    /* call actions bar */
+    #callBar {
+      position: absolute;
+      bottom: max(env(safe-area-inset-bottom, 0px), 28px);
+      left: 0; right: 0;
+      display: flex; justify-content: center; gap: 20px;
+      z-index: 6;
+    }
+    .call-action-btn {
+      width: 62px; height: 62px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: none; cursor: pointer; font-size: 20px;
+      transition: transform .15s;
+    }
+    .call-action-btn:active { transform: scale(0.93); }
+    .btn-end   { background: #c13a3a; color: white; box-shadow: 0 6px 20px rgba(193,58,58,0.5); }
+    .btn-mute  { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); color: white; border: 1px solid rgba(255,255,255,0.2); }
+    .btn-mute.muted { background: rgba(255,255,255,0.4); color: #1a1010; }
+    .btn-cam   { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); color: white; border: 1px solid rgba(255,255,255,0.2); }
+
+    /* ── POST-CALL ── */
+    #postcall { gap: 20px; text-align: center; }
+    .result-icon { font-size: 52px; }
+    .postcall-title { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+    .postcall-sub { font-size: 15px; color: var(--text-soft); max-width: 260px; line-height: 1.5; }
+    .postcall-btns { display: flex; gap: 12px; width: 100%; max-width: 300px; }
+    .btn-pass2 {
+      flex: 1; height: 52px; border-radius: 26px;
+      background: var(--surface); border: 1px solid var(--line-2);
+      color: var(--text-soft); font-size: 15px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      transition: background .15s;
+    }
+    .btn-pass2:hover { background: var(--bg); }
+    .btn-connect2 {
+      flex: 2; height: 52px; border-radius: 26px;
+      background: var(--grad); border: none;
+      color: white; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      box-shadow: 0 6px 20px rgba(158,78,74,0.4);
+      transition: opacity .15s;
+    }
+    .btn-connect2:hover { opacity: 0.88; }
+
+    /* ── STATUS ── */
+    #statusBar {
+      position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
+      background: rgba(42,31,26,0.85); backdrop-filter: blur(12px);
+      border-radius: 20px; padding: 8px 18px;
+      font-size: 13px; color: rgba(255,255,255,0.8);
+      z-index: 20; pointer-events: none;
+      opacity: 0; transition: opacity .3s;
+      white-space: nowrap;
+    }
+    #statusBar.show { opacity: 1; }
+
+    /* ── HOME LINK ── */
+    #homeBtn {
+      position: fixed; top: max(env(safe-area-inset-top,0px),16px); left: 16px; z-index: 30;
+      background: rgba(251,246,236,0.88); backdrop-filter: blur(10px);
+      border: 1px solid var(--line-2); border-radius: 20px;
+      color: var(--text-soft); font-size: 13px; padding: 6px 14px;
+      text-decoration: none; font-family: inherit;
+      display: flex; align-items: center; gap: 5px;
+    }
+    #homeBtn.dark { background: rgba(0,0,0,0.45); color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.14); }
+  </style>
+</head>
+<body>
+
+<a id="homeBtn" href="/">
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,18 9,12 15,6"/></svg>
+  Home
+</a>
+
+<!-- ── LOBBY ── -->
+<div class="screen" id="lobby">
+  <div class="logo-mark"></div>
+  <div>
+    <div class="lobby-title">Connect now</div>
+  </div>
+  <div class="lobby-sub">One tap. One stranger. 60 seconds to feel it.</div>
+  <button class="btn-connect-main" onclick="createRoom()">Connect →</button>
+  <div class="divider"><span>or join a room</span></div>
+  <div class="room-input-row">
+    <input class="room-input" id="roomCodeInput" placeholder="Enter room code" maxlength="8" autocomplete="off" autocapitalize="characters">
+    <button class="btn-join" onclick="joinRoom()">Join</button>
+  </div>
+</div>
+
+<!-- ── WAITING ── -->
+<div class="screen hidden" id="waiting">
+  <div class="waiting-ring"></div>
+  <div style="font-size:17px;font-weight:600;">Waiting for your match…</div>
+  <div class="room-code-box">
+    <div class="room-code-label">Share this code</div>
+    <div class="room-code-value" id="displayCode">——</div>
+  </div>
+  <button class="share-link-btn" onclick="copyLink()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    Copy link
+  </button>
+  <button style="font-size:13px;color:var(--text-mute);background:none;border:none;cursor:pointer;margin-top:8px;" onclick="cancelWait()">Cancel</button>
+</div>
+
+<!-- ── CALL ── -->
+<div class="screen hidden" id="call">
+  <video id="remoteVideo" autoplay playsinline></video>
+  <video id="localVideo"  autoplay playsinline muted></video>
+  <div id="timerBadge">1:00</div>
+  <div id="callBar">
+    <button class="call-action-btn btn-mute" id="muteBtn" onclick="toggleMute()" title="Mute">
+      🎤
+    </button>
+    <button class="call-action-btn btn-end" onclick="endCall()" title="End">
+      📵
+    </button>
+    <button class="call-action-btn btn-cam" onclick="toggleCam()" title="Camera">
+      📷
+    </button>
+  </div>
+</div>
+
+<!-- ── POST-CALL ── -->
+<div class="screen hidden" id="postcall">
+  <div class="result-icon">🤍</div>
+  <div class="postcall-title">Time's up</div>
+  <div class="postcall-sub">Did you feel something? Let them know.</div>
+  <div class="postcall-btns">
+    <button class="btn-pass2" onclick="passCall()">Pass</button>
+    <button class="btn-connect2" onclick="connectCall()">Connect ✓</button>
+  </div>
+</div>
+
+<!-- status toast -->
+<div id="statusBar"></div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────────────
+const SIGNAL_URL = 'wss://wildheart.no/signal';
+const CALL_DURATION = 60; // seconds
+const ICE_SERVERS = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+];
+
+// ── State ─────────────────────────────────────────────────────────────────
+let ws = null;
+let pc = null;
+let localStream = null;
+let timerInterval = null;
+let secondsLeft = CALL_DURATION;
+let myRole = null;        // 'initiator' | 'receiver'
+let currentRoom = null;
+let muted = false;
+let camOff = false;
+
+// ── Screen management ─────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  // Home button style
+  document.getElementById('homeBtn').className = id === 'call' ? 'dark' : '';
+  document.getElementById('homeBtn').id = 'homeBtn'; // reset id
+}
+
+// ── Room helpers ──────────────────────────────────────────────────────────
+function randomCode() {
+  return Math.random().toString(36).slice(2, 8).toUpperCase();
+}
+
+function createRoom() {
+  const code = randomCode();
+  startRoom(code);
+}
+
+function joinRoom() {
+  const code = document.getElementById('roomCodeInput').value.trim().toUpperCase();
+  if (code.length < 4) return status('Enter a room code');
+  startRoom(code);
+}
+
+// Check URL for ?room= param on load
+function checkUrlRoom() {
+  const params = new URLSearchParams(location.search);
+  const room = params.get('room');
+  if (room) {
+    document.getElementById('roomCodeInput').value = room.toUpperCase();
+    startRoom(room.toUpperCase());
+  }
+}
+
+function copyLink() {
+  const url = `${location.origin}/match?room=${currentRoom}`;
+  navigator.clipboard.writeText(url).then(() => status('Link copied!'));
+}
+
+function cancelWait() {
+  if (ws) { ws.close(); ws = null; }
+  showScreen('lobby');
+}
+
+// ── Connect to signaling ──────────────────────────────────────────────────
+async function startRoom(code) {
+  currentRoom = code;
+  document.getElementById('displayCode').textContent = code;
+  showScreen('waiting');
+
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    document.getElementById('localVideo').srcObject = localStream;
+  } catch(e) {
+    status('Camera/mic permission denied');
+    showScreen('lobby');
+    return;
+  }
+
+  ws = new WebSocket(SIGNAL_URL);
+
+  ws.onopen = () => {
+    ws.send(JSON.stringify({ type: 'join', room: code }));
+  };
+
+  ws.onerror = () => status('Signaling connection failed');
+
+  ws.onmessage = async (e) => {
+    const msg = JSON.parse(e.data);
+
+    if (msg.type === 'error') { status(msg.message); return; }
+
+    if (msg.type === 'joined') {
+      myRole = msg.role;
+      if (msg.peers === 2) await startPeerConnection();
+    }
+
+    if (msg.type === 'ready') {
+      if (myRole === 'initiator') await startPeerConnection();
+    }
+
+    if (msg.type === 'offer')  await handleOffer(msg.data);
+    if (msg.type === 'answer') await handleAnswer(msg.data);
+    if (msg.type === 'ice')    await handleIce(msg.data);
+
+    if (msg.type === 'peer-left') {
+      status('Match disconnected');
+      endCall();
+    }
+  };
+}
+
+// ── WebRTC ────────────────────────────────────────────────────────────────
+async function startPeerConnection() {
+  pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+
+  pc.ontrack = (e) => {
+    document.getElementById('remoteVideo').srcObject = e.streams[0];
+  };
+
+  pc.onicecandidate = (e) => {
+    if (e.candidate) {
+      ws.send(JSON.stringify({ type: 'ice', data: e.candidate }));
+    }
+  };
+
+  pc.onconnectionstatechange = () => {
+    if (pc.connectionState === 'connected') {
+      showScreen('call');
+      startTimer();
+    }
+    if (['disconnected','failed'].includes(pc.connectionState)) {
+      status('Connection lost');
+      endCall();
+    }
+  };
+
+  if (myRole === 'initiator') {
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    ws.send(JSON.stringify({ type: 'offer', data: offer }));
+  }
+}
+
+async function handleOffer(offer) {
+  if (!pc) await startPeerConnection();
+  await pc.setRemoteDescription(new RTCSessionDescription(offer));
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+  ws.send(JSON.stringify({ type: 'answer', data: answer }));
+}
+
+async function handleAnswer(answer) {
+  await pc.setRemoteDescription(new RTCSessionDescription(answer));
+}
+
+async function handleIce(candidate) {
+  try { await pc.addIceCandidate(new RTCIceCandidate(candidate)); } catch {}
+}
+
+// ── Timer ─────────────────────────────────────────────────────────────────
+function startTimer() {
+  secondsLeft = CALL_DURATION;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    secondsLeft--;
+    updateTimerDisplay();
+    if (secondsLeft <= 0) { clearInterval(timerInterval); timeUp(); }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(secondsLeft / 60);
+  const s = secondsLeft % 60;
+  const el = document.getElementById('timerBadge');
+  el.textContent = `${m}:${String(s).padStart(2,'0')}`;
+  el.classList.toggle('expiring', secondsLeft <= 10);
+}
+
+function timeUp() {
+  stopMedia();
+  showScreen('postcall');
+}
+
+// ── Call controls ─────────────────────────────────────────────────────────
+function toggleMute() {
+  muted = !muted;
+  localStream.getAudioTracks().forEach(t => t.enabled = !muted);
+  document.getElementById('muteBtn').textContent = muted ? '🔇' : '🎤';
+  document.getElementById('muteBtn').classList.toggle('muted', muted);
+}
+
+function toggleCam() {
+  camOff = !camOff;
+  localStream.getVideoTracks().forEach(t => t.enabled = !camOff);
+  document.getElementById('remoteVideo').style.filter = '';
+}
+
+function endCall() {
+  clearInterval(timerInterval);
+  stopMedia();
+  showScreen('postcall');
+}
+
+function stopMedia() {
+  if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+  if (pc) { pc.close(); pc = null; }
+  if (ws) { ws.close(); ws = null; }
+}
+
+// ── Post-call ─────────────────────────────────────────────────────────────
+function connectCall() {
+  document.querySelector('.result-icon').textContent = '💞';
+  document.querySelector('.postcall-title').textContent = 'Connected!';
+  document.querySelector('.postcall-sub').textContent = 'They\'ll see your heart too — if they feel it.';
+  document.querySelector('.postcall-btns').innerHTML =
+    '<button class="btn-connect2" style="flex:1" onclick="location.href=\'/\'">Back to home</button>';
+}
+
+function passCall() {
+  showScreen('lobby');
+  currentRoom = null;
+}
+
+// ── Status toast ──────────────────────────────────────────────────────────
+let statusTimeout;
+function status(msg) {
+  const el = document.getElementById('statusBar');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(statusTimeout);
+  statusTimeout = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+checkUrlRoom();
+
+const cfg = window.APP;
+if (cfg) document.title = `${cfg.name} — Live Call`;
+</script>
+</body>
+</html>
