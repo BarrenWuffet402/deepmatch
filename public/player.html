@@ -562,6 +562,18 @@ const _watchIdx = _parts.indexOf('watch');
 const slug = _watchIdx !== -1 ? _parts.slice(_watchIdx + 1).join('/') : _parts.pop();
 
 (async () => {
+  // ?src= query param: direct URL mode, bypasses API (useful for demos / testing)
+  const directSrc = new URLSearchParams(window.location.search).get('src');
+  const directTitle = new URLSearchParams(window.location.search).get('title') || 'Preview';
+
+  if (directSrc) {
+    document.title = `${directTitle} — ${window.APP?.name || 'DeepMatch'}`;
+    titleText.textContent = directTitle;
+    video.src = directSrc;
+    video.load();
+    return;
+  }
+
   if (!slug) { showErr('No video specified.'); return; }
   try {
     const r = await fetch(`/api/videos?slug=${encodeURIComponent(slug)}`);

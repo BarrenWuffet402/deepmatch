@@ -1,6 +1,7 @@
 {
   "rewrites": [
-    { "source": "/watch/:slug+", "destination": "/player.html" },
-    { "source": "/demo",         "destination": "/demo.html"   }
+    { "source": "/watch/:slug+",  "destination": "/player.html"       },
+    { "source": "/demo",          "destination": "/demo.html"         },
+    { "source": "/video-demo",    "destination": "/video-demo.html"   }
   ]
 }

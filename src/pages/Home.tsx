@@ -33,6 +33,7 @@ export default function Home() {
           <span>Coming soon</span>
         </div>
         <a href="/demo" className={styles.demoLink}>see prototype →</a>
+        <a href="/video-demo" className={styles.demoLink} style={{marginTop: '8px', fontSize: '13px', opacity: 0.6}}>video profile demo →</a>
       </div>
 
       {/* Admin link */}
