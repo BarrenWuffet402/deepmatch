@@ -275,9 +275,22 @@
 // ── Config ────────────────────────────────────────────────────────────────
 const SIGNAL_URL = 'wss://wildheart.no/signal';
 const CALL_DURATION = 60; // seconds
+// STUN + TURN (VPS relay for NAT traversal, especially mobile)
+const TURN_SECRET = 'deepmatch-turn-0adf55ab8aabfd35';
+const TURN_USER   = 'deepmatch';
 const ICE_SERVERS = [
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: 'stun:stun1.l.google.com:19302' },
+  {
+    urls:       'turn:134.209.192.51:3478',
+    username:   TURN_USER,
+    credential: TURN_SECRET,
+  },
+  {
+    urls:       'turn:wildheart.no:3478',
+    username:   TURN_USER,
+    credential: TURN_SECRET,
+  },
 ];
 
 // ── State ─────────────────────────────────────────────────────────────────
@@ -355,9 +368,10 @@ async function startRoom(code) {
 
   ws.onopen = () => {
     ws.send(JSON.stringify({ type: 'join', room: code }));
+    status('Connected to server — waiting for match…');
   };
 
-  ws.onerror = () => status('Signaling connection failed');
+  ws.onerror = () => status('Could not reach signaling server — check your connection');
 
   ws.onmessage = async (e) => {
     const msg = JSON.parse(e.data);
@@ -366,10 +380,12 @@ async function startRoom(code) {
 
     if (msg.type === 'joined') {
       myRole = msg.role;
+      status(msg.peers === 2 ? 'Match found! Connecting…' : 'Waiting for someone to join…');
       if (msg.peers === 2) await startPeerConnection();
     }
 
     if (msg.type === 'ready') {
+      status('Match joined! Establishing call…');
       if (myRole === 'initiator') await startPeerConnection();
     }
 
@@ -401,14 +417,15 @@ async function startPeerConnection() {
   };
 
   pc.onconnectionstatechange = () => {
-    if (pc.connectionState === 'connected') {
-      showScreen('call');
-      startTimer();
-    }
-    if (['disconnected','failed'].includes(pc.connectionState)) {
-      status('Connection lost');
-      endCall();
-    }
+    const s = pc.connectionState;
+    if (s === 'connecting') status('Connecting via relay…');
+    if (s === 'connected')  { showScreen('call'); startTimer(); }
+    if (s === 'failed')     { status('Connection failed — both devices must allow camera access'); }
+    if (s === 'disconnected') { status('Connection lost'); endCall(); }
+  };
+
+  pc.onicegatheringstatechange = () => {
+    if (pc.iceGatheringState === 'gathering') status('Finding best route…');
   };
 
   if (myRole === 'initiator') {
