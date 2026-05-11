@@ -33,8 +33,8 @@
     .back-link:hover { color: var(--ink); border-color: var(--border-h); text-decoration: none; }
 
     /* ── LAYOUT ── */
-    main { max-width: 960px; margin: 0 auto; padding: 32px 24px 80px; display: grid; grid-template-columns: 1fr 360px; gap: 28px; align-items: start; }
-    @media (max-width: 760px) { main { grid-template-columns: 1fr; } }
+    main { max-width: 1200px; margin: 0 auto; padding: 32px 32px 80px; display: grid; grid-template-columns: 1fr 480px; gap: 32px; align-items: start; }
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
     .section-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
 
     /* ── TABS ── */
@@ -64,7 +64,7 @@
       font-size: 13px; transition: border-color .2s; outline: none;
     }
     input:focus, textarea:focus, select:focus { border-color: rgba(255,61,110,0.5); }
-    textarea { resize: vertical; min-height: 90px; line-height: 1.55; }
+    textarea { resize: vertical; min-height: 120px; line-height: 1.55; }
     select option { background: #1e1e1e; }
     .char-count { font-size: 11px; color: var(--muted); text-align: right; margin-top: 3px; }
     .char-count.warn { color: var(--gold); }
@@ -349,19 +349,23 @@ async function loadSessions() {
     el.innerHTML = d.sessions.map(s => {
       const date = s.created_at ? new Date(s.created_at * 1000).toLocaleDateString() : '';
       const hasVideo = !!s.video_id;
+      const sid = esc(s.session_id);
+      const stitle = esc(s.title);
       return `
-        <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;">
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(s.title)}</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:3px;">${date}${hasVideo ? '' : ' · no video yet'}</div>
+        <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:120px;">
+              <div style="font-size:13px;font-weight:600;word-break:break-word;">${stitle}</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px;">${date}${hasVideo ? '' : ' · no video yet'}</div>
+            </div>
+            ${hasVideo
+              ? `<button onclick="importSession('${sid}','${stitle}')"
+                  style="flex-shrink:0;height:32px;padding:0 16px;background:var(--grad);border:none;border-radius:8px;color:white;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">
+                  Import
+                </button>`
+              : `<span style="flex-shrink:0;font-size:11px;color:var(--muted);">⏳ pending</span>`
+            }
           </div>
-          ${hasVideo
-            ? `<button onclick="importSession('${esc(s.session_id)}', '${esc(s.title)}')"
-                style="height:32px;padding:0 14px;background:var(--grad);border:none;border-radius:8px;color:white;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;">
-                Import
-              </button>`
-            : `<span style="font-size:11px;color:var(--muted);">⏳ pending</span>`
-          }
         </div>`;
     }).join('');
   } catch(e) {
