@@ -38,7 +38,7 @@ export default function Home() {
       </div>
 
       {/* Admin link */}
-      <a className={styles.adminLink} href="/admin.html">admin</a>
+      <a className={styles.adminLink} href="/admin">admin</a>
     </>
   )
 }
