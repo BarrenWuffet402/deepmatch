@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <meta name="theme-color" content="#F7EFE2">
+  <meta name="theme-color" content="#000">
   <script src="/config.js"></script>
   <title>Video Profile Demo — DeepMatch</title>
   <style>
@@ -11,106 +11,102 @@
 
     html, body {
       width: 100%; height: 100%;
-      background: #F7EFE2;
+      background: #000;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
-      color: #2A1F1A;
       overflow: hidden;
     }
 
-    /* ── Full-screen card stack ── */
+    /* ── Full-screen container ── */
     #card {
       position: fixed;
       inset: 0;
-      display: flex;
-      flex-direction: column;
     }
 
-    /* ── Video (takes most of the screen) ── */
-    #playerWrap {
-      position: relative;
-      flex: 1;
-      background: #1a0e08;
-      overflow: hidden;
-    }
-
-    #playerWrap iframe {
+    /* ── Video fills screen ── */
+    #profileVideo {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-      border: none;
+      object-fit: cover;
+      background: #1a0e08;
     }
 
-    /* ── Profile strip at bottom ── */
-    #profile {
-      flex-shrink: 0;
-      padding: 18px 20px max(env(safe-area-inset-bottom, 0px), 16px);
-      background: linear-gradient(to top, #F7EFE2 55%, rgba(247,239,226,0.0));
-      /* visually overlaps the bottom of the video */
-      margin-top: -60px;
-      position: relative;
-      z-index: 10;
+    /* ── Gradient fade at bottom so text is readable ── */
+    #bottomGrad {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 55%;
+      background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
       pointer-events: none;
     }
 
-    #profileInner {
-      pointer-events: auto;
+    /* ── Profile text overlay ── */
+    #profile {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 24px 24px max(env(safe-area-inset-bottom, 0px), 28px);
+      z-index: 5;
     }
 
     .name-line {
-      font-size: 22px;
+      font-size: 26px;
       font-weight: 700;
       letter-spacing: -0.01em;
-      margin-bottom: 4px;
+      color: #fff;
+      margin-bottom: 6px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.4);
     }
     .name-line span {
       font-weight: 400;
-      opacity: 0.7;
-      font-size: 18px;
+      opacity: 0.75;
+      font-size: 20px;
     }
 
     .intent {
       font-size: 14px;
-      color: rgba(74,44,33,0.60);
-      line-height: 1.4;
-      margin-bottom: 20px;
-      max-width: 340px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.5;
+      margin-bottom: 22px;
+      max-width: 320px;
     }
 
     /* ── Action buttons ── */
     .actions {
       display: flex;
-      gap: 16px;
+      gap: 14px;
       align-items: center;
     }
 
     .btn-pass {
-      width: 54px; height: 54px;
+      width: 56px; height: 56px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.65);
-      border: 1.5px solid rgba(74,44,33,0.16);
-      color: rgba(74,44,33,0.7);
-      font-size: 22px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(255,255,255,0.22);
+      color: rgba(255,255,255,0.85);
+      font-size: 20px;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer;
       transition: background 0.15s;
       flex-shrink: 0;
     }
-    .btn-pass:hover { background: rgba(255,255,255,0.92); }
+    .btn-pass:hover { background: rgba(255,255,255,0.25); }
 
     .btn-connect {
       flex: 1;
-      height: 54px;
-      border-radius: 27px;
+      height: 56px;
+      border-radius: 28px;
       background: linear-gradient(135deg, #9E4E4A 0%, #C26F6A 100%);
       border: none;
       color: #fff;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 0.01em;
       cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
+      transition: opacity 0.15s, transform 0.1s;
       font-family: inherit;
+      box-shadow: 0 8px 24px rgba(158,78,74,0.5);
     }
     .btn-connect:hover { opacity: 0.88; }
     .btn-connect:active { transform: scale(0.97); }
@@ -121,20 +117,21 @@
       top: max(env(safe-area-inset-top, 0px), 16px);
       left: 16px;
       z-index: 20;
-      background: rgba(251,246,236,0.90);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(74,44,33,0.14);
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.16);
       border-radius: 20px;
-      color: #4A3A30;
+      color: rgba(255,255,255,0.85);
       font-size: 14px;
-      padding: 6px 14px 6px 10px;
+      padding: 7px 14px 7px 10px;
       cursor: pointer;
       display: flex; align-items: center; gap: 5px;
       text-decoration: none;
       font-family: inherit;
+      transition: background 0.15s;
     }
-    #backBtn:hover { background: rgba(251,246,236,1); }
+    #backBtn:hover { background: rgba(0,0,0,0.65); }
 
     /* ── Demo badge ── */
     #demoBadge {
@@ -142,15 +139,36 @@
       top: max(env(safe-area-inset-top, 0px), 16px);
       right: 16px;
       z-index: 20;
-      background: rgba(194,111,106,0.14);
-      border: 1px solid rgba(158,78,74,0.28);
+      background: rgba(158,78,74,0.25);
+      border: 1px solid rgba(194,111,106,0.4);
       border-radius: 20px;
-      color: rgba(158,78,74,0.85);
+      color: rgba(255,220,210,0.9);
       font-size: 11px;
       padding: 5px 10px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
+
+    /* ── Tap-to-play overlay (for mobile autoplay restrictions) ── */
+    #tapPlay {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    #tapPlay .play-circle {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(255,255,255,0.25);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #tapPlay svg { width: 28px; height: 28px; color: #fff; margin-left: 4px; }
+    #tapPlay.hidden { display: none; }
   </style>
 </head>
 <body>
@@ -166,61 +184,89 @@
 
   <div id="card">
 
-    <!-- Video takes up most of the screen -->
-    <div id="playerWrap">
-      <iframe
-        id="playerFrame"
-        src=""
-        allow="autoplay; fullscreen; picture-in-picture"
-        allowfullscreen
-      ></iframe>
+    <!-- Video -->
+    <video id="profileVideo" playsinline loop preload="auto"></video>
+
+    <!-- Bottom gradient -->
+    <div id="bottomGrad"></div>
+
+    <!-- Tap to play (shown if autoplay blocked) -->
+    <div id="tapPlay" onclick="startPlay()">
+      <div class="play-circle">
+        <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21"/></svg>
+      </div>
     </div>
 
     <!-- Profile strip -->
     <div id="profile">
-      <div id="profileInner">
-        <div class="name-line">Sofia <span>27, Stockholm</span></div>
-        <p class="intent">"Looking for someone who reads slowly and thinks deeply."</p>
-        <div class="actions">
-          <button class="btn-pass" title="Pass" onclick="nextProfile()">✕</button>
-          <button class="btn-connect" onclick="onConnect()">Connect →</button>
-        </div>
+      <div class="name-line" id="profileName">Sofia <span>27, Stockholm</span></div>
+      <p class="intent" id="profileIntent">"Looking for someone who reads slowly and thinks deeply."</p>
+      <div class="actions">
+        <button class="btn-pass" title="Pass" onclick="nextProfile()">✕</button>
+        <button class="btn-connect" id="connectBtn" onclick="onConnect()">Connect →</button>
       </div>
     </div>
 
   </div>
 
 <script>
-  // ── Load player in iframe with a public test video ────────────────────────
-  // Using a short, reliable public domain clip (Blender Foundation)
-  const TEST_VIDEO = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4';
-  const TEST_TITLE = 'Sofia, 27';
+  // ── Profiles ──────────────────────────────────────────────────────────────
+  const profiles = [
+    {
+      name: 'Sofia <span style="font-weight:400;opacity:.75;font-size:20px">27, Stockholm</span>',
+      intent: '"Looking for someone who reads slowly and thinks deeply."',
+      // Sofia in Stockholm — Seedance scene from R2
+      videoSrc: 'https://v3b.fal.media/files/b/0a99d431/snnSqcZuxgAiJlm6t1xop_video.mp4',
+    },
+    {
+      name: 'Marcus <span style="font-weight:400;opacity:.75;font-size:20px">31, Copenhagen</span>',
+      intent: '"I want someone who challenges me — kindly."',
+      // Fallback public domain clip for Marcus
+      videoSrc: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    },
+  ];
 
-  document.getElementById('playerFrame').src =
-    `/player.html?src=${encodeURIComponent(TEST_VIDEO)}&title=${encodeURIComponent(TEST_TITLE)}`;
+  let currentIdx = 0;
+  const video = document.getElementById('profileVideo');
+  const tapPlay = document.getElementById('tapPlay');
 
-  // ── Mock interactions ─────────────────────────────────────────────────────
+  function loadProfile(idx) {
+    const p = profiles[idx];
+    document.getElementById('profileName').innerHTML = p.name;
+    document.getElementById('profileIntent').textContent = p.intent;
+    video.src = p.videoSrc;
+    video.load();
+    video.play().then(() => {
+      tapPlay.classList.add('hidden');
+    }).catch(() => {
+      // Autoplay blocked — show tap-to-play overlay
+      tapPlay.classList.remove('hidden');
+    });
+  }
+
+  function startPlay() {
+    video.play().then(() => tapPlay.classList.add('hidden')).catch(() => {});
+  }
+
   function onConnect() {
-    const btn = document.querySelector('.btn-connect');
+    const btn = document.getElementById('connectBtn');
     btn.textContent = '✓ Request sent';
-    btn.style.background = '#22c55e';
+    btn.style.background = 'linear-gradient(135deg,#4a7c59,#5c9e6e)';
     btn.disabled = true;
   }
 
   function nextProfile() {
-    // In the real app this would load the next profile video
-    document.querySelector('.name-line').innerHTML = 'Marcus <span>31, Copenhagen</span>';
-    document.querySelector('.intent').textContent =
-      '"I want someone who challenges me — kindly."';
-    const TEST2 = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
-    document.getElementById('playerFrame').src =
-      `/player.html?src=${encodeURIComponent(TEST2)}&title=${encodeURIComponent('Marcus, 31')}`;
+    currentIdx = (currentIdx + 1) % profiles.length;
     // Reset connect button
-    const btn = document.querySelector('.btn-connect');
+    const btn = document.getElementById('connectBtn');
     btn.textContent = 'Connect →';
     btn.style.background = '';
     btn.disabled = false;
+    loadProfile(currentIdx);
   }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  loadProfile(0);
 </script>
 </body>
 </html>
