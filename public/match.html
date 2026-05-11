@@ -517,11 +517,11 @@ function stopMedia() {
 
 // ── Post-call ─────────────────────────────────────────────────────────────
 function connectCall() {
-  document.getElementById('postcallIcon').textContent = '💞';
+  document.getElementById('postcallIcon').textContent = '\u{1F49E}';
   document.getElementById('postcallTitle').textContent = 'You connected!';
   document.getElementById('postcallSub').textContent = 'Hope it goes somewhere good.';
   document.querySelector('.postcall-btns').innerHTML =
-    '<button class="btn-connect2" style="flex:1" onclick="location.href=\'/'\">Back to home</button>';
+    `<button class="btn-connect2" style="flex:1" onclick="location.href='/'">Back to home</button>`;
 }
 
 function tryAgain() {
