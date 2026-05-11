@@ -348,22 +348,26 @@ async function loadSessions() {
     }
     el.innerHTML = d.sessions.map(s => {
       const date = s.created_at ? new Date(s.created_at * 1000).toLocaleDateString() : '';
-      const hasVideo = !!s.video_id;
       const sid = esc(s.session_id);
       const stitle = esc(s.title);
+      const canImport = s.video_status === 'completed';
+      const statusLabel = s.video_status === 'completed' ? '✓ ready'
+                        : s.video_status === 'processing' ? '⏳ rendering'
+                        : s.video_id ? '⏳ rendering'
+                        : '— no video';
       return `
         <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <div style="flex:1;min-width:120px;">
               <div style="font-size:13px;font-weight:600;word-break:break-word;">${stitle}</div>
-              <div style="font-size:11px;color:var(--muted);margin-top:3px;">${date}${hasVideo ? '' : ' · no video yet'}</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px;">${date} · ${statusLabel}</div>
             </div>
-            ${hasVideo
+            ${canImport
               ? `<button onclick="importSession('${sid}','${stitle}')"
                   style="flex-shrink:0;height:32px;padding:0 16px;background:var(--grad);border:none;border-radius:8px;color:white;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">
                   Import
                 </button>`
-              : `<span style="flex-shrink:0;font-size:11px;color:var(--muted);">⏳ pending</span>`
+              : `<span style="flex-shrink:0;font-size:11px;color:var(--muted);">${statusLabel}</span>`
             }
           </div>
         </div>`;
