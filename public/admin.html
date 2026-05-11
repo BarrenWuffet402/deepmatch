@@ -8,16 +8,22 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #0d0d0d;
-      --surface: #181818;
-      --border: rgba(255,255,255,0.08);
-      --border-hover: rgba(255,255,255,0.16);
-      --ink: #f0f0f0;
-      --muted: rgba(255,255,255,0.45);
-      --accent: #e2e2e2;
-      --accent-dim: rgba(226,226,226,0.08);
-      --green: #3ecf8e;
-      --red: #f87171;
+      --bg: #F7EFE2;
+      --surface: #FBF6EC;
+      --border: rgba(74,44,33,0.10);
+      --border-hover: rgba(74,44,33,0.22);
+      --ink: #2A1F1A;
+      --muted: rgba(74,44,33,0.50);
+      --accent: #4A3A30;
+      --accent-dim: rgba(74,44,33,0.06);
+      --green: #9E4E4A;
+      --red: #b84040;
+    }
+    body {
+      background:
+        radial-gradient(900px 500px at 85% -5%, rgba(194,111,106,0.14), transparent 60%),
+        radial-gradient(700px 400px at -5% 40%, rgba(232,184,148,0.22), transparent 60%),
+        var(--bg);
     }
     body {
       background: var(--bg);
