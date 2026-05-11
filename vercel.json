@@ -4,6 +4,7 @@
     { "source": "/demo",          "destination": "/demo.html"         },
     { "source": "/video-demo",    "destination": "/video-demo.html"   },
     { "source": "/landing",       "destination": "/landing.html"      },
-    { "source": "/admin",         "destination": "/admin.html"        }
+    { "source": "/admin",         "destination": "/admin.html"        },
+    { "source": "/ai-studio",     "destination": "/ai-studio.html"   }
   ]
 }

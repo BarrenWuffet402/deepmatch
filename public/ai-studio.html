@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="/config.js"></script>
+  <title>DeepMatch — AI Studio</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0d0d;
+      --surface: #181818;
+      --surface-2: #1e1e1e;
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(255,255,255,0.16);
+      --ink: #f0f0f0;
+      --muted: rgba(255,255,255,0.45);
+      --coral: #FF3D6E;
+      --violet: #7B61FF;
+      --green: #3ecf8e;
+      --red: #f87171;
+      --gold: #FFD27A;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+      min-height: 100vh;
+    }
+
+    a { color: var(--coral); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── HEADER ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.03em; color: var(--ink); }
+    .logo a { color: var(--ink); text-decoration: none; }
+    .logo-dot { color: var(--coral); }
+    header .sub { font-size: 13px; color: var(--muted); margin-left: 4px; }
+    .back-link {
+      margin-left: auto;
+      font-size: 13px; color: var(--muted);
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      transition: color .2s, border-color .2s;
+    }
+    .back-link:hover { color: var(--ink); border-color: var(--border-hover); text-decoration: none; }
+
+    /* ── LAYOUT ── */
+    main {
+      max-width: 940px;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 28px;
+      align-items: start;
+    }
+    @media (max-width: 740px) { main { grid-template-columns: 1fr; } }
+
+    /* ── SECTION TITLES ── */
+    .section-title {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 14px;
+    }
+
+    /* ── GENERATE PANEL ── */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .panel-title {
+      font-size: 15px; font-weight: 600;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .badge {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 20px;
+    }
+    .badge-ai { background: rgba(123,97,255,0.15); border: 1px solid rgba(123,97,255,0.3); color: var(--violet); }
+
+    label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px; }
+    input[type="text"], textarea {
+      width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 14px;
+      transition: border-color .2s;
+      outline: none;
+    }
+    input[type="text"]:focus, textarea:focus { border-color: rgba(255,61,110,0.5); }
+    textarea { resize: vertical; min-height: 100px; line-height: 1.55; }
+
+    .char-count { font-size: 11px; color: var(--muted); text-align: right; margin-top: 4px; }
+    .char-count.warn { color: var(--gold); }
+    .char-count.over { color: var(--red); }
+
+    /* orientation toggle */
+    .orientation-row { display: flex; gap: 8px; }
+    .orient-btn {
+      flex: 1; padding: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 12px; font-family: inherit;
+      cursor: pointer; transition: all .15s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .orient-btn.active {
+      border-color: rgba(255,61,110,0.5);
+      color: var(--ink);
+      background: rgba(255,61,110,0.08);
+    }
+
+    /* generate button */
+    .btn-generate {
+      width: 100%;
+      height: 48px;
+      background: linear-gradient(135deg, #FF3D6E 0%, #7B61FF 100%);
+      border: none; border-radius: 10px;
+      color: #fff; font-size: 15px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      transition: opacity .2s, transform .1s;
+    }
+    .btn-generate:hover { opacity: 0.9; }
+    .btn-generate:active { transform: scale(0.98); }
+    .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ── PROGRESS ── */
+    .progress-area {
+      display: none;
+      background: rgba(123,97,255,0.07);
+      border: 1px solid rgba(123,97,255,0.2);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .progress-area.show { display: block; }
+    .progress-label {
+      font-size: 13px; color: var(--muted);
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 12px;
+    }
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.15);
+      border-top-color: var(--violet);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .progress-steps { display: flex; flex-direction: column; gap: 8px; }
+    .step-item {
+      font-size: 12px; color: var(--muted);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .step-item.done { color: var(--green); }
+    .step-item.active { color: var(--ink); }
+    .step-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--border); flex-shrink: 0;
+    }
+    .step-item.done .step-dot { background: var(--green); }
+    .step-item.active .step-dot { background: var(--violet); box-shadow: 0 0 6px var(--violet); }
+
+    /* ── MSG ── */
+    .msg { font-size: 13px; padding: 10px 14px; border-radius: 8px; display: none; }
+    .msg.show { display: block; }
+    .msg.ok { background: rgba(62,207,142,0.1); border: 1px solid rgba(62,207,142,0.25); color: var(--green); }
+    .msg.err { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25); color: var(--red); }
+
+    /* ── VIDEO LIBRARY ── */
+    #library { display: grid; gap: 10px; }
+
+    .video-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex; align-items: center; gap: 14px;
+      transition: border-color .15s;
+    }
+    .video-card:hover { border-color: var(--border-hover); }
+    .card-thumb {
+      width: 48px; height: 64px;
+      background: #222; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: var(--muted);
+    }
+    .card-thumb.ai-thumb {
+      background: linear-gradient(135deg, rgba(255,61,110,0.15), rgba(123,97,255,0.15));
+      border: 1px solid rgba(123,97,255,0.2);
+    }
+    .card-thumb svg { width: 18px; height: 18px; }
+    .card-body { flex: 1; min-width: 0; }
+    .card-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-meta { font-size: 12px; color: var(--muted); margin-top: 3px; display: flex; gap: 8px; align-items: center; }
+    .source-tag {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 2px 6px; border-radius: 4px;
+    }
+    .source-ai { background: rgba(123,97,255,0.12); color: #9B85FF; }
+    .source-upload { background: rgba(255,255,255,0.06); color: var(--muted); }
+
+    .card-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .icon-btn {
+      width: 32px; height: 32px;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); cursor: pointer;
+      transition: border-color .15s, color .15s;
+      text-decoration: none;
+    }
+    .icon-btn:hover { border-color: var(--border-hover); color: var(--ink); }
+    .icon-btn svg { width: 14px; height: 14px; }
+
+    .empty-library {
+      font-size: 14px; color: var(--muted);
+      padding: 32px 0; text-align: center;
+    }
+
+    /* ── COPIED TOAST ── */
+    #copiedTip {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--ink); font-size: 13px;
+      padding: 8px 18px; border-radius: 20px;
+      pointer-events: none; opacity: 0;
+      transition: opacity .2s; z-index: 50;
+    }
+    #copiedTip.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <a href="/" id="logoLink">deepmatch<span class="logo-dot">.</span></a>
+  </div>
+  <span class="sub">ai studio</span>
+  <a href="/" class="back-link">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,18 9,12 15,6"/></svg>
+    Home
+  </a>
+</header>
+
+<main>
+
+  <!-- LEFT: library -->
+  <div>
+    <div class="section-title">Generated videos</div>
+    <div id="library"><div class="empty-library">Loading…</div></div>
+  </div>
+
+  <!-- RIGHT: generate panel -->
+  <div>
+    <div class="section-title">Generate new video</div>
+
+    <div class="panel">
+      <div class="panel-title">
+        AI avatar
+        <span class="badge badge-ai">HeyGen</span>
+      </div>
+
+      <div>
+        <label for="titleInput">Title</label>
+        <input type="text" id="titleInput" placeholder="Sofia, 27 — intro" maxlength="80">
+      </div>
+
+      <div>
+        <label for="slugInput">Slug <span style="color:var(--muted);font-weight:400">(used in /watch/…)</span></label>
+        <input type="text" id="slugInput" placeholder="sofia-intro" maxlength="60">
+      </div>
+
+      <div>
+        <label for="scriptInput">Script <span style="color:var(--muted);font-weight:400">(what the avatar says)</span></label>
+        <textarea id="scriptInput" placeholder="Hi, I'm Sofia. I'm 27, from Stockholm. I'm here because I believe the best conversations start with a real one. If you're curious, spontaneous, and a little intense — tap connect." maxlength="500"></textarea>
+        <div class="char-count" id="charCount">0 / 500</div>
+      </div>
+
+      <div>
+        <label>Orientation</label>
+        <div class="orientation-row">
+          <button class="orient-btn active" id="btnPortrait" onclick="setOrientation('portrait')">
+            <svg width="10" height="16" viewBox="0 0 10 16" fill="none"><rect x="1" y="1" width="8" height="14" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg>
+            Portrait
+          </button>
+          <button class="orient-btn" id="btnLandscape" onclick="setOrientation('landscape')">
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="none"><rect x="1" y="1" width="14" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg>
+            Landscape
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-generate" id="generateBtn" onclick="generate()">Generate video →</button>
+
+      <!-- Progress -->
+      <div class="progress-area" id="progressArea">
+        <div class="progress-label">
+          <div class="spinner" id="progressSpinner"></div>
+          <span id="progressLabel">Generating…</span>
+        </div>
+        <div class="progress-steps">
+          <div class="step-item" id="step1"><div class="step-dot"></div>Script submitted to HeyGen</div>
+          <div class="step-item" id="step2"><div class="step-dot"></div>Avatar rendering</div>
+          <div class="step-item" id="step3"><div class="step-dot"></div>Video ready</div>
+          <div class="step-item" id="step4"><div class="step-dot"></div>Saved to library</div>
+        </div>
+      </div>
+
+      <div class="msg" id="statusMsg"></div>
+    </div>
+  </div>
+
+</main>
+
+<div id="copiedTip">Copied!</div>
+
+<script>
+let portrait = true;
+let pollTimer = null;
+
+// ── UI helpers ─────────────────────────────────────────────────────────────
+function setOrientation(o) {
+  portrait = o === 'portrait';
+  document.getElementById('btnPortrait').classList.toggle('active', portrait);
+  document.getElementById('btnLandscape').classList.toggle('active', !portrait);
+}
+
+const scriptEl = document.getElementById('scriptInput');
+const charEl   = document.getElementById('charCount');
+scriptEl.addEventListener('input', () => {
+  const n = scriptEl.value.length;
+  charEl.textContent = `${n} / 500`;
+  charEl.className = 'char-count' + (n > 450 ? (n > 490 ? ' over' : ' warn') : '');
+});
+
+const titleEl = document.getElementById('titleInput');
+const slugEl  = document.getElementById('slugInput');
+titleEl.addEventListener('input', () => {
+  if (!slugEl.dataset.manual) {
+    slugEl.value = titleEl.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
+  }
+});
+slugEl.addEventListener('input', () => { slugEl.dataset.manual = '1'; });
+
+function stepDone(id)   { const e = document.getElementById(id); e.classList.add('done');   e.classList.remove('active'); }
+function stepActive(id) { const e = document.getElementById(id); e.classList.add('active'); e.classList.remove('done'); }
+function stepReset()    { ['step1','step2','step3','step4'].forEach(id => { const e = document.getElementById(id); e.className = 'step-item'; }); }
+
+function showMsg(type, text) {
+  const el = document.getElementById('statusMsg');
+  el.className = `msg show ${type}`;
+  el.textContent = text;
+}
+function hideMsg() {
+  const el = document.getElementById('statusMsg');
+  el.className = 'msg';
+}
+
+function setGenerating(on) {
+  document.getElementById('generateBtn').disabled = on;
+  document.getElementById('progressArea').classList.toggle('show', on);
+  if (!on) document.getElementById('progressSpinner').style.display = 'block';
+}
+
+// ── Generate ───────────────────────────────────────────────────────────────
+async function generate() {
+  const title  = titleEl.value.trim();
+  const slug   = slugEl.value.trim();
+  const script = scriptEl.value.trim();
+
+  if (!title)  return showMsg('err', 'Please enter a title.');
+  if (!slug)   return showMsg('err', 'Please enter a slug.');
+  if (!script) return showMsg('err', 'Please enter a script.');
+  if (!/^[a-z0-9-]+$/.test(slug)) return showMsg('err', 'Slug: lowercase letters, numbers, hyphens only.');
+
+  setGenerating(true);
+  hideMsg();
+  stepReset();
+  stepActive('step1');
+
+  try {
+    const res = await fetch('/api/heygen', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ script, slug, title, portrait }),
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error || 'Generation failed');
+
+    stepDone('step1');
+    stepActive('step2');
+    document.getElementById('progressLabel').textContent = 'Avatar rendering… (1–3 min)';
+
+    // start polling
+    pollStatus(d.video_id, slug, title);
+
+  } catch (e) {
+    setGenerating(false);
+    showMsg('err', e.message);
+  }
+}
+
+// ── Poll status ────────────────────────────────────────────────────────────
+async function pollStatus(videoId, slug, title) {
+  clearTimeout(pollTimer);
+
+  try {
+    const res = await fetch(`/api/heygen?video_id=${encodeURIComponent(videoId)}`);
+    const d   = await res.json();
+
+    if (d.status === 'completed' && d.video_url) {
+      stepDone('step2');
+      stepActive('step3');
+      document.getElementById('progressLabel').textContent = 'Saving to library…';
+
+      await saveVideo(videoId, d.video_url, slug, title);
+
+    } else if (d.status === 'failed') {
+      throw new Error('HeyGen rendering failed. Try again.');
+
+    } else {
+      // still processing — poll again in 8s
+      pollTimer = setTimeout(() => pollStatus(videoId, slug, title), 8000);
+    }
+
+  } catch (e) {
+    setGenerating(false);
+    showMsg('err', e.message);
+  }
+}
+
+// ── Save to library ────────────────────────────────────────────────────────
+async function saveVideo(videoId, videoUrl, slug, title) {
+  const res = await fetch('/api/heygen-save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ video_id: videoId, video_url: videoUrl, slug, title }),
+  });
+  const d = await res.json();
+  if (!res.ok) throw new Error(d.error || 'Save failed');
+
+  stepDone('step3');
+  stepActive('step4');
+
+  await loadLibrary();
+
+  stepDone('step4');
+  document.getElementById('progressSpinner').style.display = 'none';
+  document.getElementById('progressLabel').textContent = 'Done!';
+
+  setGenerating(false);
+  showMsg('ok', `✓ Video ready — /watch/${slug}`);
+
+  // reset form
+  titleEl.value = '';
+  slugEl.value = '';
+  delete slugEl.dataset.manual;
+  scriptEl.value = '';
+  charEl.textContent = '0 / 500';
+}
+
+// ── Library ────────────────────────────────────────────────────────────────
+async function loadLibrary() {
+  const lib = document.getElementById('library');
+  try {
+    const res  = await fetch('/api/videos');
+    const list = await res.json();
+
+    // filter to only AI-generated videos (source === 'heygen')
+    const aiVideos = list.filter(v => v.source === 'heygen');
+
+    if (!aiVideos.length) {
+      lib.innerHTML = '<div class="empty-library">No AI videos yet.<br>Generate your first one →</div>';
+      return;
+    }
+
+    lib.innerHTML = aiVideos.map(v => {
+      const watchUrl = `${location.origin}/watch/${v.slug}`;
+      const date = v.createdAt ? new Date(v.createdAt).toLocaleDateString() : '';
+      return `
+        <div class="video-card">
+          <div class="card-thumb ai-thumb">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 2a7 7 0 0 1 7 7c0 4-3 6-5 8H10c-2-2-5-4-5-8a7 7 0 0 1 7-7z"/>
+              <path d="M9 21h6M12 17v4" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="card-body">
+            <div class="card-title">${esc(v.title)}</div>
+            <div class="card-meta">
+              <span class="source-tag source-ai">AI</span>
+              /watch/${esc(v.slug)}${date ? ' · ' + date : ''}
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="icon-btn" title="Copy link" onclick="copyUrl('${esc(watchUrl)}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+            </button>
+            <a class="icon-btn" href="${esc(watchUrl)}" target="_blank" title="Open player">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5,3 19,12 5,21"/>
+              </svg>
+            </a>
+          </div>
+        </div>`;
+    }).join('');
+
+  } catch {
+    lib.innerHTML = '<div class="empty-library">Could not load library.</div>';
+  }
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function copyUrl(url) {
+  navigator.clipboard.writeText(url).then(() => flash('Copied!'));
+}
+
+function flash(msg) {
+  const el = document.getElementById('copiedTip');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+loadLibrary();
+
+// Apply config
+const cfg = window.APP;
+if (cfg) {
+  document.title = `${cfg.name} — AI Studio`;
+  document.getElementById('logoLink').textContent = cfg.name.toLowerCase();
+  document.getElementById('logoLink').insertAdjacentHTML('beforeend', '<span class="logo-dot">.</span>');
+}
+</script>
+</body>
+</html>
