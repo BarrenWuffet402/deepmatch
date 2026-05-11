@@ -556,7 +556,10 @@ let isTouch = false;
 let loaded = false;
 
 // ── Load video from API ───────────────────────────────────
-const slug = window.location.pathname.split('/').filter(Boolean).pop();
+// Extract everything after /watch/ to support multi-segment slugs (e.g. /watch/sofus-intro-video)
+const _parts = window.location.pathname.split('/').filter(Boolean);
+const _watchIdx = _parts.indexOf('watch');
+const slug = _watchIdx !== -1 ? _parts.slice(_watchIdx + 1).join('/') : _parts.pop();
 
 (async () => {
   if (!slug) { showErr('No video specified.'); return; }
