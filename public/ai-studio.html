@@ -355,20 +355,39 @@ async function loadSessions() {
                         : s.video_status === 'processing' ? '⏳ rendering'
                         : s.video_id ? '⏳ rendering'
                         : '— no video';
+      // Generate a default slug from the title
+      const defaultSlug = stitle.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
       return `
-        <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
+        <div id="scard-${sid}" style="background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <div style="flex:1;min-width:120px;">
               <div style="font-size:13px;font-weight:600;word-break:break-word;">${stitle}</div>
               <div style="font-size:11px;color:var(--muted);margin-top:3px;">${date} · ${statusLabel}</div>
             </div>
             ${canImport
-              ? `<button onclick="importSession('${sid}','${stitle}')"
+              ? `<button onclick="showImportForm('${sid}','${defaultSlug}')"
                   style="flex-shrink:0;height:32px;padding:0 16px;background:var(--grad);border:none;border-radius:8px;color:white;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">
                   Import
                 </button>`
               : `<span style="flex-shrink:0;font-size:11px;color:var(--muted);">${statusLabel}</span>`
             }
+          </div>
+          <!-- Inline import form (hidden by default) -->
+          <div id="sform-${sid}" style="display:none;margin-top:10px;display:none;">
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input id="sslug-${sid}" type="text" value="${defaultSlug}"
+                style="flex:1;height:34px;padding:0 10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;color:var(--ink);outline:none;"
+                placeholder="slug" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
+              <button onclick="doImport('${sid}','${stitle}')"
+                style="flex-shrink:0;height:34px;padding:0 14px;background:var(--grad);border:none;border-radius:8px;color:white;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">
+                Save
+              </button>
+              <button onclick="hideImportForm('${sid}')"
+                style="flex-shrink:0;height:34px;padding:0 10px;background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;cursor:pointer;font-family:inherit;">
+                ✕
+              </button>
+            </div>
+            <div id="simsg-${sid}" style="font-size:11px;margin-top:6px;display:none;"></div>
           </div>
         </div>`;
     }).join('');
@@ -377,20 +396,37 @@ async function loadSessions() {
   }
 }
 
-async function importSession(sessionId, defaultTitle) {
-  const slug = prompt('Slug for this video (e.g. sofia-agent):');
-  if (!slug) return;
-  if (!validSlug(slug)) { showMsg('err', 'Invalid slug'); return; }
-  const title = defaultTitle || slug;
+function showImportForm(sessionId, defaultSlug) {
+  const form = document.getElementById(`sform-${sessionId}`);
+  if (form) { form.style.display = 'block'; }
+}
 
-  showMsg('ok', 'Fetching video…');
+function hideImportForm(sessionId) {
+  const form = document.getElementById(`sform-${sessionId}`);
+  if (form) form.style.display = 'none';
+}
+
+async function doImport(sessionId, title) {
+  const slugEl = document.getElementById(`sslug-${sessionId}`);
+  const msgEl  = document.getElementById(`simsg-${sessionId}`);
+  const slug   = (slugEl?.value || '').trim();
+
+  if (!slug || !validSlug(slug)) {
+    if (msgEl) { msgEl.textContent = 'Invalid slug — lowercase letters, numbers, hyphens only'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; }
+    return;
+  }
+
+  if (msgEl) { msgEl.textContent = 'Fetching video…'; msgEl.style.color = 'var(--muted)'; msgEl.style.display = 'block'; }
+
   try {
     const d = await get(`/api/heygen-sessions?session_id=${encodeURIComponent(sessionId)}`);
-    if (!d.video_url) throw new Error('Video not ready yet — check back in a moment');
-    await saveVideo({ video_id: d.video_id, video_url: d.video_url, slug, title, source: 'agent' });
-    showMsg('ok', `✓ Imported — /watch/${slug}`);
+    if (!d.video_url) throw new Error('Video URL not ready — try again in a moment');
+    await saveVideo({ video_id: d.video_id, video_url: d.video_url, slug, title: title || slug, source: 'agent' });
+    if (msgEl) { msgEl.textContent = `✓ Saved as /watch/${slug}`; msgEl.style.color = 'var(--green)'; }
     await loadLibrary();
-  } catch(e) { showMsg('err', e.message); }
+  } catch(e) {
+    if (msgEl) { msgEl.textContent = e.message; msgEl.style.color = 'var(--red)'; }
+  }
 }
 
 // ── Orientation ────────────────────────────────────────────────────────────
