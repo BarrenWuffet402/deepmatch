@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const { video_id, video_url, slug, title } = req.body || {};
+  const { video_id, video_url, slug, title, source } = req.body || {};
 
   if (!slug || !/^[a-z0-9-]+$/.test(slug))
     return res.status(400).json({ error: "invalid slug" });
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     slug,
     title: title.trim(),
     url: video_url,
-    source: "heygen",
+    source: source || "heygen",
     heygen_video_id: video_id || null,
     createdAt: new Date().toISOString(),
   };
