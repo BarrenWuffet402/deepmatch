@@ -35,6 +35,7 @@ export default function Home() {
         <a href="/landing" className={styles.demoLink}>full landing page →</a>
         <a href="/demo" className={styles.demoLink} style={{marginTop: '8px', fontSize: '13px', opacity: 0.7}}>see prototype →</a>
         <a href="/video-demo" className={styles.demoLink} style={{marginTop: '8px', fontSize: '13px', opacity: 0.5}}>video profile demo →</a>
+        <a href="/admin" className={styles.demoLink} style={{marginTop: '8px', fontSize: '13px', opacity: 0.5}}>upload videos →</a>
       </div>
 
       {/* Admin link */}
