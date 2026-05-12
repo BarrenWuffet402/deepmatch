@@ -6,6 +6,8 @@
     { "source": "/landing",       "destination": "/landing.html"      },
     { "source": "/admin",         "destination": "/admin.html"        },
     { "source": "/ai-studio",     "destination": "/ai-studio.html"   },
-    { "source": "/match",          "destination": "/match.html"        }
+    { "source": "/match",          "destination": "/match.html"        },
+    { "source": "/prototype",      "destination": "/prototype/index.html" },
+    { "source": "/prototype/:path+", "destination": "/prototype/index.html" }
   ]
 }

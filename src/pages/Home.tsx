@@ -38,6 +38,7 @@ export default function Home() {
         <a href="/admin" className={styles.demoLink} style={{marginTop: '8px', fontSize: '13px', opacity: 0.5}}>upload videos →</a>
         <a href="/ai-studio" className={styles.demoLink} style={{marginTop: '8px', fontSize: '13px', opacity: 0.5}}>ai studio →</a>
         <a href="/match" className={styles.demoLink} style={{marginTop: '8px', fontSize: '13px', opacity: 0.5}}>live call →</a>
+        <a href="/prototype" className={styles.demoLink} style={{marginTop: '8px', fontSize: '13px', opacity: 0.5}}>onboarding prototype →</a>
       </div>
 
       {/* Admin link */}
