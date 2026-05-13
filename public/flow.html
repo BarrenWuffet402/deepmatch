@@ -529,6 +529,169 @@
       transition: border-color 0.15s;
     }
     .ls-name-input:focus { outline: none; border-color: #C26F6A; }
+
+    /* ── AI Avatar Generator ── */
+    .gen-phase { display: none; }
+    .gen-phase.active { display: block; }
+    .gen-form-label {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.07em; color: rgba(74,44,33,0.40); margin-bottom: 5px;
+    }
+    .gen-input {
+      width: 100%; border: 1px solid rgba(74,44,33,0.15); border-radius: 8px;
+      padding: 10px 12px; font-size: 14px; font-family: 'Inter', sans-serif;
+      color: #4A2C21; background: rgba(255,255,255,0.70);
+      transition: border-color 0.15s; margin-bottom: 12px;
+    }
+    .gen-input:focus { outline: none; border-color: #C26F6A; }
+    .gen-video-wrap {
+      border-radius: 14px; overflow: hidden; margin-bottom: 1rem;
+      background: #3A1F15; aspect-ratio: 16/9;
+    }
+    .gen-video-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .gen-result-link {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(194,111,106,0.08); border: 1px solid rgba(194,111,106,0.25);
+      border-radius: 12px; padding: 13px 16px;
+      font-size: 14px; color: #9E4E4A; text-decoration: none; margin-bottom: 0.75rem;
+      transition: all 0.15s;
+    }
+    .gen-result-link:hover { background: rgba(194,111,106,0.14); }
+
+    /* ── AI Practice Partner ── */
+    .chat-phase { display: none; }
+    .chat-phase.active { display: block; }
+    .chat-persona-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1.25rem; }
+    .chat-persona-btn {
+      display: flex; flex-direction: column; gap: 2px; padding: 12px 14px;
+      border: 1px solid rgba(74,44,33,0.15); border-radius: 12px;
+      background: rgba(255,255,255,0.55); cursor: pointer;
+      font-family: 'Inter', sans-serif; transition: all 0.15s; text-align: left;
+    }
+    .chat-persona-btn:hover { border-color: rgba(29,158,117,0.45); background: rgba(29,158,117,0.05); }
+    .chat-persona-btn.active { border-color: #1D9E75; background: rgba(29,158,117,0.09); box-shadow: 0 0 0 1px rgba(29,158,117,0.25); }
+    .chat-persona-btn .p-name { font-size: 13px; font-weight: 600; color: #4A2C21; }
+    .chat-persona-btn .p-desc { font-size: 11px; color: rgba(74,44,33,0.45); line-height: 1.4; }
+    .chat-messages {
+      max-height: 300px; overflow-y: auto; margin-bottom: 1rem;
+      display: flex; flex-direction: column; gap: 10px; padding: 0 2px;
+    }
+    .chat-msg { display: flex; gap: 8px; align-items: flex-start; }
+    .chat-msg.user { flex-direction: row-reverse; }
+    .chat-bubble {
+      max-width: 78%; padding: 9px 13px; border-radius: 14px;
+      font-size: 13px; line-height: 1.55;
+    }
+    .chat-msg.ai .chat-bubble { background: rgba(247,239,226,0.85); border: 1px solid rgba(74,44,33,0.10); color: #4A2C21; border-radius: 14px 14px 14px 4px; }
+    .chat-msg.user .chat-bubble { background: #C26F6A; color: #fff; border-radius: 14px 14px 4px 14px; }
+    .chat-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(194,111,106,0.12); border: 1px solid rgba(194,111,106,0.22);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; flex-shrink: 0; margin-top: 2px;
+    }
+    .chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
+    .chat-input-row textarea { flex: 1; min-height: 44px; max-height: 120px; resize: none; }
+    .chat-send-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: #C26F6A; color: #fff; border: none; cursor: pointer;
+      transition: all 0.15s; flex-shrink: 0; font-size: 16px;
+    }
+    .chat-send-btn:hover { background: #9E4E4A; }
+    .chat-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .chat-debrief-card {
+      background: linear-gradient(160deg, rgba(247,239,226,0.95) 0%, rgba(29,158,117,0.07) 100%);
+      border: 1px solid rgba(29,158,117,0.20); border-radius: 14px; padding: 1.5rem; margin-bottom: 1rem;
+    }
+    .chat-debrief-section { margin-bottom: 1rem; }
+    .chat-debrief-section:last-child { margin-bottom: 0; }
+    .chat-debrief-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.10em;
+      text-transform: uppercase; color: rgba(29,158,117,0.70); margin-bottom: 5px;
+    }
+    .chat-debrief-text { font-size: 13px; color: #4A2C21; line-height: 1.65; }
+    .chat-turns-counter { font-size: 11px; color: rgba(74,44,33,0.35); }
+
+    /* ── Profile Roast ── */
+    .roast-phase { display: none; }
+    .roast-phase.active { display: block; }
+    .roast-reviewer-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1rem; }
+    .roast-reviewer-card { border-radius: 12px; padding: 1rem 1.25rem; animation: fadeIn 0.3s ease; }
+    .roast-reviewer-card.honest { background: rgba(194,111,106,0.07); border: 1px solid rgba(194,111,106,0.22); }
+    .roast-reviewer-card.date   { background: rgba(216,139,133,0.09); border: 1px solid rgba(216,139,133,0.25); }
+    .roast-reviewer-card.strategist { background: rgba(74,44,33,0.04); border: 1px solid rgba(74,44,33,0.12); }
+    .roast-reviewer-name {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .roast-reviewer-card.honest .roast-reviewer-name { color: #9E4E4A; }
+    .roast-reviewer-card.date .roast-reviewer-name { color: #A05555; }
+    .roast-reviewer-card.strategist .roast-reviewer-name { color: rgba(74,44,33,0.60); }
+    .roast-reviewer-text { font-size: 13px; color: #4A2C21; line-height: 1.65; }
+
+    /* ── Live Call ── */
+    .call-room-row { display: flex; gap: 8px; margin: 1rem 0; }
+    .call-room-input {
+      flex: 1; border: 1px solid rgba(74,44,33,0.15); border-radius: 99px;
+      padding: 10px 16px; font-size: 14px; font-family: 'Inter', sans-serif;
+      color: #4A2C21; background: rgba(255,255,255,0.70); transition: border-color 0.15s;
+    }
+    .call-room-input:focus { outline: none; border-color: #D88B85; }
+    .call-join-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #D88B85; color: #fff; border: none;
+      border-radius: 99px; padding: 10px 20px;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      transition: all 0.15s; font-family: 'Inter', sans-serif;
+    }
+    .call-join-btn:hover { background: #C26F6A; }
+    .call-info-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .call-info-item {
+      flex: 1; min-width: 110px;
+      background: rgba(216,139,133,0.08); border: 1px solid rgba(216,139,133,0.20);
+      border-radius: 10px; padding: 10px 12px;
+      font-size: 12px; color: rgba(74,44,33,0.55); line-height: 1.5;
+    }
+    .call-info-item strong {
+      display: block; font-size: 10px; font-weight: 700; color: #D88B85;
+      letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 3px;
+    }
+
+    /* ── Compatibility Snapshot ── */
+    .snap-phase { display: none; }
+    .snap-phase.active { display: block; }
+    .snap-card {
+      background: linear-gradient(160deg, rgba(247,239,226,0.96) 0%, rgba(186,117,23,0.08) 100%);
+      border: 1px solid rgba(186,117,23,0.22); border-radius: 16px; padding: 1.5rem;
+      margin-bottom: 1rem; animation: fadeIn 0.4s ease;
+    }
+    .snap-story {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px; line-height: 1.85; color: #4A2C21;
+      font-style: italic; margin-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(74,44,33,0.08); padding-bottom: 1.25rem;
+    }
+    .snap-obs-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.10em;
+      text-transform: uppercase; color: rgba(186,117,23,0.70); margin-bottom: 8px;
+    }
+    .snap-obs-item {
+      display: flex; gap: 8px; align-items: flex-start;
+      font-size: 13px; color: #4A2C21; line-height: 1.6;
+      margin-bottom: 6px; padding: 6px 10px;
+      background: rgba(255,255,255,0.40); border-radius: 8px;
+    }
+    .snap-obs-item::before { content: '→'; color: #BA7517; flex-shrink: 0; opacity: 0.6; }
+    .snap-starter-wrap {
+      background: rgba(186,117,23,0.08); border: 1px solid rgba(186,117,23,0.22);
+      border-radius: 10px; padding: 10px 14px; margin-top: 1.25rem;
+    }
+    .snap-starter-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: rgba(186,117,23,0.65); margin-bottom: 4px;
+    }
+    .snap-starter-text { font-size: 13px; color: #4A2C21; line-height: 1.6; font-style: italic; }
   </style>
 </head>
 <body>
@@ -807,6 +970,105 @@
       <span class="tag">pre-screening tool</span>
       <span class="tag">async dating</span>
     </div>
+
+    <button class="game-toggle-btn" id="gen-toggle-btn" onclick="toggleGame('gen')">
+      <i class="ti ti-user-circle"></i> Build your avatar
+    </button>
+
+    <div class="game-area" id="gen-game">
+
+      <!-- Phase 0: form -->
+      <div class="gen-phase active" id="gen-phase-0">
+        <p style="font-size:13px;color:rgba(74,44,33,0.50);line-height:1.65;margin-bottom:1.25rem;">
+          Write a short script for your avatar — imagine introducing yourself as you would on a first date.
+          HeyGen will generate a video you can share with potential matches before they commit to a real call.
+        </p>
+        <div class="gen-form-label">Script <span style="color:rgba(74,44,33,0.30);font-weight:400;">(what your avatar will say)</span></div>
+        <textarea class="gen-input fm-textarea" id="gen-script" style="min-height:100px;" placeholder="Hey, I'm [name]. I'm someone who... What I'm really looking for is... A few things that make me me..."></textarea>
+        <div class="gen-form-label">Video title</div>
+        <input class="gen-input" id="gen-title" placeholder="e.g. My intro — Emma" />
+        <div class="gen-form-label">Style note <span style="color:rgba(74,44,33,0.30);font-weight:400;">(optional — helps set the scene)</span></div>
+        <input class="gen-input" id="gen-portrait" placeholder="e.g. warm, casual, natural light..." />
+        <div style="display:flex;justify-content:flex-end;">
+          <button class="fantasy-btn" onclick="generateAvatar()">
+            <i class="ti ti-wand"></i> Generate avatar
+          </button>
+        </div>
+        <div class="fm-privacy-note">
+          <i class="ti ti-shield-lock"></i>
+          <span>Video is generated via HeyGen and stored privately. Script is processed server-side only.</span>
+        </div>
+      </div>
+
+      <!-- Phase 1: generating -->
+      <div class="gen-phase" id="gen-phase-1">
+        <div style="text-align:center;padding:2.5rem 0;">
+          <div class="fm-spinner" style="margin:0 auto 1rem;"></div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#4A2C21;margin-bottom:6px;">Generating your avatar...</div>
+          <p style="font-size:12px;color:rgba(74,44,33,0.40);line-height:1.7;" id="gen-status-text">This takes 1–3 minutes. Hang tight.</p>
+        </div>
+      </div>
+
+      <!-- Phase 2: done -->
+      <div class="gen-phase" id="gen-phase-2">
+        <div style="text-align:center;margin-bottom:1rem;">
+          <div style="font-size:28px;margin-bottom:6px;">✅</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#4A2C21;">Your avatar is ready</div>
+        </div>
+        <div class="gen-video-wrap">
+          <video id="gen-video" controls playsinline></video>
+        </div>
+        <a id="gen-video-link" href="#" target="_blank" class="gen-result-link">
+          <span>Open full video</span>
+          <i class="ti ti-external-link"></i>
+        </a>
+        <div style="display:flex;justify-content:center;">
+          <button class="fantasy-btn secondary" onclick="resetAvatarGen()">
+            <i class="ti ti-refresh"></i> Generate another
+          </button>
+        </div>
+      </div>
+
+      <!-- Phase 3: error -->
+      <div class="gen-phase" id="gen-phase-3">
+        <div style="text-align:center;padding:2rem 0;">
+          <div style="font-size:32px;margin-bottom:8px;">⚠️</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#4A2C21;margin-bottom:6px;">Generation failed</div>
+          <p id="gen-error-text" style="font-size:13px;color:rgba(74,44,33,0.50);margin-bottom:1.25rem;"></p>
+          <button class="fantasy-btn secondary" onclick="showGenPhase(0)">Try again</button>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="devnote-toggle" onclick="toggleDevNote('gen-devnote')">
+      <i class="ti ti-code"></i> Dev notes
+    </button>
+    <div class="devnote-area" id="gen-devnote">
+      <h4>What's needed to make this work</h4>
+      <div class="devnote-item">
+        <span class="devnote-tag missing">Missing</span>
+        <div class="devnote-text">
+          <strong>HeyGen env vars</strong> — Needs <code>HEYGEN_API_KEY</code>, <code>HEYGEN_AVATAR_ID</code>, and
+          <code>HEYGEN_VOICE_ID</code> set in Vercel. Requires a paid HeyGen account with a photo avatar uploaded.
+        </div>
+      </div>
+      <div class="devnote-item">
+        <span class="devnote-tag partial">Partial</span>
+        <div class="devnote-text">
+          <strong>Video storage</strong> — Links to HeyGen's CDN URL directly. A future step would download the video
+          and re-upload to R2 via the existing <code>/api/upload</code> endpoint for long-term storage.
+        </div>
+      </div>
+      <div class="devnote-item">
+        <span class="devnote-tag missing">Missing</span>
+        <div class="devnote-text">
+          <strong>Custom photo upload</strong> — Uses the default <code>HEYGEN_AVATAR_ID</code> env var.
+          Real product needs a photo upload step so each user gets their own avatar ID.
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- STEP 4 -->
@@ -814,12 +1076,129 @@
     <div class="step-badge badge-teal"><i class="ti ti-messages"></i> Step 4</div>
     <div class="step-icon"><i class="ti ti-messages" style="color:#1D9E75;"></i></div>
     <p class="step-title">The AI practice partner</p>
-    <p class="step-sub">Before real dates, practice with an AI girlfriend/boyfriend tuned to your type. Not to simulate a relationship — to surface your patterns. Do you deflect compliments? Go quiet when things get deep? The AI flags it gently. You show up to real dates a little more self-aware.</p>
+    <p class="step-sub">Before real dates, practice with an AI partner tuned to your type. Not to simulate a relationship — to surface your patterns. Do you deflect compliments? Go quiet when things get deep? The AI flags it gently. You show up to real dates a little more self-aware.</p>
     <div class="tags">
       <span class="tag">safe rehearsal space</span>
       <span class="tag">pattern detection</span>
       <span class="tag">no judgment</span>
     </div>
+
+    <button class="game-toggle-btn" id="chat-toggle-btn" onclick="toggleGame('chat')">
+      <i class="ti ti-messages"></i> Start practice session
+    </button>
+
+    <div class="game-area" id="chat-game">
+
+      <!-- Phase 0: persona picker -->
+      <div class="chat-phase active" id="chat-phase-0">
+        <p style="font-size:13px;color:rgba(74,44,33,0.50);line-height:1.65;margin-bottom:1.25rem;">
+          Pick a persona to practice with. They'll respond like a real date — asking questions, reacting naturally, holding space for the real stuff.
+        </p>
+        <div class="chat-persona-grid">
+          <button class="chat-persona-btn" onclick="selectPersona('curious','The Curious One',this)">
+            <span class="p-name">🔍 The Curious One</span>
+            <span class="p-desc">Asks deep follow-up questions. Wants to understand everything.</span>
+          </button>
+          <button class="chat-persona-btn" onclick="selectPersona('direct','The Direct One',this)">
+            <span class="p-name">⚡ The Direct One</span>
+            <span class="p-desc">Gets straight to the point. No fluff, no small talk.</span>
+          </button>
+          <button class="chat-persona-btn" onclick="selectPersona('warm','The Warm One',this)">
+            <span class="p-name">☀️ The Warm One</span>
+            <span class="p-desc">Caring and attentive. Makes you feel completely at ease.</span>
+          </button>
+          <button class="chat-persona-btn" onclick="selectPersona('sharp','The Sharp One',this)">
+            <span class="p-name">💎 The Sharp One</span>
+            <span class="p-desc">Witty and a little challenging. Keeps you on your toes.</span>
+          </button>
+        </div>
+        <div style="display:flex;justify-content:flex-end;">
+          <button class="fantasy-btn" id="chat-start-btn" onclick="startChatSession()" disabled>
+            Start session <i class="ti ti-arrow-right"></i>
+          </button>
+        </div>
+        <div class="fm-privacy-note">
+          <i class="ti ti-shield-lock"></i>
+          <span>Conversation analyzed by open source AI (Llama 3.3 via Groq). Nothing stored beyond this session.</span>
+        </div>
+      </div>
+
+      <!-- Phase 1: active chat -->
+      <div class="chat-phase" id="chat-phase-1">
+        <div id="chat-persona-header" style="display:flex;align-items:center;gap:10px;background:rgba(29,158,117,0.07);border:1px solid rgba(29,158,117,0.18);border-radius:10px;padding:10px 14px;margin-bottom:1rem;">
+          <div id="chat-persona-emoji" style="width:34px;height:34px;border-radius:50%;background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.25);display:flex;align-items:center;justify-content:center;font-size:16px;">🔍</div>
+          <div>
+            <div id="chat-persona-display" style="font-size:13px;font-weight:500;color:#4A2C21;">The Curious One</div>
+            <div style="font-size:11px;color:rgba(74,44,33,0.40);">your practice partner</div>
+          </div>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-row">
+          <textarea class="fm-textarea" id="chat-input" placeholder="Type your reply..." style="min-height:44px;" onkeydown="chatKeyDown(event)"></textarea>
+          <button class="chat-send-btn" id="chat-send-btn" onclick="sendChatMsg()">
+            <i class="ti ti-send"></i>
+          </button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.5rem;">
+          <div class="chat-turns-counter" id="chat-turns-label">0 / 8 turns</div>
+          <button class="fantasy-btn secondary" id="chat-debrief-btn" onclick="requestDebrief()" style="display:none;margin-top:0;padding:8px 16px;">
+            <i class="ti ti-report"></i> Get debrief
+          </button>
+        </div>
+      </div>
+
+      <!-- Phase 2: analyzing -->
+      <div class="chat-phase" id="chat-phase-2">
+        <div style="text-align:center;padding:2.5rem 0;">
+          <div class="fm-spinner" style="margin:0 auto 1rem;"></div>
+          <p style="font-size:14px;color:rgba(74,44,33,0.45);line-height:1.75;">
+            Reviewing your session...<br>
+            <span style="font-size:12px;opacity:0.7;">Looking for patterns, strengths, and growth edges.</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 3: debrief -->
+      <div class="chat-phase" id="chat-phase-3">
+        <div style="margin-bottom:0.75rem;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#4A2C21;margin-bottom:3px;">Session debrief</div>
+          <div style="font-size:12px;color:rgba(74,44,33,0.40);">From your practice partner</div>
+        </div>
+        <div class="chat-debrief-card" id="chat-debrief-card"></div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <button class="fantasy-btn secondary" onclick="resetChatSession()">
+            <i class="ti ti-refresh"></i> New session
+          </button>
+        </div>
+        <div class="fm-privacy-note" style="justify-content:center;margin-top:1rem;">
+          <i class="ti ti-shield-lock"></i>
+          <span>Generated by open source AI (Llama 3.3 via Groq). Not stored.</span>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="devnote-toggle" onclick="toggleDevNote('chat-devnote')">
+      <i class="ti ti-code"></i> Dev notes
+    </button>
+    <div class="devnote-area" id="chat-devnote">
+      <h4>What's missing / future work</h4>
+      <div class="devnote-item">
+        <span class="devnote-tag partial">Partial</span>
+        <div class="devnote-text">
+          <strong>Context window</strong> — Full conversation history is sent each turn as formatted text.
+          Works fine for 8-turn sessions; a production version would truncate older turns and keep a rolling window.
+        </div>
+      </div>
+      <div class="devnote-item">
+        <span class="devnote-tag missing">Missing</span>
+        <div class="devnote-text">
+          <strong>Voice mode</strong> — Text-only for now. Voice input would need Groq Whisper transcription;
+          voice output would need a TTS endpoint. Neither is built yet.
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- STEP 5 -->
@@ -833,6 +1212,85 @@
       <span class="tag">non-romantic</span>
       <span class="tag">brutally helpful</span>
     </div>
+
+    <button class="game-toggle-btn" id="roast-toggle-btn" onclick="toggleGame('roast')">
+      <i class="ti ti-heart-handshake"></i> Roast my profile
+    </button>
+
+    <div class="game-area" id="roast-game">
+
+      <!-- Phase 0: input -->
+      <div class="roast-phase active" id="roast-phase-0">
+        <p style="font-size:13px;color:rgba(74,44,33,0.50);line-height:1.65;margin-bottom:1.25rem;">
+          Paste your dating profile bio below. Three AI reviewers will give you honest, useful, slightly brutal feedback — the kind your friends won't.
+        </p>
+        <div class="gen-form-label">Your bio or profile text</div>
+        <textarea class="fm-textarea" id="roast-bio" placeholder="Hey, I'm Emma. I love hiking, cooking elaborate meals, and finding tiny perfect coffee shops. Looking for someone who thinks deeply and laughs loudly..." style="min-height:120px;"></textarea>
+        <div class="gen-form-label" style="margin-top:10px;">Your name <span style="color:rgba(74,44,33,0.30);font-weight:400;">(optional)</span></div>
+        <input class="gen-input" id="roast-name" placeholder="First name — makes the feedback feel more personal" />
+        <div style="display:flex;justify-content:flex-end;">
+          <button class="fantasy-btn" onclick="generateRoast()">
+            <i class="ti ti-report"></i> Get feedback
+          </button>
+        </div>
+        <div class="fm-privacy-note">
+          <i class="ti ti-shield-lock"></i>
+          <span>Analyzed by open source AI (Llama 3.3 via Groq). Nothing stored beyond this session.</span>
+        </div>
+      </div>
+
+      <!-- Phase 1: loading -->
+      <div class="roast-phase" id="roast-phase-1">
+        <div style="text-align:center;padding:2.5rem 0;">
+          <div class="fm-spinner" style="margin:0 auto 1rem;"></div>
+          <p style="font-size:14px;color:rgba(74,44,33,0.45);line-height:1.75;">
+            Your reviewers are reading...<br>
+            <span style="font-size:12px;opacity:0.7;">The honest kind. Give it a second.</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 2: results -->
+      <div class="roast-phase" id="roast-phase-2">
+        <div style="margin-bottom:1rem;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#4A2C21;margin-bottom:3px;">Your profile feedback</div>
+          <div style="font-size:12px;color:rgba(74,44,33,0.40);">Three perspectives, zero sugarcoating</div>
+        </div>
+        <div class="roast-reviewer-grid" id="roast-results"></div>
+        <div style="display:flex;justify-content:center;">
+          <button class="fantasy-btn secondary" onclick="showRoastPhase(0)">
+            <i class="ti ti-refresh"></i> Try another bio
+          </button>
+        </div>
+        <div class="fm-privacy-note" style="justify-content:center;margin-top:1rem;">
+          <i class="ti ti-shield-lock"></i>
+          <span>Generated by open source AI (Llama 3.3 via Groq). Not stored.</span>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="devnote-toggle" onclick="toggleDevNote('roast-devnote')">
+      <i class="ti ti-code"></i> Dev notes
+    </button>
+    <div class="devnote-area" id="roast-devnote">
+      <h4>What's missing / future work</h4>
+      <div class="devnote-item">
+        <span class="devnote-tag missing">Missing</span>
+        <div class="devnote-text">
+          <strong>Real community roast</strong> — This is AI-only feedback. The full product concept is actual DeepMatch
+          users reviewing each other's profiles. Requires user accounts, a review queue, and a submission/notification system.
+        </div>
+      </div>
+      <div class="devnote-item">
+        <span class="devnote-tag partial">Partial</span>
+        <div class="devnote-text">
+          <strong>Photo analysis</strong> — Text-only for now. A future version could accept a profile photo
+          and include visual feedback (photo selection, pose, first impression).
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- STEP 6 -->
@@ -846,6 +1304,63 @@
       <span class="tag">AI debrief after</span>
       <span class="tag">match training</span>
     </div>
+
+    <button class="game-toggle-btn" id="call-toggle-btn" onclick="toggleGame('call')">
+      <i class="ti ti-phone-call"></i> Join a live call
+    </button>
+
+    <div class="game-area" id="call-game">
+      <p style="font-size:13px;color:rgba(74,44,33,0.50);line-height:1.65;margin-bottom:1rem;">
+        Start a private video call with your match. Create a room code and share it — they enter the same code to join you.
+      </p>
+      <div class="call-room-row">
+        <input class="call-room-input" id="call-room-input" placeholder="Room code — e.g. deepdate-42" onkeydown="if(event.key==='Enter')joinCall()" />
+        <button class="call-join-btn" onclick="joinCall()">
+          <i class="ti ti-video"></i> Join
+        </button>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1.25rem;">
+        <button onclick="generateRoomCode()" style="font-size:12px;color:rgba(74,44,33,0.40);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:'Inter',sans-serif;">
+          Generate random code
+        </button>
+      </div>
+      <div class="call-info-row">
+        <div class="call-info-item">
+          <strong>Peer-to-peer</strong>
+          No server sees your video. Direct browser-to-browser connection via WebRTC.
+        </div>
+        <div class="call-info-item">
+          <strong>AI debrief</strong>
+          Post-call summary of what clicked — topics, energy, what to follow up on.
+        </div>
+        <div class="call-info-item">
+          <strong>Private rooms</strong>
+          Room codes are ephemeral. Nothing stored after the call ends.
+        </div>
+      </div>
+    </div>
+
+    <button class="devnote-toggle" onclick="toggleDevNote('call-devnote')">
+      <i class="ti ti-code"></i> Dev notes
+    </button>
+    <div class="devnote-area" id="call-devnote">
+      <h4>What's missing / future work</h4>
+      <div class="devnote-item">
+        <span class="devnote-tag partial">Partial</span>
+        <div class="devnote-text">
+          <strong>AI debrief</strong> — The <code>/match</code> page has a working WebRTC call.
+          A real post-call debrief needs transcript capture (browser SpeechRecognition or Whisper) + a Groq analysis endpoint — not built yet.
+        </div>
+      </div>
+      <div class="devnote-item">
+        <span class="devnote-tag missing">Missing</span>
+        <div class="devnote-text">
+          <strong>Match gating</strong> — Currently any two people can share a room code.
+          Real product flow: room codes are auto-generated when two profiles match, not manually entered.
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- STEP 7 -->
@@ -859,6 +1374,87 @@
       <span class="tag">shared artifact</span>
       <span class="tag">conversation starter</span>
     </div>
+
+    <button class="game-toggle-btn" id="snap-toggle-btn" onclick="toggleGame('snap')">
+      <i class="ti ti-sparkles"></i> Generate snapshot
+    </button>
+
+    <div class="game-area" id="snap-game">
+
+      <!-- Phase 0: input -->
+      <div class="snap-phase active" id="snap-phase-0">
+        <p style="font-size:13px;color:rgba(74,44,33,0.50);line-height:1.65;margin-bottom:1.25rem;">
+          Describe both people. The AI writes a compatibility story, surfaces three real observations, and gives you a conversation starter for your next interaction.
+        </p>
+        <div class="ls-name-inputs">
+          <input class="ls-name-input" id="snap-name-a" placeholder="Person A's name" />
+          <input class="ls-name-input" id="snap-name-b" placeholder="Person B's name" />
+        </div>
+        <textarea class="fm-textarea" id="snap-about-a" placeholder="Person A — personality, what they care about, how they show up in relationships..." style="margin-bottom:10px;min-height:90px;"></textarea>
+        <textarea class="fm-textarea" id="snap-about-b" placeholder="Person B — same thing, be honest..." style="min-height:90px;"></textarea>
+        <div style="margin-top:1.25rem;display:flex;justify-content:flex-end;">
+          <button class="fantasy-btn" onclick="generateSnapshot()">
+            <i class="ti ti-sparkles"></i> Generate snapshot
+          </button>
+        </div>
+        <div class="fm-privacy-note">
+          <i class="ti ti-shield-lock"></i>
+          <span>Analyzed by open source AI (Llama 3.3 via Groq). Nothing stored beyond this session.</span>
+        </div>
+      </div>
+
+      <!-- Phase 1: loading -->
+      <div class="snap-phase" id="snap-phase-1">
+        <div style="text-align:center;padding:2.5rem 0;">
+          <div class="fm-spinner" style="margin:0 auto 1rem;"></div>
+          <p style="font-size:14px;color:rgba(74,44,33,0.45);line-height:1.75;">
+            Reading the dynamic between you...<br>
+            <span style="font-size:12px;opacity:0.7;">Looking for what connects you and what to explore.</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 2: result -->
+      <div class="snap-phase" id="snap-phase-2">
+        <div style="margin-bottom:0.75rem;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#4A2C21;margin-bottom:3px;">Compatibility snapshot</div>
+          <div id="snap-names-label" style="font-size:12px;color:rgba(74,44,33,0.40);"></div>
+        </div>
+        <div class="snap-card" id="snap-card"></div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <button class="fantasy-btn secondary" onclick="showSnapPhase(0)">
+            <i class="ti ti-refresh"></i> New snapshot
+          </button>
+        </div>
+        <div class="fm-privacy-note" style="justify-content:center;margin-top:1rem;">
+          <i class="ti ti-shield-lock"></i>
+          <span>Generated by open source AI (Llama 3.3 via Groq). Not stored.</span>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="devnote-toggle" onclick="toggleDevNote('snap-devnote')">
+      <i class="ti ti-code"></i> Dev notes
+    </button>
+    <div class="devnote-area" id="snap-devnote">
+      <h4>What's missing / future work</h4>
+      <div class="devnote-item">
+        <span class="devnote-tag missing">Missing</span>
+        <div class="devnote-text">
+          <strong>Profile data integration</strong> — Ideally the snapshot uses saved profile + call transcript data, not manual input.
+          Requires user accounts or R2-persisted state across sessions.
+        </div>
+      </div>
+      <div class="devnote-item">
+        <span class="devnote-tag partial">Partial</span>
+        <div class="devnote-text">
+          <strong>Shared artifact</strong> — The concept is "read together." A real version would generate a shareable
+          URL (stored in R2) that both people open — a snapshot that expires after 7 days.
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- STEP 8 — THE OVERLAP GAME -->
@@ -1505,6 +2101,27 @@ function toggleGame(id) {
     btn.innerHTML = isOpen
       ? '<i class="ti ti-chevron-up"></i> Hide'
       : '<i class="ti ti-sparkles"></i> Write our story';
+  } else if (id === 'gen') {
+    btn.innerHTML = isOpen
+      ? '<i class="ti ti-chevron-up"></i> Hide'
+      : '<i class="ti ti-user-circle"></i> Build your avatar';
+    if (!isOpen) clearInterval(genPollInterval);
+  } else if (id === 'chat') {
+    btn.innerHTML = isOpen
+      ? '<i class="ti ti-chevron-up"></i> Hide session'
+      : '<i class="ti ti-messages"></i> Start practice session';
+  } else if (id === 'roast') {
+    btn.innerHTML = isOpen
+      ? '<i class="ti ti-chevron-up"></i> Hide'
+      : '<i class="ti ti-heart-handshake"></i> Roast my profile';
+  } else if (id === 'call') {
+    btn.innerHTML = isOpen
+      ? '<i class="ti ti-chevron-up"></i> Hide'
+      : '<i class="ti ti-phone-call"></i> Join a live call';
+  } else if (id === 'snap') {
+    btn.innerHTML = isOpen
+      ? '<i class="ti ti-chevron-up"></i> Hide'
+      : '<i class="ti ti-sparkles"></i> Generate snapshot';
   }
 }
 
@@ -1857,6 +2474,351 @@ function resetStory() {
   document.getElementById('ls-loading').style.display = 'none';
   document.getElementById('ls-story-screen').style.display = 'none';
   document.getElementById('ls-story-wrap').innerHTML = '';
+}
+
+/* ══════════════════════════════════════
+   CARD 3 — AI AVATAR GENERATOR
+══════════════════════════════════════ */
+let genVideoId = null;
+let genPollInterval = null;
+
+function showGenPhase(n) {
+  document.querySelectorAll('.gen-phase').forEach((p, i) => p.classList.toggle('active', i === n));
+}
+
+async function generateAvatar() {
+  const script = document.getElementById('gen-script').value.trim();
+  const title  = document.getElementById('gen-title').value.trim() || 'My avatar';
+  if (!script) { alert('Write a script for your avatar first!'); return; }
+
+  showGenPhase(1);
+  document.getElementById('gen-status-text').textContent = 'Submitting to HeyGen... (this takes 1–3 minutes)';
+
+  try {
+    const res = await fetch('/api/heygen', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode: 'standard', script, slug: 'avatar-' + Date.now(), title })
+    });
+    if (!res.ok) throw new Error('Generation request failed: ' + res.status);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    genVideoId = data.video_id;
+    pollAvatarStatus();
+  } catch(e) {
+    document.getElementById('gen-error-text').textContent = e.message;
+    showGenPhase(3);
+  }
+}
+
+function pollAvatarStatus() {
+  let polls = 0;
+  genPollInterval = setInterval(async () => {
+    polls++;
+    if (polls > 60) {
+      clearInterval(genPollInterval);
+      document.getElementById('gen-error-text').textContent = 'Generation is taking too long. Try again.';
+      showGenPhase(3);
+      return;
+    }
+    try {
+      const r = await fetch('/api/heygen?video_id=' + genVideoId);
+      const d = await r.json();
+      if (d.status === 'completed' && d.video_url) {
+        clearInterval(genPollInterval);
+        document.getElementById('gen-video').src = d.video_url;
+        document.getElementById('gen-video-link').href = d.video_url;
+        showGenPhase(2);
+      } else if (d.status === 'failed') {
+        clearInterval(genPollInterval);
+        document.getElementById('gen-error-text').textContent = 'HeyGen reported a failure. Check API key and avatar settings.';
+        showGenPhase(3);
+      } else {
+        document.getElementById('gen-status-text').textContent = `Still generating... (${Math.floor(polls * 3)}s elapsed)`;
+      }
+    } catch(e) {}
+  }, 3000);
+}
+
+function resetAvatarGen() {
+  clearInterval(genPollInterval);
+  genVideoId = null;
+  document.getElementById('gen-script').value = '';
+  document.getElementById('gen-title').value = '';
+  document.getElementById('gen-portrait').value = '';
+  showGenPhase(0);
+}
+
+/* ══════════════════════════════════════
+   CARD 4 — AI PRACTICE PARTNER
+══════════════════════════════════════ */
+let chatPersonaKey = '';
+let chatPersonaName = '';
+let chatHistory = [];
+let chatUserTurns = 0;
+const CHAT_MAX_TURNS = 8;
+
+const PERSONA_SYSTEM = {
+  curious: 'You are a warm, intellectually curious date who asks thoughtful follow-up questions. You love understanding what makes people tick. Ask one question at a time. Keep responses concise (2–3 sentences max). You\'re genuinely interested, not interrogating.',
+  direct:  'You are a direct, no-nonsense date who gets to the point and appreciates honesty. You skip small talk and go straight for what matters. Ask one direct question at a time. Keep responses short (1–2 sentences). Occasionally challenge the person lightly — in a good-natured way.',
+  warm:    'You are an exceptionally warm, caring date who makes people feel completely at ease. You reflect back what you hear, validate feelings, and create a safe space. Keep responses gentle and inviting (2–3 sentences). Ask soft, open-ended questions.',
+  sharp:   'You are a witty, sharp date with a dry sense of humor. You\'re playful and a little challenging — you like clever banter. Keep responses concise and with a light edge. You\'re interested but not easily impressed. One question or prompt at a time.',
+};
+
+const PERSONA_EMOJI = { curious: '🔍', direct: '⚡', warm: '☀️', sharp: '💎' };
+
+function selectPersona(key, name, btn) {
+  chatPersonaKey = key;
+  chatPersonaName = name;
+  document.querySelectorAll('.chat-persona-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('chat-start-btn').disabled = false;
+}
+
+function showChatPhase(n) {
+  document.querySelectorAll('.chat-phase').forEach((p, i) => p.classList.toggle('active', i === n));
+}
+
+async function startChatSession() {
+  if (!chatPersonaKey) return;
+  chatHistory = [];
+  chatUserTurns = 0;
+  document.getElementById('chat-messages').innerHTML = '';
+  document.getElementById('chat-debrief-btn').style.display = 'none';
+  document.getElementById('chat-turns-label').textContent = '0 / 8 turns';
+  document.getElementById('chat-persona-display').textContent = chatPersonaName;
+  document.getElementById('chat-persona-emoji').textContent = PERSONA_EMOJI[chatPersonaKey] || '💬';
+  showChatPhase(1);
+
+  const openingPrompt = PERSONA_SYSTEM[chatPersonaKey] + '\n\nThis is the start of a practice dating conversation. Begin with a warm, natural opening line or question — as you would at the start of a real date. Just one opening, concise.';
+
+  document.getElementById('chat-send-btn').disabled = true;
+  try {
+    const reply = await callLLM(openingPrompt, 150);
+    appendChatMsg('ai', reply.trim());
+    chatHistory.push({ role: 'assistant', content: reply.trim() });
+  } catch(e) {
+    const fallback = "Hey — tell me something about yourself that would never end up in a dating bio.";
+    appendChatMsg('ai', fallback);
+    chatHistory.push({ role: 'assistant', content: fallback });
+  }
+  document.getElementById('chat-send-btn').disabled = false;
+}
+
+function appendChatMsg(role, text) {
+  const wrap = document.getElementById('chat-messages');
+  const emoji = role === 'ai' ? (PERSONA_EMOJI[chatPersonaKey] || '💬') : '🧑';
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  div.innerHTML = `<div class="chat-avatar">${emoji}</div><div class="chat-bubble">${text}</div>`;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+async function sendChatMsg() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || document.getElementById('chat-send-btn').disabled) return;
+
+  input.value = '';
+  appendChatMsg('user', text);
+  chatHistory.push({ role: 'user', content: text });
+  chatUserTurns++;
+  document.getElementById('chat-turns-label').textContent = chatUserTurns + ' / ' + CHAT_MAX_TURNS + ' turns';
+  document.getElementById('chat-send-btn').disabled = true;
+
+  if (chatUserTurns >= CHAT_MAX_TURNS) {
+    document.getElementById('chat-debrief-btn').style.display = 'inline-flex';
+    appendChatMsg('ai', "That was a great conversation. I\'d love to keep going, but let\'s take a look at what came up. Hit the debrief button when you\'re ready.");
+    return;
+  }
+
+  const histText = chatHistory.map(m => (m.role === 'user' ? 'Them' : 'You') + ': ' + m.content).join('\n');
+  const prompt = PERSONA_SYSTEM[chatPersonaKey] + '\n\nConversation so far:\n' + histText + '\n\nReply as the date — 2–3 sentences max, then ask one follow-up question or make one thoughtful observation. Stay in character.';
+
+  try {
+    const reply = await callLLM(prompt, 200);
+    appendChatMsg('ai', reply.trim());
+    chatHistory.push({ role: 'assistant', content: reply.trim() });
+  } catch(e) {
+    appendChatMsg('ai', "That\'s really interesting. What made you feel that way?");
+  }
+  document.getElementById('chat-send-btn').disabled = false;
+}
+
+function chatKeyDown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMsg(); }
+}
+
+async function requestDebrief() {
+  showChatPhase(2);
+  const histText = chatHistory.map(m => (m.role === 'user' ? 'You' : chatPersonaName) + ': ' + m.content).join('\n');
+  const prompt = `You are an insightful dating coach. Read this practice conversation and give a brief, honest debrief.
+
+Persona: ${chatPersonaName}
+Conversation:
+${histText}
+
+Return ONLY this JSON (no markdown, no preamble):
+{
+  "strength": "1–2 sentences on what went well — what came across naturally",
+  "pattern": "1–2 sentences on a pattern or habit that emerged — gently honest",
+  "suggestion": "1 concrete thing to try differently next time"
+}`;
+
+  try {
+    const text = await callLLM(prompt, 450);
+    const clean = text.replace(/```json|```/g, '').trim();
+    let d;
+    try { d = JSON.parse(clean); }
+    catch(e) { const m = clean.match(/\{[\s\S]*\}/); d = m ? JSON.parse(m[0]) : null; }
+    renderDebrief(d || { strength: 'You showed up and practiced — that counts.', pattern: '', suggestion: 'Keep going.' });
+  } catch(e) {
+    renderDebrief({ strength: 'You showed up and practiced — that counts.', pattern: '', suggestion: 'Try again.' });
+  }
+}
+
+function renderDebrief(d) {
+  showChatPhase(3);
+  document.getElementById('chat-debrief-card').innerHTML =
+    `<div class="chat-debrief-section"><div class="chat-debrief-label">✦ What went well</div><div class="chat-debrief-text">${d.strength}</div></div>` +
+    (d.pattern ? `<div class="chat-debrief-section"><div class="chat-debrief-label">⟳ Pattern detected</div><div class="chat-debrief-text">${d.pattern}</div></div>` : '') +
+    `<div class="chat-debrief-section"><div class="chat-debrief-label">→ Try this next time</div><div class="chat-debrief-text">${d.suggestion}</div></div>`;
+}
+
+function resetChatSession() {
+  chatPersonaKey = '';
+  chatPersonaName = '';
+  chatHistory = [];
+  chatUserTurns = 0;
+  document.querySelectorAll('.chat-persona-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('chat-start-btn').disabled = true;
+  showChatPhase(0);
+}
+
+/* ══════════════════════════════════════
+   CARD 5 — PROFILE ROAST
+══════════════════════════════════════ */
+function showRoastPhase(n) {
+  document.querySelectorAll('.roast-phase').forEach((p, i) => p.classList.toggle('active', i === n));
+}
+
+async function generateRoast() {
+  const bio  = document.getElementById('roast-bio').value.trim();
+  const name = document.getElementById('roast-name').value.trim() || 'this person';
+  if (!bio) { alert('Paste your bio first!'); return; }
+
+  showRoastPhase(1);
+
+  const prompt = `You are three different people reviewing a dating profile. Give honest, specific, genuinely useful feedback — no sugarcoating, but no cruelty either.
+
+Name: ${name}
+Bio: "${bio}"
+
+Return ONLY this JSON (no markdown, no preamble):
+{
+  "honest_friend": "What a close friend who cares about you would say — specific, kind but direct. What's working and what's not.",
+  "date_perspective": "What someone reading this as a potential date would actually think and feel. Be honest about first impressions.",
+  "strategist": "What a dating strategist would say — positioning, what's missing, what would make this more compelling. Concrete suggestions."
+}`;
+
+  try {
+    const text = await callLLM(prompt, 700);
+    const clean = text.replace(/```json|```/g, '').trim();
+    let d;
+    try { d = JSON.parse(clean); }
+    catch(e) { const m = clean.match(/\{[\s\S]*\}/); d = m ? JSON.parse(m[0]) : null; }
+    renderRoast(d || { honest_friend: 'Could not parse feedback. Try again.', date_perspective: '', strategist: '' });
+  } catch(e) {
+    renderRoast({ honest_friend: 'Something went wrong. Try again.', date_perspective: '', strategist: '' });
+  }
+}
+
+function renderRoast(d) {
+  showRoastPhase(2);
+  document.getElementById('roast-results').innerHTML =
+    `<div class="roast-reviewer-card honest"><div class="roast-reviewer-name">🫂 Your honest friend</div><div class="roast-reviewer-text">${d.honest_friend}</div></div>` +
+    (d.date_perspective ? `<div class="roast-reviewer-card date"><div class="roast-reviewer-name">👀 A potential date</div><div class="roast-reviewer-text">${d.date_perspective}</div></div>` : '') +
+    (d.strategist ? `<div class="roast-reviewer-card strategist"><div class="roast-reviewer-name">🧠 The strategist</div><div class="roast-reviewer-text">${d.strategist}</div></div>` : '');
+}
+
+/* ══════════════════════════════════════
+   CARD 6 — LIVE VIDEO CALL
+══════════════════════════════════════ */
+function joinCall() {
+  const code = document.getElementById('call-room-input').value.trim();
+  if (!code) { alert('Enter a room code first!'); return; }
+  const safe = code.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-|-$/g, '');
+  window.open('/match?room=' + encodeURIComponent(safe), '_blank');
+}
+
+function generateRoomCode() {
+  const words = ['rose','ember','sage','silk','tide','nova','dusk','mist','glow','reef','haze','fern'];
+  const a = words[Math.floor(Math.random() * words.length)];
+  const b = words[Math.floor(Math.random() * words.length)];
+  const n = Math.floor(Math.random() * 90) + 10;
+  document.getElementById('call-room-input').value = a + '-' + b + '-' + n;
+}
+
+/* ══════════════════════════════════════
+   CARD 7 — COMPATIBILITY SNAPSHOT
+══════════════════════════════════════ */
+function showSnapPhase(n) {
+  document.querySelectorAll('.snap-phase').forEach((p, i) => p.classList.toggle('active', i === n));
+}
+
+async function generateSnapshot() {
+  const nameA  = document.getElementById('snap-name-a').value.trim()  || 'Person A';
+  const nameB  = document.getElementById('snap-name-b').value.trim()  || 'Person B';
+  const aboutA = document.getElementById('snap-about-a').value.trim();
+  const aboutB = document.getElementById('snap-about-b').value.trim();
+
+  if (!aboutA && !aboutB) { alert('Describe at least one of you so there\'s something to work with!'); return; }
+
+  showSnapPhase(1);
+
+  const prompt = `You are an insightful relationship analyst. Based on two people's descriptions, write a brief compatibility snapshot — not a score, but a story and three specific observations.
+
+${nameA}: ${aboutA || '(no description)'}
+${nameB}: ${aboutB || '(no description)'}
+
+Return ONLY this JSON (no markdown, no preamble):
+{
+  "story": "2–3 sentences describing the dynamic between these two people — what might light up between them, where there could be friction, and what's worth exploring. Warm, specific, human.",
+  "observations": [
+    "A short, specific observation about their dynamic (not generic)",
+    "Something they might not have noticed about themselves",
+    "Where they could surprise each other"
+  ],
+  "conversation_starter": "One specific question or topic they should bring into their next conversation — something that would open a door neither has knocked on yet."
+}`;
+
+  try {
+    const text = await callLLM(prompt, 600);
+    const clean = text.replace(/```json|```/g, '').trim();
+    let d;
+    try { d = JSON.parse(clean); }
+    catch(e) { const m = clean.match(/\{[\s\S]*\}/); d = m ? JSON.parse(m[0]) : null; }
+    renderSnapshot(d || { story: 'Could not parse snapshot.', observations: [], conversation_starter: '' }, nameA, nameB);
+  } catch(e) {
+    renderSnapshot({ story: 'Something went wrong. Try again.', observations: [], conversation_starter: '' }, nameA, nameB);
+  }
+}
+
+function renderSnapshot(d, nameA, nameB) {
+  showSnapPhase(2);
+  document.getElementById('snap-names-label').textContent = nameA + ' & ' + nameB;
+
+  const obsHtml = d.observations?.length
+    ? `<div style="margin-bottom:1.25rem;"><div class="snap-obs-label">Three observations</div>${d.observations.map(o => `<div class="snap-obs-item">${o}</div>`).join('')}</div>`
+    : '';
+
+  const starterHtml = d.conversation_starter
+    ? `<div class="snap-starter-wrap"><div class="snap-starter-label">✦ Conversation starter</div><div class="snap-starter-text">"${d.conversation_starter}"</div></div>`
+    : '';
+
+  document.getElementById('snap-card').innerHTML =
+    `<div class="snap-story">${d.story}</div>${obsHtml}${starterHtml}`;
 }
 </script>
 </body>
