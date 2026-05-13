@@ -336,6 +336,78 @@
     }
     .tof-done-screen p { font-size: 14px; color: rgba(74,44,33,0.55); line-height: 1.6; margin-bottom: 1.25rem; }
 
+    /* ── Intro Recorder ── */
+    .rec-phase { display: none; }
+    .rec-phase.active { display: block; }
+
+    .rec-preview-wrap {
+      position: relative; background: #3A1F15;
+      border-radius: 14px; overflow: hidden;
+      aspect-ratio: 16/9; margin-bottom: 1rem;
+    }
+    .rec-video {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block; border-radius: 14px;
+    }
+    .rec-recording-dot {
+      display: none; position: absolute; top: 12px; right: 12px;
+      align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.55); border-radius: 99px;
+      padding: 4px 10px; font-size: 11px; color: #fff; font-weight: 500;
+    }
+    .rec-recording-dot.active { display: flex; }
+    .rec-dot {
+      width: 7px; height: 7px; background: #E53E3E; border-radius: 50%;
+      animation: recBlink 1s ease-in-out infinite;
+    }
+    @keyframes recBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .rec-timer-display {
+      text-align: center; font-size: 13px; color: rgba(74,44,33,0.40);
+      margin-bottom: 1rem; letter-spacing: 0.06em; font-variant-numeric: tabular-nums;
+    }
+    .rec-progress-bar {
+      height: 3px; background: #E0D4C0; border-radius: 2px;
+      margin-bottom: 0.75rem; overflow: hidden;
+    }
+    .rec-progress-fill { height: 100%; background: #C26F6A; border-radius: 2px; width: 0%; transition: width 0.4s; }
+
+    .rec-controls-row { display: flex; gap: 10px; justify-content: center; }
+
+    .rec-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      border-radius: 99px; padding: 10px 22px;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      font-family: 'Inter', sans-serif; border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+    .rec-btn-record { background: #C26F6A; color: #fff; border-color: #C26F6A; }
+    .rec-btn-record:hover { background: #9E4E4A; }
+    .rec-btn-stop { background: #3A1F15; color: #F7EFE2; border-color: #3A1F15; }
+    .rec-btn-stop:hover { background: #2a1510; }
+    .rec-btn-secondary { background: transparent; border-color: rgba(74,44,33,0.20); color: rgba(74,44,33,0.65); }
+    .rec-btn-secondary:hover { background: rgba(74,44,33,0.05); }
+    .rec-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .rec-name-input {
+      border: 1px solid rgba(74,44,33,0.15); border-radius: 8px;
+      padding: 10px 12px; font-size: 14px; font-family: 'Inter', sans-serif;
+      color: #4A2C21; background: rgba(255,255,255,0.70);
+      width: 100%; transition: border-color 0.15s; margin-bottom: 1rem;
+    }
+    .rec-name-input:focus { outline: none; border-color: #C26F6A; }
+
+    .rec-done-link {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(194,111,106,0.08); border: 1px solid rgba(194,111,106,0.25);
+      border-radius: 12px; padding: 13px 16px;
+      font-size: 14px; color: #9E4E4A; text-decoration: none;
+      transition: all 0.15s; margin-bottom: 0.75rem;
+    }
+    .rec-done-link:hover { background: rgba(194,111,106,0.14); }
+    .rec-done-link .rec-link-text { font-family: 'Inter', sans-serif; font-weight: 500; }
+    .rec-done-link .rec-link-sub { font-size: 11px; color: rgba(74,44,33,0.40); margin-top: 2px; }
+
     /* ── Love Story ── */
     .ls-name-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.25rem; }
     .ls-name-input {
@@ -371,8 +443,106 @@
     <p class="step-sub">Record a short video introducing yourself — no filters, no scripts. Just you, talking naturally. Think "first 60 seconds of a great date." The AI watches, listens, and starts building your profile from tone, energy, and the stuff you didn't even notice you said.</p>
     <div class="tags">
       <span class="tag">recorded once</span>
-      <span class="tag">AI-analyzed</span>
-      <span class="tag">profile seed</span>
+      <span class="tag">up to 90 seconds</span>
+      <span class="tag">stored privately</span>
+    </div>
+
+    <button class="game-toggle-btn" id="rec-toggle-btn" onclick="toggleGame('rec')">
+      <i class="ti ti-video"></i> Record your intro
+    </button>
+
+    <div class="game-area" id="rec-game">
+
+      <!-- Phase 0: permission request -->
+      <div class="rec-phase active" id="rec-phase-0">
+        <div style="text-align:center;padding:0.75rem 0 1rem;">
+          <div style="font-size:40px;margin-bottom:0.75rem;">🎥</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#4A2C21;margin-bottom:0.5rem;">Ready when you are</div>
+          <p style="font-size:13px;color:rgba(74,44,33,0.50);line-height:1.7;margin-bottom:1.25rem;max-width:360px;margin-left:auto;margin-right:auto;">
+            Your browser will ask for camera and mic access. Nothing records or uploads until you hit the button — you'll review it first.
+          </p>
+          <button class="rec-btn rec-btn-record" onclick="startCamera()">
+            <i class="ti ti-camera"></i> Enable camera
+          </button>
+        </div>
+        <div class="fm-privacy-note" style="justify-content:center;">
+          <i class="ti ti-shield-lock"></i>
+          <span>Video is uploaded to your private storage only. Never shared without your action.</span>
+        </div>
+      </div>
+
+      <!-- Phase 1: live preview + record controls -->
+      <div class="rec-phase" id="rec-phase-1">
+        <div class="rec-preview-wrap">
+          <video id="rec-live" autoplay muted playsinline class="rec-video"></video>
+          <div class="rec-recording-dot" id="rec-recording-dot">
+            <span class="rec-dot"></span> Recording
+          </div>
+        </div>
+        <div class="rec-progress-bar"><div class="rec-progress-fill" id="rec-progress-fill"></div></div>
+        <div class="rec-timer-display" id="rec-timer">0:00 / 1:30</div>
+        <div class="rec-controls-row">
+          <button class="rec-btn rec-btn-record" id="rec-start-btn" onclick="startRecording()">
+            <i class="ti ti-circle"></i> Start recording
+          </button>
+          <button class="rec-btn rec-btn-stop" id="rec-stop-btn" style="display:none;" onclick="stopRecording()">
+            <i class="ti ti-square"></i> Stop
+          </button>
+        </div>
+      </div>
+
+      <!-- Phase 2: review + upload -->
+      <div class="rec-phase" id="rec-phase-2">
+        <div class="rec-preview-wrap">
+          <video id="rec-playback" controls class="rec-video"></video>
+        </div>
+        <p style="font-size:13px;color:rgba(74,44,33,0.50);line-height:1.6;margin-bottom:0.75rem;">
+          Happy with it? Add your name (optional) then upload — you'll get a private watch link.
+        </p>
+        <input class="rec-name-input" id="rec-name-input" placeholder="Your first name (optional — used in the video link)" />
+        <div class="rec-controls-row" style="justify-content:space-between;">
+          <button class="rec-btn rec-btn-secondary" onclick="retakeIntro()">
+            <i class="ti ti-refresh"></i> Retake
+          </button>
+          <button class="rec-btn rec-btn-record" onclick="uploadIntro()">
+            Upload intro <i class="ti ti-cloud-upload"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Phase 3: uploading -->
+      <div class="rec-phase" id="rec-phase-3">
+        <div style="text-align:center;padding:2rem 0;">
+          <div class="fm-spinner" style="margin:0 auto 1rem;"></div>
+          <p style="font-size:14px;color:rgba(74,44,33,0.45);">Uploading your intro...</p>
+          <div class="rec-progress-bar" style="margin-top:1.25rem;">
+            <div class="rec-progress-fill" id="rec-upload-fill"></div>
+          </div>
+          <div style="font-size:12px;color:rgba(74,44,33,0.35);margin-top:0.5rem;" id="rec-upload-pct">0%</div>
+        </div>
+      </div>
+
+      <!-- Phase 4: done -->
+      <div class="rec-phase" id="rec-phase-4">
+        <div style="text-align:center;padding:0.75rem 0 1.25rem;">
+          <div style="font-size:36px;margin-bottom:0.75rem;">✅</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#4A2C21;margin-bottom:0.4rem;">Intro uploaded</div>
+          <p style="font-size:13px;color:rgba(74,44,33,0.50);">Your video is live. Share the link or use it on your profile.</p>
+        </div>
+        <a id="rec-watch-link" href="#" target="_blank" class="rec-done-link">
+          <div>
+            <div class="rec-link-text">Watch your intro</div>
+            <div class="rec-link-sub" id="rec-watch-slug"></div>
+          </div>
+          <i class="ti ti-external-link" style="font-size:16px;"></i>
+        </a>
+        <div style="display:flex;justify-content:center;">
+          <button class="rec-btn rec-btn-secondary" onclick="resetRecorder()">
+            <i class="ti ti-refresh"></i> Record another
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -803,13 +973,152 @@ function go(dir) {
 render();
 
 /* ══════════════════════════════════════
+   CARD 1 — INTRO RECORDER
+══════════════════════════════════════ */
+let recStream = null;
+let mediaRecorder = null;
+let recChunks = [];
+let recBlob = null;
+let recTimerInterval = null;
+let recSeconds = 0;
+const REC_MAX = 90;
+
+function showRecPhase(n) {
+  document.querySelectorAll('.rec-phase').forEach((p, i) => p.classList.toggle('active', i === n));
+}
+
+async function startCamera() {
+  try {
+    recStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    document.getElementById('rec-live').srcObject = recStream;
+    showRecPhase(1);
+  } catch(e) {
+    alert('Camera access is needed. Please allow it and try again.');
+  }
+}
+
+function startRecording() {
+  if (!recStream) return;
+  recChunks = []; recSeconds = 0;
+  const mimeType = ['video/webm;codecs=vp9,opus','video/webm','video/mp4'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+  mediaRecorder = new MediaRecorder(recStream, mimeType ? { mimeType } : {});
+  mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
+  mediaRecorder.onstop = onRecordingStop;
+  mediaRecorder.start(250);
+
+  document.getElementById('rec-start-btn').style.display = 'none';
+  document.getElementById('rec-stop-btn').style.display = 'inline-flex';
+  document.getElementById('rec-recording-dot').classList.add('active');
+
+  recTimerInterval = setInterval(() => {
+    recSeconds++;
+    const m = Math.floor(recSeconds / 60), s = recSeconds % 60;
+    document.getElementById('rec-timer').textContent = `${m}:${s.toString().padStart(2,'0')} / 1:30`;
+    document.getElementById('rec-progress-fill').style.width = Math.min(100, (recSeconds / REC_MAX) * 100) + '%';
+    if (recSeconds >= REC_MAX) stopRecording();
+  }, 1000);
+}
+
+function stopRecording() {
+  clearInterval(recTimerInterval);
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  document.getElementById('rec-recording-dot').classList.remove('active');
+}
+
+function onRecordingStop() {
+  recBlob = new Blob(recChunks, { type: recChunks[0]?.type || 'video/webm' });
+  document.getElementById('rec-playback').src = URL.createObjectURL(recBlob);
+  recStream.getTracks().forEach(t => t.stop());
+  recStream = null;
+  showRecPhase(2);
+}
+
+function retakeIntro() {
+  recChunks = []; recBlob = null; recSeconds = 0;
+  document.getElementById('rec-timer').textContent = '0:00 / 1:30';
+  document.getElementById('rec-progress-fill').style.width = '0%';
+  document.getElementById('rec-start-btn').style.display = 'inline-flex';
+  document.getElementById('rec-stop-btn').style.display = 'none';
+  startCamera();
+}
+
+async function uploadIntro() {
+  if (!recBlob) return;
+  const nameRaw = document.getElementById('rec-name-input').value.trim();
+  const safeName = nameRaw ? nameRaw.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') : 'intro';
+  const slug = `${safeName}-${Date.now()}`;
+  const contentType = recBlob.type || 'video/webm';
+
+  showRecPhase(3);
+  document.getElementById('rec-upload-fill').style.width = '0%';
+  document.getElementById('rec-upload-pct').textContent = '0%';
+
+  try {
+    const presignRes = await fetch('/api/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug, contentType })
+    });
+    if (!presignRes.ok) throw new Error('Could not get upload URL');
+    const { uploadUrl } = await presignRes.json();
+
+    await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('PUT', uploadUrl);
+      xhr.setRequestHeader('Content-Type', contentType);
+      xhr.upload.onprogress = e => {
+        if (e.lengthComputable) {
+          const pct = Math.round((e.loaded / e.total) * 100);
+          document.getElementById('rec-upload-fill').style.width = pct + '%';
+          document.getElementById('rec-upload-pct').textContent = pct + '%';
+        }
+      };
+      xhr.onload = () => xhr.status < 400 ? resolve() : reject(new Error('Upload failed ' + xhr.status));
+      xhr.onerror = () => reject(new Error('Upload failed'));
+      xhr.send(recBlob);
+    });
+
+    await fetch('/api/videos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug, title: nameRaw ? `${nameRaw}'s intro` : 'My intro' })
+    });
+
+    const watchUrl = `/watch/${slug}`;
+    const link = document.getElementById('rec-watch-link');
+    link.href = watchUrl;
+    document.getElementById('rec-watch-slug').textContent = `deepmatch-three.vercel.app/watch/${slug}`;
+    showRecPhase(4);
+  } catch(e) {
+    alert('Upload failed: ' + e.message);
+    showRecPhase(2);
+  }
+}
+
+function resetRecorder() {
+  recChunks = []; recBlob = null; recSeconds = 0;
+  if (recStream) { recStream.getTracks().forEach(t => t.stop()); recStream = null; }
+  document.getElementById('rec-name-input').value = '';
+  document.getElementById('rec-timer').textContent = '0:00 / 1:30';
+  document.getElementById('rec-progress-fill').style.width = '0%';
+  document.getElementById('rec-start-btn').style.display = 'inline-flex';
+  document.getElementById('rec-stop-btn').style.display = 'none';
+  showRecPhase(0);
+}
+
+/* ══════════════════════════════════════
    SHARED: GAME TOGGLE
 ══════════════════════════════════════ */
 function toggleGame(id) {
   const area = document.getElementById(id + '-game');
   const btn  = document.getElementById(id + '-toggle-btn');
   const isOpen = area.classList.toggle('open');
-  if (id === 'fm') {
+  if (id === 'rec') {
+    btn.innerHTML = isOpen
+      ? '<i class="ti ti-chevron-up"></i> Hide recorder'
+      : '<i class="ti ti-video"></i> Record your intro';
+    if (!isOpen && recStream) { recStream.getTracks().forEach(t => t.stop()); recStream = null; }
+  } else if (id === 'fm') {
     btn.innerHTML = isOpen
       ? '<i class="ti ti-chevron-up"></i> Hide game'
       : '<i class="ti ti-lock-open"></i> Play this together';
