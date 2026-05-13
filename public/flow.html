@@ -139,6 +139,40 @@
     }
     .game-area.open { display: block; }
 
+    /* ── Fantasy Matcher topic picker ── */
+    .fm-topic-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+      margin-bottom: 1.25rem;
+    }
+    .fm-topic-btn {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 3px; padding: 12px 8px;
+      border: 1px solid rgba(74,44,33,0.15); border-radius: 12px;
+      background: rgba(255,255,255,0.55); cursor: pointer;
+      font-family: 'Inter', sans-serif; transition: all 0.15s;
+      text-align: center;
+    }
+    .fm-topic-btn:hover { border-color: rgba(194,111,106,0.45); background: rgba(194,111,106,0.06); }
+    .fm-topic-btn.active { border-color: #C26F6A; background: rgba(194,111,106,0.10); box-shadow: 0 0 0 1px rgba(194,111,106,0.25); }
+    .fm-topic-btn .topic-emoji { font-size: 20px; }
+    .fm-topic-btn .topic-label { font-size: 12px; font-weight: 600; color: #4A2C21; margin-top: 2px; }
+    .fm-topic-btn .topic-desc { font-size: 10px; color: rgba(74,44,33,0.40); line-height: 1.3; }
+
+    .fm-selected-topic {
+      display: none; align-items: center; gap: 6px;
+      background: rgba(194,111,106,0.08); border: 1px solid rgba(194,111,106,0.20);
+      border-radius: 99px; padding: 5px 12px;
+      font-size: 12px; color: #9E4E4A; font-weight: 500;
+      margin-bottom: 1rem; width: fit-content;
+    }
+
+    .fm-privacy-note {
+      display: flex; align-items: flex-start; gap: 6px;
+      font-size: 11px; color: rgba(74,44,33,0.35); line-height: 1.6;
+      margin-top: 1rem;
+    }
+    .fm-privacy-note i { font-size: 12px; margin-top: 2px; flex-shrink: 0; }
+
     /* ── Fantasy Matcher ── */
     .fantasy-btn {
       display: inline-flex; align-items: center; gap: 8px;
@@ -425,12 +459,12 @@
     <div class="step-badge badge-rose"><i class="ti ti-flame"></i> Step 8</div>
     <div class="step-icon"><i class="ti ti-flame" style="color:#C26F6A;"></i></div>
     <p class="step-title">The overlap game</p>
-    <p class="step-sub">Both of you write down your fantasies, desires, and curiosities — privately, no peeking. Then the AI quietly finds what you have in common and only shows you that. No awkward mismatches, no judgment. Just the places where you already align.</p>
+    <p class="step-sub">Pick a topic — vibes, desires, fantasies, kinks, curiosities. Each of you answers privately. The AI finds only what you share and shows you that. No mismatches revealed, no judgment. Just the places where you already align.</p>
     <div class="tags">
       <span class="tag">private input</span>
       <span class="tag">AI-matched</span>
       <span class="tag">only shared interests</span>
-      <span class="tag">no judgment</span>
+      <span class="tag">open source AI</span>
     </div>
 
     <button class="game-toggle-btn" id="fm-toggle-btn" onclick="toggleGame('fm')">
@@ -440,8 +474,60 @@
     <div class="game-area" id="fm-game">
       <div id="fantasy-matcher">
 
-        <!-- Phase 0: Person A input -->
+        <!-- Phase 0: topic picker -->
         <div class="fm-phase active" id="fm-phase-0">
+          <div style="margin-bottom:1.25rem;">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#4A2C21;margin-bottom:4px;">What are you exploring tonight?</div>
+            <div style="font-size:13px;color:rgba(74,44,33,0.50);line-height:1.6;">Pick a focus — both of you will answer privately about the same thing.</div>
+          </div>
+          <div class="fm-topic-grid">
+            <button class="fm-topic-btn" onclick="selectTopicPreset('vibes','✨ Vibes',this)">
+              <span class="topic-emoji">✨</span>
+              <span class="topic-label">Vibes</span>
+              <span class="topic-desc">energy &amp; what feels right</span>
+            </button>
+            <button class="fm-topic-btn" onclick="selectTopicPreset('fantasies','💫 Fantasies',this)">
+              <span class="topic-emoji">💫</span>
+              <span class="topic-label">Fantasies</span>
+              <span class="topic-desc">scenarios to explore</span>
+            </button>
+            <button class="fm-topic-btn" onclick="selectTopicPreset('desires','💛 Desires',this)">
+              <span class="topic-emoji">💛</span>
+              <span class="topic-label">Desires</span>
+              <span class="topic-desc">what you're longing for</span>
+            </button>
+            <button class="fm-topic-btn" onclick="selectTopicPreset('kinks','🌶️ Kinks',this)">
+              <span class="topic-emoji">🌶️</span>
+              <span class="topic-label">Kinks</span>
+              <span class="topic-desc">turn-ons &amp; curiosities</span>
+            </button>
+            <button class="fm-topic-btn" onclick="selectTopicPreset('curiosities','🔍 Curiosities',this)">
+              <span class="topic-emoji">🔍</span>
+              <span class="topic-label">Curiosities</span>
+              <span class="topic-desc">things you've wondered about</span>
+            </button>
+            <button class="fm-topic-btn" id="fm-free-btn" onclick="selectTopicPreset('free','✏️ Custom',this)">
+              <span class="topic-emoji">✏️</span>
+              <span class="topic-label">Your own</span>
+              <span class="topic-desc">write a custom topic</span>
+            </button>
+          </div>
+          <div id="fm-custom-wrap" style="display:none;margin-bottom:1rem;">
+            <input id="fm-custom-topic" class="ls-name-input" style="width:100%;" placeholder="e.g. love languages, what safety feels like to me..." oninput="fmTopicLabel=this.value||'✏️ Custom'" />
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:0.5rem;">
+            <button class="fantasy-btn" onclick="startFM()">
+              Start — Person A first <i class="ti ti-arrow-right"></i>
+            </button>
+          </div>
+          <div class="fm-privacy-note">
+            <i class="ti ti-shield-lock"></i>
+            <span>Processed by an open source AI model (Llama 3.3 via Groq). Your answers are never stored or shared beyond this session.</span>
+          </div>
+        </div>
+
+        <!-- Phase 1: Person A input -->
+        <div class="fm-phase" id="fm-phase-1">
           <div class="fm-player-header">
             <i class="ti ti-user-circle" style="color:#C26F6A;font-size:20px;"></i>
             <div>
@@ -449,19 +535,24 @@
               <div class="player-hint">Person B, look away or hand over the screen</div>
             </div>
           </div>
+          <div class="fm-selected-topic" id="fm-topic-label-a"></div>
           <div class="fm-instructions">
-            Type anything — fantasies, desires, vibes, curiosities. One per line or comma-separated. This is completely private until the AI processes it.
+            Write freely — one item per line or comma-separated. This is completely private until the AI finds your overlap.
           </div>
-          <textarea class="fm-textarea" id="fm-input-a" placeholder="e.g. slow mornings in bed, being desired, spontaneous trips, trying new things together..."></textarea>
+          <textarea class="fm-textarea" id="fm-input-a" placeholder="..."></textarea>
           <div style="margin-top:1rem;display:flex;justify-content:flex-end;">
             <button class="fantasy-btn" onclick="submitA()">
               Lock in &amp; pass to B <i class="ti ti-arrow-right"></i>
             </button>
           </div>
+          <div class="fm-privacy-note">
+            <i class="ti ti-shield-lock"></i>
+            <span>Open source AI only (Llama 3.3 via Groq). Nothing stored.</span>
+          </div>
         </div>
 
-        <!-- Phase 1: look-away screen -->
-        <div class="fm-phase" id="fm-phase-1">
+        <!-- Phase 2: look-away screen -->
+        <div class="fm-phase" id="fm-phase-2">
           <div class="fm-look-away">
             <span class="laa-emoji">🙈</span>
             <div class="laa-title">Person A, look away</div>
@@ -474,8 +565,8 @@
           </div>
         </div>
 
-        <!-- Phase 2: Person B input -->
-        <div class="fm-phase" id="fm-phase-2">
+        <!-- Phase 3: Person B input -->
+        <div class="fm-phase" id="fm-phase-3">
           <div class="fm-player-header" style="background:rgba(74,44,33,0.06);border-color:rgba(74,44,33,0.15);">
             <i class="ti ti-user-circle" style="color:#D88B85;font-size:20px;"></i>
             <div>
@@ -483,37 +574,46 @@
               <div class="player-hint" style="color:#D88B85;">Person A can't see this</div>
             </div>
           </div>
+          <div class="fm-selected-topic" id="fm-topic-label-b"></div>
           <div class="fm-instructions">
-            Same deal — type your own desires, curiosities, fantasies. No peeking at each other's answers.
+            Same topic, your own answers. Write whatever comes honestly — no peeking at each other's input.
           </div>
-          <textarea class="fm-textarea" id="fm-input-b" placeholder="e.g. deep conversations at 2am, feeling seen, outdoor adventures, playful tension..."></textarea>
+          <textarea class="fm-textarea" id="fm-input-b" placeholder="..."></textarea>
           <div style="margin-top:1rem;display:flex;justify-content:flex-end;">
             <button class="fantasy-btn dark" onclick="findMatches()">
               Find our overlap <i class="ti ti-sparkles"></i>
             </button>
           </div>
+          <div class="fm-privacy-note">
+            <i class="ti ti-shield-lock"></i>
+            <span>Open source AI only (Llama 3.3 via Groq). Nothing stored.</span>
+          </div>
         </div>
 
-        <!-- Phase 3: loading -->
-        <div class="fm-phase" id="fm-phase-3">
+        <!-- Phase 4: loading -->
+        <div class="fm-phase" id="fm-phase-4">
           <div class="fm-loading">
             <div class="fm-spinner"></div>
             <p>Finding your overlap...<br>Only shared interests will appear.</p>
           </div>
         </div>
 
-        <!-- Phase 4: results -->
-        <div class="fm-phase" id="fm-phase-4">
+        <!-- Phase 5: results -->
+        <div class="fm-phase" id="fm-phase-5">
           <div style="text-align:center;margin-bottom:1.25rem;">
             <div style="font-size:28px;margin-bottom:6px;">✨</div>
             <div style="font-size:18px;font-family:'Cormorant Garamond',serif;font-weight:500;color:#4A2C21;margin-bottom:4px;">Here's where you already align</div>
             <div style="font-size:13px;color:rgba(74,44,33,0.45);">Only the things you both expressed interest in</div>
           </div>
           <div class="fm-matches-wrap" id="fm-matches-output"></div>
-          <div style="margin-top:1.25rem;display:flex;justify-content:center;">
+          <div style="margin-top:1.25rem;display:flex;justify-content:center;gap:10px;">
             <button class="fantasy-btn secondary" onclick="resetFM()">
               <i class="ti ti-refresh"></i> Play again
             </button>
+          </div>
+          <div class="fm-privacy-note" style="justify-content:center;">
+            <i class="ti ti-shield-lock"></i>
+            <span>Processed by open source AI (Llama 3.3 via Groq). Not stored anywhere.</span>
           </div>
         </div>
 
@@ -742,6 +842,8 @@ async function callLLM(prompt, maxTokens) {
    CARD 8 — FANTASY MATCHER
 ══════════════════════════════════════ */
 let fmDataA = '';
+let fmTopic = '';
+let fmTopicLabel = '';
 
 function showPhase(n) {
   document.querySelectorAll('.fm-phase').forEach((p, i) => {
@@ -749,30 +851,80 @@ function showPhase(n) {
   });
 }
 
+const FM_PLACEHOLDERS = {
+  vibes:       'e.g. slow mornings, being seen, spontaneous adventures, easy silences...',
+  fantasies:   'e.g. weekend away somewhere new, being surprised, slow tension building...',
+  desires:     'e.g. deep conversations, physical closeness, being pursued, real partnership...',
+  kinks:       'e.g. power dynamics, sensory play, roleplay, being completely desired...',
+  curiosities: 'e.g. things I\'ve wondered about but never tried, open to experimenting with...',
+  free:        'Write freely — anything that comes to mind about this topic...',
+};
+
+function selectTopicPreset(key, label, btn) {
+  document.querySelectorAll('.fm-topic-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  fmTopic = key;
+  fmTopicLabel = label;
+  const customWrap = document.getElementById('fm-custom-wrap');
+  if (key === 'free') {
+    customWrap.style.display = 'block';
+    document.getElementById('fm-custom-topic').focus();
+  } else {
+    customWrap.style.display = 'none';
+  }
+}
+
+function startFM() {
+  if (!fmTopic) { alert('Pick a focus first!'); return; }
+  if (fmTopic === 'free') {
+    const custom = document.getElementById('fm-custom-topic').value.trim();
+    if (!custom) { alert('Type your custom topic first!'); return; }
+    fmTopicLabel = custom;
+  }
+
+  const placeholder = FM_PLACEHOLDERS[fmTopic] || 'Write freely...';
+  document.getElementById('fm-input-a').placeholder = placeholder;
+  document.getElementById('fm-input-b').placeholder = placeholder;
+
+  const labelHtml = `<i class="ti ti-target"></i> ${fmTopicLabel}`;
+  const la = document.getElementById('fm-topic-label-a');
+  const lb = document.getElementById('fm-topic-label-b');
+  la.innerHTML = labelHtml; la.style.display = 'flex';
+  lb.innerHTML = labelHtml; lb.style.display = 'flex';
+
+  showPhase(1);
+}
+
 function submitA() {
   const val = document.getElementById('fm-input-a').value.trim();
   if (!val) { alert('Type something first!'); return; }
   fmDataA = val;
-  showPhase(1);
+  showPhase(2);
 }
 
-function startB() { showPhase(2); }
+function startB() { showPhase(3); }
 
 async function findMatches() {
   const valB = document.getElementById('fm-input-b').value.trim();
   if (!valB) { alert("Person B hasn't typed anything yet!"); return; }
-  showPhase(3);
+  showPhase(4);
 
-  const prompt = `You are helping two people on a date discover their shared interests, desires, and fantasies in a safe and respectful way.
+  const topicLine = (fmTopic && fmTopic !== 'free')
+    ? `Both people were writing about: ${fmTopicLabel}.`
+    : fmTopicLabel ? `Topic: ${fmTopicLabel}.` : '';
+
+  const prompt = `You are helping two people discover their shared interests in a safe, consensual, and respectful way.
+
+${topicLine}
 
 Person A wrote: "${fmDataA}"
 Person B wrote: "${valB}"
 
-Your task: Find genuinely matching themes, desires, or interests between them. They don't need to be word-for-word identical — look for semantic overlap (e.g. "spontaneous trips" and "adventures" match; "being desired" and "feeling wanted" match).
+Find genuinely matching themes between them. Look for semantic overlap — exact wording doesn't matter (e.g. "spontaneous trips" and "adventures" match; "being desired" and "feeling wanted" match).
 
 Return ONLY a JSON array of match objects. Each object: { "theme": "short label", "note": "1-sentence warm description of this shared interest" }
 
-If there are no real matches, return an empty array [].
+If there are no real matches, return [].
 Return only valid JSON, no markdown, no preamble.`;
 
   try {
@@ -792,7 +944,7 @@ Return only valid JSON, no markdown, no preamble.`;
 }
 
 function renderMatches(matches) {
-  showPhase(4);
+  showPhase(5);
   const out = document.getElementById('fm-matches-output');
   if (!matches || !matches.length) {
     out.innerHTML = `<div class="fm-no-matches">
@@ -811,9 +963,12 @@ function renderMatches(matches) {
 }
 
 function resetFM() {
-  fmDataA = '';
+  fmDataA = ''; fmTopic = ''; fmTopicLabel = '';
   document.getElementById('fm-input-a').value = '';
   document.getElementById('fm-input-b').value = '';
+  document.getElementById('fm-custom-topic').value = '';
+  document.getElementById('fm-custom-wrap').style.display = 'none';
+  document.querySelectorAll('.fm-topic-btn').forEach(b => b.classList.remove('active'));
   showPhase(0);
 }
 
