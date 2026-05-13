@@ -692,6 +692,73 @@
       text-transform: uppercase; color: rgba(186,117,23,0.65); margin-bottom: 4px;
     }
     .snap-starter-text { font-size: 13px; color: #4A2C21; line-height: 1.6; font-style: italic; }
+
+    /* ── Initiative (card 11) ── */
+    .ig-card {
+      border-radius: 10px; padding: 10px 12px; cursor: pointer;
+      transition: all 0.15s; border: 1px solid transparent; user-select: none;
+    }
+    .ig-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(74,44,33,0.10); }
+    .ig-card:active { transform: scale(0.97); }
+    .ig-card.played { opacity: 0.45; pointer-events: none; }
+    .ig-card-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+    .ig-card-desc { font-size: 11px; line-height: 1.4; }
+    .ig-her { background: #FDE8EE; border-color: #F0B8CC; }
+    .ig-her:hover { background: #F5C6D8; border-color: #C26F6A; }
+    .ig-her .ig-card-title { color: #8B1A3A; }
+    .ig-her .ig-card-desc { color: rgba(139,26,58,0.60); }
+    .ig-him { background: #EAF4FF; border-color: #B8D8F0; }
+    .ig-him:hover { background: #C8E4F8; border-color: #5B9BD5; }
+    .ig-him .ig-card-title { color: #1A4A7A; }
+    .ig-him .ig-card-desc { color: rgba(26,74,122,0.60); }
+    .ig-tension-track { background: #E0D4C0; border-radius: 99px; height: 8px; overflow: hidden; }
+    .ig-tension-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg,#E0D4C0,#D88B85,#C26F6A); transition: width 0.5s ease; }
+
+    /* ── Tarot (card 12) ── */
+    .tarot-card-wrap { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1.25rem; }
+    .tarot-card {
+      background: linear-gradient(160deg, #1E1035, #2D1B4E);
+      border: 1px solid #4A2A7A; border-radius: 14px; padding: 1rem;
+      text-align: center; animation: fadeIn 0.4s ease;
+    }
+    .tarot-card-name { font-family: 'Cormorant Garamond',serif; font-size: 13px; color: #D4A8FF; margin-bottom: 4px; line-height: 1.3; }
+    .tarot-card-position { font-size: 10px; color: #9B59D4; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .tarot-card-emoji { font-size: 26px; display: block; margin-bottom: 6px; }
+    .tarot-reading-body {
+      background: linear-gradient(160deg, #1E1035 0%, #0E0A1A 100%);
+      border: 1px solid #3A1E5E; border-radius: 14px; padding: 1.5rem;
+      color: #D8C8F0; font-size: 14px; line-height: 1.8;
+    }
+    .tarot-reading-body h4 {
+      font-family: 'Cormorant Garamond',serif;
+      font-size: 16px; color: #C9A7F5; margin: 1rem 0 0.4rem; font-weight: 400;
+    }
+    .tarot-reading-body h4:first-child { margin-top: 0; }
+    .tarot-planet-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.25rem; }
+    .tarot-planet-badge {
+      font-size: 11px; background: #1E1035; border: 1px solid #4A2A7A;
+      color: #C9A7F5; padding: 4px 10px; border-radius: 99px;
+    }
+
+    /* ── Astrology (card 13) ── */
+    .astro-section {
+      background: linear-gradient(160deg, #0A1628, #0E1A30);
+      border: 1px solid #1E3A5E; border-radius: 14px; padding: 1.5rem;
+      color: #C8E0F5; font-size: 14px; line-height: 1.8;
+      margin-bottom: 10px; animation: fadeIn 0.4s ease;
+    }
+    .astro-section h4 { font-family: 'Cormorant Garamond',serif; font-size: 16px; margin-bottom: 0.5rem; font-weight: 400; }
+    .astro-header {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: linear-gradient(90deg, #0E1A2E, #1A2E48);
+      border: 1px solid #2A4A6E; border-radius: 12px;
+      padding: 1rem 1.25rem; margin-bottom: 1rem; animation: fadeIn 0.3s ease;
+    }
+    .astro-names { font-family: 'Cormorant Garamond',serif; font-size: 18px; color: #7EC8E3; flex: 1; }
+    .astro-planet-badge {
+      font-size: 10px; background: rgba(78,205,196,0.10); border: 1px solid #2A4A6E;
+      color: #7EC8E3; padding: 3px 8px; border-radius: 99px;
+    }
   </style>
 </head>
 <body>
@@ -1750,6 +1817,287 @@
     </div>
   </div>
 
+  <!-- STEP 11 — INITIATIVE -->
+  <div class="step-card" data-step="10">
+    <div class="step-badge badge-rose"><i class="ti ti-flame"></i> Step 11</div>
+    <div class="step-icon"><i class="ti ti-flame" style="color:#C26F6A;"></i></div>
+    <p class="step-title">Initiative</p>
+    <p class="step-sub">A tension and escalation game. She controls the pace — always. He can mirror, tease, ask, hold space. The only rule: he can't go further than she's already gone. Watch the tension meter. See what happens when someone finally plays Freeze.</p>
+    <div class="tags">
+      <span class="tag">she leads</span>
+      <span class="tag">he mirrors</span>
+      <span class="tag">tension meter</span>
+      <span class="tag">in person</span>
+    </div>
+
+    <button class="game-toggle-btn" id="ig-toggle-btn" onclick="toggleGame('ig')">
+      <i class="ti ti-flame"></i> Play Initiative
+    </button>
+
+    <div class="game-area" id="ig-game">
+
+      <!-- tension meter -->
+      <div style="margin-bottom:1.5rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="font-size:11px;font-weight:700;color:rgba(74,44,33,0.40);letter-spacing:0.07em;text-transform:uppercase;">Tension</span>
+          <span style="font-size:12px;color:#C26F6A;font-weight:600;">✦ <span id="ig-sparks">0</span> sparks</span>
+        </div>
+        <div class="ig-tension-track">
+          <div id="ig-tension-bar" class="ig-tension-fill" style="width:0%;"></div>
+        </div>
+        <div id="ig-tension-label" style="font-size:11px;color:rgba(74,44,33,0.35);text-align:right;margin-top:4px;">Waiting for first move…</div>
+      </div>
+
+      <!-- board -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem;">
+
+        <!-- HER CARDS -->
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:#C26F6A;margin-bottom:10px;text-align:center;">Her cards</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="ig-card ig-her" onclick="igPlay('her','escalate')">
+              <div class="ig-card-title">🔥 Escalate</div>
+              <div class="ig-card-desc">Move closer. Touch. Initiate.</div>
+            </div>
+            <div class="ig-card ig-her" onclick="igPlay('her','challenge')">
+              <div class="ig-card-title">🎭 Challenge</div>
+              <div class="ig-card-desc">Ask something bold or revealing.</div>
+            </div>
+            <div class="ig-card ig-her" onclick="igPlay('her','tempt')">
+              <div class="ig-card-title">👀 Tempt</div>
+              <div class="ig-card-desc">Eye contact. Silence. A slow smile.</div>
+            </div>
+            <div class="ig-card ig-her" onclick="igPlay('her','freeze')">
+              <div class="ig-card-title">🛑 Freeze</div>
+              <div class="ig-card-desc">Slow it all down. Reset the room.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HIS CARDS -->
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:#5B9BD5;margin-bottom:10px;text-align:center;">His cards</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="ig-card ig-him" onclick="igPlay('him','mirror')">
+              <div class="ig-card-title">🎯 Mirror</div>
+              <div class="ig-card-desc">Match her energy — exactly, no more.</div>
+            </div>
+            <div class="ig-card ig-him" onclick="igPlay('him','curious')">
+              <div class="ig-card-title">🧠 Curious</div>
+              <div class="ig-card-desc">"What were you thinking just now?"</div>
+            </div>
+            <div class="ig-card ig-him" onclick="igPlay('him','tease')">
+              <div class="ig-card-title">😏 Tease</div>
+              <div class="ig-card-desc">"You started this." Then nothing.</div>
+            </div>
+            <div class="ig-card ig-him" onclick="igPlay('him','reveal')">
+              <div class="ig-card-title">🎲 Reveal</div>
+              <div class="ig-card-desc">Share something real and unexpected.</div>
+            </div>
+            <div class="ig-card ig-him" onclick="igPlay('him','hold')">
+              <div class="ig-card-title">🕯 Hold</div>
+              <div class="ig-card-desc">Say nothing. Let the silence work.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- status -->
+      <div id="ig-status" style="text-align:center;font-size:14px;font-weight:500;color:rgba(74,44,33,0.50);background:rgba(247,239,226,0.60);border-radius:10px;padding:12px;margin-bottom:1rem;min-height:44px;line-height:1.5;transition:color 0.3s;">
+        She goes first — only she can start the tension.
+      </div>
+
+      <!-- log -->
+      <div style="border-top:1px solid rgba(74,44,33,0.08);padding-top:1rem;">
+        <div style="font-size:10px;font-weight:700;color:rgba(74,44,33,0.30);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Game log</div>
+        <div id="ig-log" style="font-size:13px;color:rgba(74,44,33,0.55);line-height:1.9;min-height:40px;">No moves yet.</div>
+      </div>
+
+      <div style="display:flex;justify-content:center;margin-top:1.25rem;">
+        <button class="fantasy-btn secondary" onclick="igReset()"><i class="ti ti-refresh"></i> Reset</button>
+      </div>
+
+    </div>
+
+    <button class="devnote-toggle" onclick="toggleDevNote('ig-devnote')">
+      <i class="ti ti-code"></i> Dev notes
+    </button>
+    <div class="devnote-area" id="ig-devnote">
+      <h4>What's missing / future work</h4>
+      <div class="devnote-item">
+        <span class="devnote-tag partial">Partial</span>
+        <div class="devnote-text">
+          <strong>Session profile integration</strong> — The Initiative tension dynamics (peak tension %, sparks) could be fed into cards 12–13 as non-confidential context. Currently these are standalone.
+        </div>
+      </div>
+      <div class="devnote-item">
+        <span class="devnote-tag missing">Missing</span>
+        <div class="devnote-text">
+          <strong>Customisable roles</strong> — Currently assumes her/him binary framing. A future version would let players choose their own labels before starting.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- STEP 12 — TAROT -->
+  <div class="step-card" data-step="11">
+    <div class="step-badge" style="background:#1E1035;color:#C9A7F5;"><i class="ti ti-moon-stars"></i> Step 12</div>
+    <div class="step-icon"><i class="ti ti-moon-stars" style="color:#9B59D4;"></i></div>
+    <p class="step-title">Tarot reading</p>
+    <p class="step-sub">Enter your birth details and draw three cards — past energy, present moment, what's unfolding. The AI reads them together, specifically for where you are right now. Honest about the shadows. Bright about the possibilities.</p>
+    <div class="tags">
+      <span class="tag">AI-powered</span>
+      <span class="tag">three-card spread</span>
+      <span class="tag">personal to you</span>
+      <span class="tag">real ephemeris</span>
+    </div>
+
+    <button class="game-toggle-btn" id="tr-toggle-btn" onclick="toggleGame('tr')" style="border-color:#9B59D4;color:#9B59D4;">
+      <i class="ti ti-moon-stars"></i> Read the cards
+    </button>
+
+    <div class="game-area" id="tr-game">
+
+      <!-- input -->
+      <div id="tr-input">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <input class="ls-name-input" id="tr-name" placeholder="Your name" />
+          <input class="ls-name-input" id="tr-sign" placeholder="Star sign (e.g. Scorpio)" />
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <input class="ls-name-input" id="tr-dob" placeholder="Date of birth (DD/MM/YYYY)" />
+          <input class="ls-name-input" id="tr-time" placeholder="Birth time optional (HH:MM)" />
+        </div>
+        <textarea class="fm-textarea" id="tr-question" placeholder="What's on your mind right now? (optional — gives the reading more focus)" style="min-height:70px;margin-bottom:1rem;"></textarea>
+        <div style="display:flex;justify-content:flex-end;">
+          <button class="fantasy-btn" style="background:#9B59D4;" onclick="drawTarot()">
+            <i class="ti ti-sparkles"></i> Draw three cards
+          </button>
+        </div>
+        <div class="fm-privacy-note">
+          <i class="ti ti-shield-lock"></i>
+          <span>Reading generated by open source AI (Llama 3.3 via Groq). Planetary positions calculated in your browser. Nothing stored.</span>
+        </div>
+      </div>
+
+      <!-- loading -->
+      <div id="tr-loading" style="display:none;">
+        <div style="text-align:center;padding:2.5rem 0;">
+          <div class="fm-spinner" style="border-top-color:#9B59D4;border-color:#E8D5F5;margin:0 auto 1rem;"></div>
+          <p style="font-size:14px;color:rgba(74,44,33,0.45);">Shuffling the deck…<br><span style="font-size:12px;opacity:0.7;">The cards know what they want to say.</span></p>
+        </div>
+      </div>
+
+      <!-- result -->
+      <div id="tr-result" style="display:none;"></div>
+
+    </div>
+
+    <button class="devnote-toggle" onclick="toggleDevNote('tr-devnote')">
+      <i class="ti ti-code"></i> Dev notes
+    </button>
+    <div class="devnote-area" id="tr-devnote">
+      <h4>What's working / what's missing</h4>
+      <div class="devnote-item">
+        <span class="devnote-tag partial">Partial</span>
+        <div class="devnote-text">
+          <strong>Ephemeris accuracy</strong> — Sun (~1°), Moon (~3°), inner planets (~5°) are calculated with simplified formulas in the browser. Good enough for astrology context; a production version would call a proper Swiss Ephemeris API.
+        </div>
+      </div>
+      <div class="devnote-item">
+        <span class="devnote-tag missing">Missing</span>
+        <div class="devnote-text">
+          <strong>Rising sign precision</strong> — Rising sign requires birth location (lat/lon) for accurate calculation. Current approximation uses time only. For real accuracy, add a location input and pass it to a server-side ephemeris endpoint.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- STEP 13 — ASTROLOGY COMPATIBILITY -->
+  <div class="step-card" data-step="12">
+    <div class="step-badge" style="background:#0E1A2E;color:#7EC8E3;"><i class="ti ti-stars"></i> Step 13</div>
+    <div class="step-icon"><i class="ti ti-stars" style="color:#4A9EBF;"></i></div>
+    <p class="step-title">Astrology compatibility</p>
+    <p class="step-sub">Both of you enter your birth details. The AI reads your charts together — where you naturally align, where you'll push each other, and what this pairing is actually good at. Playful and honest. No sugarcoating, no doom either.</p>
+    <div class="tags">
+      <span class="tag">both charts</span>
+      <span class="tag">AI-powered</span>
+      <span class="tag">synastry aspects</span>
+      <span class="tag">read together</span>
+    </div>
+
+    <button class="game-toggle-btn" id="ac-toggle-btn" onclick="toggleGame('ac')" style="border-color:#4A9EBF;color:#4A9EBF;">
+      <i class="ti ti-stars"></i> Read our compatibility
+    </button>
+
+    <div class="game-area" id="ac-game">
+
+      <!-- input -->
+      <div id="ac-input">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1rem;">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#4A9EBF;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Person A</div>
+            <input class="ls-name-input" id="ac-name-a" placeholder="Name" style="margin-bottom:8px;display:block;width:100%;" />
+            <input class="ls-name-input" id="ac-sign-a" placeholder="Star sign" style="margin-bottom:8px;display:block;width:100%;" />
+            <input class="ls-name-input" id="ac-dob-a" placeholder="Date of birth (DD/MM/YYYY)" style="margin-bottom:8px;display:block;width:100%;" />
+            <input class="ls-name-input" id="ac-time-a" placeholder="Birth time optional (HH:MM)" style="display:block;width:100%;" />
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#C26F6A;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Person B</div>
+            <input class="ls-name-input" id="ac-name-b" placeholder="Name" style="margin-bottom:8px;display:block;width:100%;" />
+            <input class="ls-name-input" id="ac-sign-b" placeholder="Star sign" style="margin-bottom:8px;display:block;width:100%;" />
+            <input class="ls-name-input" id="ac-dob-b" placeholder="Date of birth (DD/MM/YYYY)" style="margin-bottom:8px;display:block;width:100%;" />
+            <input class="ls-name-input" id="ac-time-b" placeholder="Birth time optional (HH:MM)" style="display:block;width:100%;" />
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;">
+          <button class="fantasy-btn" style="background:#4A9EBF;" onclick="readCompatibility()">
+            <i class="ti ti-stars"></i> Read our charts
+          </button>
+        </div>
+        <div class="fm-privacy-note">
+          <i class="ti ti-shield-lock"></i>
+          <span>Charts calculated in your browser. Reading generated by open source AI (Llama 3.3 via Groq). Nothing stored.</span>
+        </div>
+      </div>
+
+      <!-- loading -->
+      <div id="ac-loading" style="display:none;">
+        <div style="text-align:center;padding:2.5rem 0;">
+          <div class="fm-spinner" style="border-top-color:#4A9EBF;border-color:#C8E8F5;margin:0 auto 1rem;"></div>
+          <p style="font-size:14px;color:rgba(74,44,33,0.45);">Reading your charts together…<br><span style="font-size:12px;opacity:0.7;">The stars have opinions.</span></p>
+        </div>
+      </div>
+
+      <!-- result -->
+      <div id="ac-result" style="display:none;"></div>
+
+    </div>
+
+    <button class="devnote-toggle" onclick="toggleDevNote('ac-devnote')">
+      <i class="ti ti-code"></i> Dev notes
+    </button>
+    <div class="devnote-area" id="ac-devnote">
+      <h4>What's missing / future work</h4>
+      <div class="devnote-item">
+        <span class="devnote-tag partial">Partial</span>
+        <div class="devnote-text">
+          <strong>Synastry aspects</strong> — Venus–Mars, Moon–Moon, Mercury–Mercury cross-aspects are auto-detected and fed into the prompt. House positions require birth location — not calculated here.
+        </div>
+      </div>
+      <div class="devnote-item">
+        <span class="devnote-tag missing">Missing</span>
+        <div class="devnote-text">
+          <strong>Save & share</strong> — The reading only lives in the browser. A shareable URL (stored in R2) would let both people read the same analysis separately and reference it later.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
   <!-- NAV -->
   <div class="nav" id="flow-nav">
     <button class="nav-btn" id="prev-btn" disabled onclick="go(-1)">
@@ -1768,7 +2116,7 @@
    PROGRESS / NAV
 ══════════════════════════════════════ */
 let current = 0;
-const TOTAL = 10;
+const TOTAL = 13;
 const cards = document.querySelectorAll('.step-card');
 const prog  = document.getElementById('progress');
 
@@ -2122,6 +2470,18 @@ function toggleGame(id) {
     btn.innerHTML = isOpen
       ? '<i class="ti ti-chevron-up"></i> Hide'
       : '<i class="ti ti-sparkles"></i> Generate snapshot';
+  } else if (id === 'ig') {
+    btn.innerHTML = isOpen
+      ? '<i class="ti ti-chevron-up"></i> Hide game'
+      : '<i class="ti ti-flame"></i> Play Initiative';
+  } else if (id === 'tr') {
+    btn.innerHTML = isOpen
+      ? '<i class="ti ti-chevron-up"></i> Hide'
+      : '<i class="ti ti-moon-stars"></i> Read the cards';
+  } else if (id === 'ac') {
+    btn.innerHTML = isOpen
+      ? '<i class="ti ti-chevron-up"></i> Hide'
+      : '<i class="ti ti-stars"></i> Read our compatibility';
   }
 }
 
@@ -2819,6 +3179,386 @@ function renderSnapshot(d, nameA, nameB) {
 
   document.getElementById('snap-card').innerHTML =
     `<div class="snap-story">${d.story}</div>${obsHtml}${starterHtml}`;
+}
+
+/* ══════════════════════════════════════
+   CARD 11 — INITIATIVE
+══════════════════════════════════════ */
+let igLastPlayer = null;
+let igTension = 0;
+let igSparks = 0;
+let igLog = [];
+
+const IG_MOVES = {
+  her: {
+    escalate: { label: 'Escalate', msg: 'She moved the energy forward — closer, warmer, unmistakably intentional.', delta: 18 },
+    challenge: { label: 'Challenge', msg: 'She asked something that hangs in the air. No easy answer.', delta: 12 },
+    tempt:    { label: 'Tempt',    msg: 'She said nothing. She didn\'t have to.', delta: 15 },
+    freeze:   { label: 'Freeze',   msg: 'She pulled back. The whole room felt it.', delta: -40, reset: true }
+  },
+  him: {
+    mirror:  { label: 'Mirror',  msg: 'He matched her exactly — no more, no less. Steady.', delta: 10 },
+    curious: { label: 'Curious', msg: 'He asked. Genuinely. It landed.', delta: 8 },
+    tease:   { label: 'Tease',   msg: '"You started this." He left it right there.', delta: 12 },
+    reveal:  { label: 'Reveal',  msg: 'He said something real. Unexpected. She noticed.', delta: 10 },
+    hold:    { label: 'Hold',    msg: 'He said nothing. Held her gaze. The silence did all the work.', delta: 14 }
+  }
+};
+
+const IG_LABELS = [
+  [0,  20, '❄️ Ice cold — someone make a move.'],
+  [20, 40, '🌡️ Something\'s starting…'],
+  [40, 60, '🔥 The air is getting thick.'],
+  [60, 80, '💥 It\'s electric in here.'],
+  [80, 101,'🌋 Off the charts. What happens next is on you.'],
+];
+
+function igTensionLabel(t) {
+  for (const [lo, hi, lbl] of IG_LABELS) { if (t >= lo && t < hi) return lbl; }
+  return IG_LABELS[IG_LABELS.length - 1][2];
+}
+
+function igPlay(player, move) {
+  if (igLastPlayer === player) {
+    document.getElementById('ig-status').textContent =
+      player === 'her' ? 'His turn — he has to respond before she can go again.' : 'Her turn — she sets the pace here.';
+    return;
+  }
+  if (player === 'him' && igLastPlayer === null) {
+    document.getElementById('ig-status').textContent = 'She goes first. Always.';
+    return;
+  }
+
+  const m = IG_MOVES[player][move];
+  igLastPlayer = player;
+
+  if (player === 'him' && (move === 'mirror' || move === 'tease' || move === 'hold')) igSparks++;
+
+  const isFrozen = m.reset;
+  igTension = isFrozen ? Math.max(0, igTension + m.delta) : Math.min(100, igTension + m.delta);
+  if (isFrozen) igSparks = 0;
+
+  const who = player === 'her' ? '🔥 Her' : '🎯 Him';
+  igLog.unshift(`<span style="font-weight:600;color:${player==='her'?'#C26F6A':'#5B9BD5'}">${who} — ${m.label}:</span> ${m.msg}`);
+  if (igLog.length > 6) igLog.pop();
+  document.getElementById('ig-log').innerHTML = igLog.join('<br>');
+
+  document.getElementById('ig-tension-bar').style.width = igTension + '%';
+  document.getElementById('ig-tension-label').textContent = igTensionLabel(igTension);
+  document.getElementById('ig-sparks').textContent = igSparks;
+
+  const status = document.getElementById('ig-status');
+  if (isFrozen) {
+    status.style.color = 'rgba(74,44,33,0.45)';
+    status.textContent = '❄️ Frozen. The tension resets. She decides if anything restarts.';
+  } else if (igSparks >= 5) {
+    status.style.color = '#C26F6A';
+    status.textContent = '✦ Five sparks. This is something.';
+  } else if (igTension >= 80) {
+    status.style.color = '#C26F6A';
+    status.textContent = player === 'her' ? '🌋 His turn — this is almost too much.' : '🌋 Her turn — she can take this wherever she wants.';
+  } else {
+    status.style.color = 'rgba(74,44,33,0.50)';
+    status.textContent = player === 'her'
+      ? 'His turn: mirror, tease, ask, or hold space.'
+      : 'Her turn — only she decides what happens next.';
+  }
+}
+
+function igReset() {
+  igLastPlayer = null; igTension = 0; igSparks = 0; igLog = [];
+  document.getElementById('ig-tension-bar').style.width = '0%';
+  document.getElementById('ig-tension-label').textContent = 'Waiting for first move…';
+  document.getElementById('ig-sparks').textContent = '0';
+  document.getElementById('ig-log').innerHTML = 'No moves yet.';
+  document.getElementById('ig-status').textContent = 'She goes first — only she can start the tension.';
+  document.getElementById('ig-status').style.color = 'rgba(74,44,33,0.50)';
+}
+
+/* ══════════════════════════════════════
+   EPHEMERIS — client-side planet positions
+   (self-contained, no external library)
+══════════════════════════════════════ */
+function lonToSign(lon) {
+  return ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'][Math.floor(lon / 30)];
+}
+function dateToJD(day, month, year, hour, min) {
+  if (month <= 2) { year -= 1; month += 12; }
+  const A = Math.floor(year / 100), B = 2 - A + Math.floor(A / 4);
+  return Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day + B - 1524.5 + (hour + min / 60) / 24;
+}
+function parseDate(str) {
+  if (!str) return null;
+  const parts = str.split(/[\/\-\.]/);
+  if (parts.length !== 3) return null;
+  let d, m, y;
+  if (parts[0].length === 4) { [y, m, d] = parts.map(Number); } else { [d, m, y] = parts.map(Number); }
+  if (!d || !m || !y || y < 1900 || y > 2010) return null;
+  return { d, m, y };
+}
+function parseTime(str) {
+  if (!str || !str.trim()) return { h: 12, min: 0 };
+  const parts = str.split(':').map(Number);
+  return { h: parts[0] || 12, min: parts[1] || 0 };
+}
+function calcChart(dobStr, timeStr) {
+  const date = parseDate(dobStr);
+  if (!date) return null;
+  const t = parseTime(timeStr);
+  const jd = dateToJD(date.d, date.m, date.y, t.h, t.min);
+  const n = jd - 2451545.0;
+  const L = (280.460 + 0.9856474 * n) % 360;
+  const g = ((357.528 + 0.9856003 * n) % 360) * Math.PI / 180;
+  const sunLon = ((L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) % 360 + 360) % 360;
+  const moonLon = ((218.316 + 13.176396 * n) % 360 + 360) % 360;
+  const mercL = ((252.25 + 4.09233 * n) % 360 + 360) % 360;
+  const venL  = ((181.98 + 1.60213 * n) % 360 + 360) % 360;
+  const marsL = ((355.45 + 0.52403 * n) % 360 + 360) % 360;
+  const sun = lonToSign(sunLon), moon = lonToSign(moonLon);
+  const mercury = lonToSign(mercL), venus = lonToSign(venL), mars = lonToSign(marsL);
+  let rising = null;
+  if (timeStr && timeStr.trim()) {
+    const hoursFromSunrise = ((t.h - 6) + 24) % 24;
+    const signs = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+    rising = signs[(signs.indexOf(sun) + Math.floor(hoursFromSunrise / 2)) % 12];
+  }
+  return { sun, moon, mercury, venus, mars, rising, sunDeg: Math.round(sunLon % 30) };
+}
+function formatChart(chart, name) {
+  if (!chart) return '';
+  const lines = [`${name}'s chart:`, `  ☀️  Sun in ${chart.sun} (${chart.sunDeg}°)`, `  🌙  Moon in ${chart.moon}`, `  ☿  Mercury in ${chart.mercury}`, `  ♀  Venus in ${chart.venus}`, `  ♂  Mars in ${chart.mars}`];
+  if (chart.rising) lines.push(`  ↑  Rising (approx) ${chart.rising}`);
+  return lines.join('\n');
+}
+
+/* ══════════════════════════════════════
+   TAROT DECK
+══════════════════════════════════════ */
+const TAROT_DECK = [
+  { name: 'The Fool',          emoji: '🌟', upright: 'New beginnings, spontaneity, faith' },
+  { name: 'The Magician',      emoji: '✨', upright: 'Willpower, skill, manifestation' },
+  { name: 'The High Priestess',emoji: '🌙', upright: 'Intuition, mystery, inner knowing' },
+  { name: 'The Empress',       emoji: '🌿', upright: 'Abundance, sensuality, nurturing' },
+  { name: 'The Emperor',       emoji: '🏔️', upright: 'Structure, authority, stability' },
+  { name: 'The Lovers',        emoji: '💞', upright: 'Connection, alignment, a real choice' },
+  { name: 'The Chariot',       emoji: '⚡', upright: 'Drive, momentum, controlled power' },
+  { name: 'Strength',          emoji: '🦁', upright: 'Inner power, courage, patience' },
+  { name: 'The Hermit',        emoji: '🕯️', upright: 'Solitude, reflection, inner guidance' },
+  { name: 'Wheel of Fortune',  emoji: '🎡', upright: 'Change, cycles, turning point' },
+  { name: 'Justice',           emoji: '⚖️', upright: 'Truth, fairness, cause and effect' },
+  { name: 'The Hanged Man',    emoji: '🌀', upright: 'Pause, surrender, new perspective' },
+  { name: 'Death',             emoji: '🦋', upright: 'Transformation, endings that open doors' },
+  { name: 'Temperance',        emoji: '🌊', upright: 'Balance, patience, flow' },
+  { name: 'The Devil',         emoji: '🔗', upright: 'Shadow self, attachment, what binds you' },
+  { name: 'The Tower',         emoji: '🌩️', upright: 'Sudden change, revelation, breakthrough' },
+  { name: 'The Star',          emoji: '⭐', upright: 'Hope, renewal, trust' },
+  { name: 'The Moon',          emoji: '🌕', upright: 'Illusion, the unconscious, hidden truth' },
+  { name: 'The Sun',           emoji: '☀️', upright: 'Joy, vitality, clarity' },
+  { name: 'Judgement',         emoji: '📯', upright: 'Reckoning, awakening, a call to rise' },
+  { name: 'The World',         emoji: '🌍', upright: 'Completion, integration, arrival' },
+  { name: 'Ace of Cups',       emoji: '💧', upright: 'New feeling, emotional opening' },
+  { name: 'Queen of Wands',    emoji: '🌺', upright: 'Confidence, passion, magnetic energy' },
+  { name: 'Knight of Swords',  emoji: '🗡️', upright: 'Action, directness, cutting through' },
+  { name: 'Ten of Pentacles',  emoji: '🏡', upright: 'Legacy, security, lasting connection' },
+  { name: 'Three of Cups',     emoji: '🥂', upright: 'Celebration, joy, good company' },
+  { name: 'Five of Swords',    emoji: '🌪️', upright: 'Conflict, pride, choose your battles' },
+  { name: 'Two of Cups',       emoji: '🤝', upright: 'Mutual attraction, partnership forming' },
+];
+
+/* ══════════════════════════════════════
+   CARD 12 — TAROT READING
+══════════════════════════════════════ */
+function drawTarot() {
+  const name = document.getElementById('tr-name').value.trim() || 'you';
+  const sign = document.getElementById('tr-sign').value.trim();
+  const dob  = document.getElementById('tr-dob').value.trim();
+  const time = document.getElementById('tr-time').value.trim();
+  const q    = document.getElementById('tr-question').value.trim();
+  if (!sign && !dob) { alert('Enter at least your star sign or date of birth.'); return; }
+
+  const chart = calcChart(dob, time);
+  const chartText = chart ? formatChart(chart, name) : '';
+  const drawn = [...TAROT_DECK].sort(() => Math.random() - 0.5).slice(0, 3);
+  const positions = ['Past energy', 'Present moment', 'What\'s unfolding'];
+
+  document.getElementById('tr-input').style.display = 'none';
+  document.getElementById('tr-loading').style.display = 'block';
+
+  const prompt = `You are a gifted, warm, and honest tarot reader — insightful, poetic, never vague. You do not hedge or give empty positivity.
+
+Reading for: ${name}
+${sign ? `Stated star sign: ${sign}` : ''}
+${chartText ? `\nPlanetary positions calculated from birth data:\n${chartText}` : dob ? `Date of birth: ${dob}` : ''}
+${q ? `\nWhat's on their mind: "${q}"` : ''}
+
+Three cards drawn:
+1. ${positions[0]}: ${drawn[0].name} — ${drawn[0].upright}
+2. ${positions[1]}: ${drawn[1].name} — ${drawn[1].upright}
+3. ${positions[2]}: ${drawn[2].name} — ${drawn[2].upright}
+
+${chart ? `Use their real chart meaningfully. Moon in ${chart.moon} shapes their emotional world. Venus in ${chart.venus} is how they love. Mars in ${chart.mars} is their desire and drive. Let these inform the reading — specifically, not generically.` : ''}
+${chart?.rising ? `Rising sign approximately ${chart.rising} — weave in one observation about how they present to the world.` : ''}
+
+Write a tarot reading in 4 sections:
+1. **The spread** — 2 sentences setting the overall tone, grounded in their chart
+2. **${drawn[0].name} (Past energy)** — 2–3 sentences. What shaped them. What they're carrying.
+3. **${drawn[1].name} (Present moment)** — 2–3 sentences. What's alive in them right now.
+4. **${drawn[2].name} (What's unfolding)** — 2–3 sentences. Where this leads. Be specific and honest — end with genuine possibility.
+
+Tone: warm, direct, slightly poetic. Like a wise friend who happens to read cards.
+Prose only, no bullet points. Use the section headers exactly as shown with ** around them.`;
+
+  callLLM(prompt, 1200).then(text => {
+    document.getElementById('tr-loading').style.display = 'none';
+    const result = document.getElementById('tr-result');
+    result.style.display = 'block';
+
+    const chartBadges = chart ? `<div class="tarot-planet-badges">
+      <span class="tarot-planet-badge">☀️ ${chart.sun}</span>
+      <span class="tarot-planet-badge">🌙 ${chart.moon}</span>
+      <span class="tarot-planet-badge">♀ ${chart.venus}</span>
+      <span class="tarot-planet-badge">♂ ${chart.mars}</span>
+      ${chart.rising ? `<span class="tarot-planet-badge">↑ ${chart.rising}</span>` : ''}
+    </div>` : '';
+
+    const cardHtml = drawn.map((c, i) => `
+      <div class="tarot-card">
+        <div class="tarot-card-position">${positions[i]}</div>
+        <span class="tarot-card-emoji">${c.emoji}</span>
+        <div class="tarot-card-name">${c.name}</div>
+      </div>`).join('');
+
+    const sections = text.split(/\*\*(.*?)\*\*/g).filter(s => s.trim());
+    let readingHtml = '';
+    for (let i = 0; i < sections.length - 1; i += 2) {
+      readingHtml += `<h4>${sections[i]}</h4><p>${(sections[i + 1] || '').trim()}</p>`;
+    }
+    if (!readingHtml) readingHtml = `<p>${text}</p>`;
+
+    result.innerHTML = `
+      ${chartBadges}
+      <div class="tarot-card-wrap">${cardHtml}</div>
+      <div class="tarot-reading-body">${readingHtml}</div>
+      <div style="display:flex;justify-content:center;margin-top:1.25rem;">
+        <button class="fantasy-btn secondary" onclick="resetTarot()"><i class="ti ti-refresh"></i> New reading</button>
+      </div>`;
+  }).catch(() => {
+    document.getElementById('tr-loading').style.display = 'none';
+    document.getElementById('tr-result').style.display = 'block';
+    document.getElementById('tr-result').innerHTML = '<p style="color:rgba(74,44,33,0.50);text-align:center;padding:1rem;">Something went wrong. Try again.</p>';
+  });
+}
+
+function resetTarot() {
+  document.getElementById('tr-input').style.display = 'block';
+  document.getElementById('tr-loading').style.display = 'none';
+  document.getElementById('tr-result').style.display = 'none';
+  document.getElementById('tr-result').innerHTML = '';
+}
+
+/* ══════════════════════════════════════
+   CARD 13 — ASTROLOGY COMPATIBILITY
+══════════════════════════════════════ */
+function readCompatibility() {
+  const nameA = document.getElementById('ac-name-a').value.trim() || 'Person A';
+  const signA = document.getElementById('ac-sign-a').value.trim();
+  const dobA  = document.getElementById('ac-dob-a').value.trim();
+  const timeA = document.getElementById('ac-time-a').value.trim();
+  const nameB = document.getElementById('ac-name-b').value.trim() || 'Person B';
+  const signB = document.getElementById('ac-sign-b').value.trim();
+  const dobB  = document.getElementById('ac-dob-b').value.trim();
+  const timeB = document.getElementById('ac-time-b').value.trim();
+
+  if ((!signA && !dobA) || (!signB && !dobB)) {
+    alert('Both people need at least a star sign or date of birth.'); return;
+  }
+
+  const chartA = calcChart(dobA, timeA);
+  const chartB = calcChart(dobB, timeB);
+
+  // Detect Venus–Mars synastry aspects
+  const sparks = [];
+  if (chartA && chartB) {
+    if (chartA.venus === chartB.sun)    sparks.push(`${nameA}'s Venus in ${nameB}'s Sun sign — magnetic pull`);
+    if (chartB.venus === chartA.sun)    sparks.push(`${nameB}'s Venus in ${nameA}'s Sun sign — they see you as their type`);
+    if (chartA.mars  === chartB.moon)   sparks.push(`${nameA}'s Mars meets ${nameB}'s Moon — desire meets emotion`);
+    if (chartB.mars  === chartA.moon)   sparks.push(`${nameB}'s Mars meets ${nameA}'s Moon — instinctive chemistry`);
+    if (chartA.moon  === chartB.moon)   sparks.push('Same Moon sign — emotionally on the same frequency');
+    if (chartA.venus === chartB.venus)  sparks.push('Same Venus sign — you love in a similar language');
+    if (chartA.mercury === chartB.mercury) sparks.push('Same Mercury — you likely think and talk in the same style');
+  }
+
+  document.getElementById('ac-input').style.display = 'none';
+  document.getElementById('ac-loading').style.display = 'block';
+
+  const prompt = `You are a warm, direct, insightful astrologer reading synastry — two charts in relation to each other. Playful but honest. Find the real sparks and the real friction.
+
+${chartA ? formatChart(chartA, nameA) : `${nameA}: ${signA ? `Sun sign ${signA}` : ''}${dobA ? `, born ${dobA}` : ''}`}
+
+${chartB ? formatChart(chartB, nameB) : `${nameB}: ${signB ? `Sun sign ${signB}` : ''}${dobB ? `, born ${dobB}` : ''}`}
+
+${sparks.length ? `\nCalculated synastry aspects:\n${sparks.map(s => '• ' + s).join('\n')}\nWeave these into the reading — they are real planetary alignments.` : ''}
+
+Write a compatibility reading in 5 sections using **section headers**:
+
+**The pairing** — 2 sentences. What is this combination at its core? Lead with the most striking chart interaction.
+**Where you ignite** — 3 sentences. Real chemistry from their Venus, Mars, Moon placements.
+**The friction points** — 2–3 sentences. Honest about where these charts create tension. Frame as growth edges, not dealbreakers.
+**What this connection is good at** — 2 sentences. What THIS pairing specifically excels at.
+**The spark worth protecting** — 1–2 sentences. Something true and specific about what makes this worth exploring.
+
+Tone: warm, real, occasionally playful, always honest. Use their names throughout. Prose only, no bullet points.
+Ground everything in the actual chart data — not generic sun-sign compatibility.`;
+
+  callLLM(prompt, 1400).then(text => {
+    document.getElementById('ac-loading').style.display = 'none';
+    const result = document.getElementById('ac-result');
+    result.style.display = 'block';
+
+    const makeBadges = (chart) => chart
+      ? `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+          <span class="astro-planet-badge">☀️ ${chart.sun}</span>
+          <span class="astro-planet-badge">🌙 ${chart.moon}</span>
+          <span class="astro-planet-badge">♀ ${chart.venus}</span>
+          <span class="astro-planet-badge">♂ ${chart.mars}</span>
+          ${chart.rising ? `<span class="astro-planet-badge">↑ ${chart.rising}</span>` : ''}
+        </div>` : '';
+
+    const sections = text.split(/\*\*(.*?)\*\*/g).filter(s => s.trim());
+    const accents = ['#7EC8E3','#4ECDC4','#F5A623','#C26F6A','#9B59D4'];
+
+    let html = `<div class="astro-header">
+      <div style="flex:1;">
+        <div class="astro-names">${nameA} & ${nameB}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
+          <div><div style="font-size:10px;color:#4A9EBF;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">${nameA}</div>${makeBadges(chartA)}</div>
+          <div><div style="font-size:10px;color:#C26F6A;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">${nameB}</div>${makeBadges(chartB)}</div>
+        </div>
+        ${sparks.length ? `<div style="margin-top:10px;font-size:11px;color:#4ECDC4;">✦ ${sparks.length} synastry aspect${sparks.length > 1 ? 's' : ''} found</div>` : ''}
+      </div>
+    </div>`;
+
+    for (let i = 0; i < sections.length - 1; i += 2) {
+      html += `<div class="astro-section"><h4 style="color:${accents[Math.floor(i / 2)] || '#7EC8E3'}">${sections[i]}</h4><p>${(sections[i + 1] || '').trim()}</p></div>`;
+    }
+    if (sections.length === 0) html += `<div class="astro-section"><p>${text}</p></div>`;
+
+    html += `<div style="display:flex;justify-content:center;margin-top:1.25rem;">
+      <button class="fantasy-btn secondary" onclick="resetCompatibility()"><i class="ti ti-refresh"></i> Read again</button>
+    </div>`;
+    result.innerHTML = html;
+  }).catch(() => {
+    document.getElementById('ac-loading').style.display = 'none';
+    document.getElementById('ac-result').style.display = 'block';
+    document.getElementById('ac-result').innerHTML = '<p style="color:rgba(74,44,33,0.50);text-align:center;padding:1rem;">Something went wrong. Try again.</p>';
+  });
+}
+
+function resetCompatibility() {
+  document.getElementById('ac-input').style.display = 'block';
+  document.getElementById('ac-loading').style.display = 'none';
+  document.getElementById('ac-result').style.display = 'none';
+  document.getElementById('ac-result').innerHTML = '';
 }
 </script>
 </body>
