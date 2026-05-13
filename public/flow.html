@@ -408,6 +408,82 @@
     .rec-done-link .rec-link-text { font-family: 'Inter', sans-serif; font-weight: 500; }
     .rec-done-link .rec-link-sub { font-size: 11px; color: rgba(74,44,33,0.40); margin-top: 2px; }
 
+    /* ── AI Interview ── */
+    .int-phase { display: none; }
+    .int-phase.active { display: block; }
+
+    .int-avatar-row {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem;
+    }
+    .int-avatar {
+      position: relative; width: 52px; height: 52px;
+      border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, rgba(194,111,106,0.12), rgba(216,139,133,0.18));
+      border: 1.5px solid rgba(194,111,106,0.28);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .int-avatar-pulse {
+      position: absolute; inset: -5px; border-radius: 50%;
+      border: 1.5px solid rgba(194,111,106,0.22);
+      animation: intPulse 2.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes intPulse {
+      0%,100% { opacity: 0.3; transform: scale(1); }
+      50%      { opacity: 0.75; transform: scale(1.07); }
+    }
+    .int-avatar-icon { font-size: 22px; line-height: 1; }
+    .int-avatar-name { font-size: 14px; font-weight: 500; color: #4A2C21; }
+    .int-avatar-label { font-size: 11px; color: rgba(74,44,33,0.40); margin-top: 2px; }
+
+    .int-progress { display: flex; gap: 5px; margin-bottom: 1.5rem; }
+    .int-prog-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #E0D4C0; transition: background 0.3s, transform 0.2s;
+    }
+    .int-prog-dot.done   { background: #C26F6A; }
+    .int-prog-dot.active { background: #D88B85; transform: scale(1.25); }
+
+    .int-question {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 500; color: #4A2C21;
+      line-height: 1.45; margin-bottom: 1.25rem;
+    }
+    .int-answer-label {
+      font-size: 10px; font-weight: 600; color: rgba(74,44,33,0.38);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .int-controls {
+      display: flex; align-items: center; justify-content: space-between; margin-top: 1rem;
+    }
+    .int-skip {
+      font-size: 12px; color: rgba(74,44,33,0.35); background: none; border: none;
+      cursor: pointer; font-family: 'Inter', sans-serif; transition: color 0.15s; padding: 0;
+    }
+    .int-skip:hover { color: rgba(74,44,33,0.60); }
+
+    .int-summary-wrap {
+      background: linear-gradient(160deg, rgba(247,239,226,0.95) 0%, rgba(216,139,133,0.10) 100%);
+      border: 1px solid rgba(194,111,106,0.20);
+      border-radius: 14px; padding: 1.5rem; margin-bottom: 1rem;
+    }
+    .int-essence {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px; line-height: 1.75; color: #4A2C21;
+      font-style: italic; margin-bottom: 1.25rem;
+    }
+    .int-traits { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.25rem; }
+    .int-trait {
+      background: rgba(194,111,106,0.09); border: 1px solid rgba(194,111,106,0.22);
+      border-radius: 99px; padding: 5px 13px;
+      font-size: 12px; font-weight: 500; color: #9E4E4A; cursor: default;
+    }
+    .int-looking-for {
+      font-size: 13px; color: rgba(74,44,33,0.65); line-height: 1.65;
+      border-top: 1px solid rgba(74,44,33,0.08); padding-top: 1rem;
+    }
+    .int-looking-for strong { color: #4A2C21; font-weight: 500; }
+
     /* ── Love Story ── */
     .ls-name-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.25rem; }
     .ls-name-input {
@@ -551,11 +627,103 @@
     <div class="step-badge badge-rose"><i class="ti ti-robot"></i> Step 2</div>
     <div class="step-icon"><i class="ti ti-robot" style="color:#C26F6A;"></i></div>
     <p class="step-title">The AI interview</p>
-    <p class="step-sub">Your personal AI avatar sits you down for a proper interview. "What's a green flag you never talk about?" "What do you actually do on a Sunday?" It asks the awkward things so your matches don't have to. Answers fill out your profile automatically.</p>
+    <p class="step-sub">Eight questions designed to surface who you really are — the stuff that never ends up in a dating bio. Answer honestly. At the end the AI reads your responses and writes your profile in plain language.</p>
     <div class="tags">
-      <span class="tag">AI-driven Q&amp;A</span>
-      <span class="tag">auto profile fill</span>
-      <span class="tag">gets the real you</span>
+      <span class="tag">8 questions</span>
+      <span class="tag">~10 minutes</span>
+      <span class="tag">builds your profile</span>
+      <span class="tag">open source AI</span>
+    </div>
+
+    <button class="game-toggle-btn" id="int-toggle-btn" onclick="toggleGame('int')">
+      <i class="ti ti-robot"></i> Start the interview
+    </button>
+
+    <div class="game-area" id="int-game">
+
+      <!-- Phase 0: intro -->
+      <div class="int-phase active" id="int-phase-0">
+        <div class="int-avatar-row">
+          <div class="int-avatar">
+            <div class="int-avatar-pulse"></div>
+            <span class="int-avatar-icon">🤖</span>
+          </div>
+          <div>
+            <div class="int-avatar-name">DeepMatch AI</div>
+            <div class="int-avatar-label">your interviewer</div>
+          </div>
+        </div>
+        <p style="font-size:13px;color:rgba(74,44,33,0.55);line-height:1.75;margin-bottom:1.25rem;">
+          Eight questions. No right answers. Take your time with each one — this isn't a test, it's a map.
+          Your answers stay in this session and are used to write your profile summary at the end.
+        </p>
+        <div style="display:flex;justify-content:flex-end;">
+          <button class="fantasy-btn" onclick="startInterview()">
+            Begin <i class="ti ti-arrow-right"></i>
+          </button>
+        </div>
+        <div class="fm-privacy-note">
+          <i class="ti ti-shield-lock"></i>
+          <span>Analyzed by open source AI (Llama 3.3 via Groq). Nothing stored beyond this session.</span>
+        </div>
+      </div>
+
+      <!-- Phase 1: active question -->
+      <div class="int-phase" id="int-phase-1">
+        <div class="int-avatar-row">
+          <div class="int-avatar">
+            <div class="int-avatar-pulse"></div>
+            <span class="int-avatar-icon">🤖</span>
+          </div>
+          <div>
+            <div class="int-avatar-name">DeepMatch AI</div>
+            <div class="int-avatar-label" id="int-q-counter">Question 1 of 8</div>
+          </div>
+        </div>
+        <div class="int-progress" id="int-progress"></div>
+        <div class="int-question" id="int-question-text"></div>
+        <div class="int-answer-label">Your answer</div>
+        <textarea class="fm-textarea" id="int-answer" placeholder="Take your time..." style="min-height:100px;" oninput="intCheckAnswer()"></textarea>
+        <div class="int-controls">
+          <button class="int-skip" onclick="intSkip()">Skip this one</button>
+          <button class="fantasy-btn" id="int-next-btn" onclick="intNext()" disabled>
+            Next <i class="ti ti-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Phase 2: analyzing -->
+      <div class="int-phase" id="int-phase-2">
+        <div style="text-align:center;padding:2.5rem 0;">
+          <div class="fm-spinner" style="margin:0 auto 1rem;"></div>
+          <p style="font-size:14px;color:rgba(74,44,33,0.45);line-height:1.75;">
+            Reading between the lines...<br>
+            <span style="font-size:12px;opacity:0.7;">Building your profile from your answers.</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 3: profile summary -->
+      <div class="int-phase" id="int-phase-3">
+        <div style="margin-bottom:1rem;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#4A2C21;margin-bottom:3px;">Your profile, in plain language</div>
+          <div style="font-size:12px;color:rgba(74,44,33,0.40);">Written from your interview answers</div>
+        </div>
+        <div class="int-summary-wrap" id="int-summary-card"></div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <button class="fantasy-btn secondary" id="int-copy-btn" onclick="intCopySummary()">
+            <i class="ti ti-copy"></i> Copy to clipboard
+          </button>
+          <button class="fantasy-btn secondary" onclick="resetInterview()">
+            <i class="ti ti-refresh"></i> Start over
+          </button>
+        </div>
+        <div class="fm-privacy-note" style="justify-content:center;margin-top:1rem;">
+          <i class="ti ti-shield-lock"></i>
+          <span>Generated by open source AI (Llama 3.3 via Groq). Not stored.</span>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1107,6 +1275,128 @@ function resetRecorder() {
 }
 
 /* ══════════════════════════════════════
+   CARD 2 — AI INTERVIEW
+══════════════════════════════════════ */
+const INT_QUESTIONS = [
+  "Tell me about yourself in a way you'd never put in a dating bio.",
+  "What's a green flag you look for in a partner that you rarely talk about?",
+  "What does a typical Sunday look like for you — and what does that say about you?",
+  "What ended your last relationship, and what did it teach you about yourself?",
+  "What does intimacy mean to you outside of the physical?",
+  "Where do you feel most like yourself?",
+  "What's something you're still figuring out about yourself?",
+  "What are you actually looking for right now — be completely honest.",
+];
+
+let intCurrentQ = 0;
+let intAnswers  = [];
+
+function showIntPhase(n) {
+  document.querySelectorAll('.int-phase').forEach((p, i) => p.classList.toggle('active', i === n));
+}
+
+function buildIntProgress() {
+  document.getElementById('int-progress').innerHTML = INT_QUESTIONS.map((_, i) => {
+    const cls = i < intCurrentQ ? 'done' : i === intCurrentQ ? 'active' : '';
+    return `<div class="int-prog-dot ${cls}"></div>`;
+  }).join('');
+}
+
+function startInterview() {
+  intCurrentQ = 0; intAnswers = [];
+  loadIntQuestion();
+  showIntPhase(1);
+}
+
+function loadIntQuestion() {
+  document.getElementById('int-question-text').textContent = INT_QUESTIONS[intCurrentQ];
+  document.getElementById('int-q-counter').textContent = `Question ${intCurrentQ + 1} of ${INT_QUESTIONS.length}`;
+  document.getElementById('int-answer').value = '';
+  document.getElementById('int-next-btn').disabled = true;
+  buildIntProgress();
+}
+
+function intCheckAnswer() {
+  document.getElementById('int-next-btn').disabled =
+    document.getElementById('int-answer').value.trim().length < 3;
+}
+
+function intAdvance(answer) {
+  intAnswers.push({ q: INT_QUESTIONS[intCurrentQ], a: answer });
+  intCurrentQ++;
+  if (intCurrentQ >= INT_QUESTIONS.length) { analyzeInterview(); }
+  else { loadIntQuestion(); }
+}
+
+function intNext()  { intAdvance(document.getElementById('int-answer').value.trim()); }
+function intSkip()  { intAdvance('(skipped)'); }
+
+async function analyzeInterview() {
+  showIntPhase(2);
+  const answered = intAnswers.filter(x => x.a !== '(skipped)');
+  if (!answered.length) {
+    renderIntSummary({ essence: 'You skipped every question — try again. There are no wrong answers.', traits: [], looking_for: '' });
+    return;
+  }
+
+  const pairs = answered.map(x => `Q: ${x.q}\nA: ${x.a}`).join('\n\n');
+  const prompt = `You are a warm, insightful dating coach. Based on these interview answers, build a profile summary.
+
+${pairs}
+
+Return ONLY this JSON (no markdown, no preamble):
+{
+  "essence": "2 sentences capturing who this person really is — specific, warm, non-clichéd",
+  "traits": [
+    { "label": "one word", "note": "brief explanation from their answers" },
+    { "label": "one word", "note": "brief explanation" },
+    { "label": "one word", "note": "brief explanation" }
+  ],
+  "looking_for": "One honest sentence about what they are really looking for, based on what they said"
+}`;
+
+  try {
+    const text = await callLLM(prompt, 700);
+    const clean = text.replace(/```json|```/g, '').trim();
+    let s;
+    try { s = JSON.parse(clean); }
+    catch(e) { const m = clean.match(/\{[\s\S]*\}/); s = m ? JSON.parse(m[0]) : null; }
+    renderIntSummary(s || { essence: 'Something went wrong — try again.', traits: [], looking_for: '' });
+  } catch(e) {
+    renderIntSummary({ essence: 'Something went wrong — try again.', traits: [], looking_for: '' });
+  }
+}
+
+function renderIntSummary(s) {
+  showIntPhase(3);
+  const traitsHtml = s.traits?.length
+    ? `<div class="int-traits">${s.traits.map(t => `<span class="int-trait" title="${t.note}">${t.label}</span>`).join('')}</div>`
+    : '';
+  const lookingHtml = s.looking_for
+    ? `<div class="int-looking-for"><strong>Looking for:</strong> ${s.looking_for}</div>`
+    : '';
+  document.getElementById('int-summary-card').innerHTML =
+    `<div class="int-essence">"${s.essence}"</div>${traitsHtml}${lookingHtml}`;
+  document.getElementById('int-summary-card').dataset.raw =
+    [s.essence, s.traits?.map(t => `${t.label}: ${t.note}`).join(' · '), s.looking_for ? 'Looking for: ' + s.looking_for : '']
+    .filter(Boolean).join('\n\n');
+}
+
+function intCopySummary() {
+  const text = document.getElementById('int-summary-card').dataset.raw || '';
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('int-copy-btn');
+    btn.innerHTML = '<i class="ti ti-check"></i> Copied!';
+    setTimeout(() => { btn.innerHTML = '<i class="ti ti-copy"></i> Copy to clipboard'; }, 2200);
+  });
+}
+
+function resetInterview() {
+  intCurrentQ = 0; intAnswers = [];
+  showIntPhase(0);
+}
+
+/* ══════════════════════════════════════
    SHARED: GAME TOGGLE
 ══════════════════════════════════════ */
 function toggleGame(id) {
@@ -1118,6 +1408,10 @@ function toggleGame(id) {
       ? '<i class="ti ti-chevron-up"></i> Hide recorder'
       : '<i class="ti ti-video"></i> Record your intro';
     if (!isOpen && recStream) { recStream.getTracks().forEach(t => t.stop()); recStream = null; }
+  } else if (id === 'int') {
+    btn.innerHTML = isOpen
+      ? '<i class="ti ti-chevron-up"></i> Hide interview'
+      : '<i class="ti ti-robot"></i> Start the interview';
   } else if (id === 'fm') {
     btn.innerHTML = isOpen
       ? '<i class="ti ti-chevron-up"></i> Hide game'
