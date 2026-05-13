@@ -408,6 +408,42 @@
     .rec-done-link .rec-link-text { font-family: 'Inter', sans-serif; font-weight: 500; }
     .rec-done-link .rec-link-sub { font-size: 11px; color: rgba(74,44,33,0.40); margin-top: 2px; }
 
+    /* ── DevNote ── */
+    .devnote-toggle {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: transparent; border: 1px dashed rgba(74,44,33,0.18);
+      border-radius: 6px; padding: 5px 11px;
+      font-size: 10px; font-weight: 600; color: rgba(74,44,33,0.30);
+      letter-spacing: 0.07em; text-transform: uppercase;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: all 0.15s; margin-top: 1.25rem;
+    }
+    .devnote-toggle:hover { border-color: rgba(74,44,33,0.35); color: rgba(74,44,33,0.55); }
+    .devnote-area {
+      display: none; margin-top: 0.75rem;
+      background: rgba(74,44,33,0.03); border: 1px dashed rgba(74,44,33,0.12);
+      border-radius: 10px; padding: 1rem 1.1rem;
+    }
+    .devnote-area.open { display: block; }
+    .devnote-area h4 {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.10em;
+      text-transform: uppercase; color: rgba(74,44,33,0.35);
+      margin-bottom: 0.75rem;
+    }
+    .devnote-item {
+      display: flex; gap: 10px; margin-bottom: 0.75rem; align-items: flex-start;
+    }
+    .devnote-item:last-child { margin-bottom: 0; }
+    .devnote-tag {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+      text-transform: uppercase; padding: 2px 8px; border-radius: 4px;
+      white-space: nowrap; flex-shrink: 0; margin-top: 1px;
+    }
+    .devnote-tag.missing  { background: rgba(220,80,80,0.10); color: rgba(180,50,50,0.75); }
+    .devnote-tag.partial  { background: rgba(194,146,50,0.12); color: rgba(160,110,30,0.85); }
+    .devnote-text { font-size: 12px; color: rgba(74,44,33,0.50); line-height: 1.65; }
+    .devnote-text strong { color: rgba(74,44,33,0.70); font-weight: 600; }
+
     /* ── AI Interview ── */
     .int-phase { display: none; }
     .int-phase.active { display: block; }
@@ -725,6 +761,39 @@
       </div>
 
     </div>
+
+    <button class="devnote-toggle" onclick="toggleDevNote('int-devnote')">
+      <i class="ti ti-code"></i> Dev notes
+    </button>
+    <div class="devnote-area" id="int-devnote">
+      <h4>What's missing / future work</h4>
+      <div class="devnote-item">
+        <span class="devnote-tag missing">Missing</span>
+        <div class="devnote-text">
+          <strong>Live avatar video</strong> — HeyGen integration here is async generation only.
+          A real-time speaking avatar needs the <strong>HeyGen Streaming SDK</strong>
+          (<code>@heygen/streaming-avatar</code> npm package + WebSocket session).
+          Completely separate integration from what's built.
+        </div>
+      </div>
+      <div class="devnote-item">
+        <span class="devnote-tag missing">Missing</span>
+        <div class="devnote-text">
+          <strong>Voice input</strong> — Interview is text-only. Proper solution: record audio,
+          send to <strong>Groq Whisper endpoint</strong> (<code>/api/transcribe</code>, not built yet)
+          for transcription. Browser's native <code>SpeechRecognition</code> only works reliably in Chrome.
+        </div>
+      </div>
+      <div class="devnote-item">
+        <span class="devnote-tag missing">Missing</span>
+        <div class="devnote-text">
+          <strong>Profile persistence</strong> — Answers and AI summary only live in the browser session.
+          Need a save-to-R2 endpoint (or user accounts) to persist the profile summary
+          across sessions.
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- STEP 3 -->
@@ -1272,6 +1341,18 @@ function resetRecorder() {
   document.getElementById('rec-start-btn').style.display = 'inline-flex';
   document.getElementById('rec-stop-btn').style.display = 'none';
   showRecPhase(0);
+}
+
+/* ══════════════════════════════════════
+   DEVNOTE TOGGLE (shared)
+══════════════════════════════════════ */
+function toggleDevNote(id) {
+  const area = document.getElementById(id);
+  const isOpen = area.classList.toggle('open');
+  const btn = area.previousElementSibling;
+  btn.innerHTML = isOpen
+    ? '<i class="ti ti-code"></i> Hide dev notes'
+    : '<i class="ti ti-code"></i> Dev notes';
 }
 
 /* ══════════════════════════════════════
