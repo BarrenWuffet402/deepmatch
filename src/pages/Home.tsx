@@ -32,7 +32,8 @@ export default function Home() {
           <span className={styles.statusDot} />
           <span>Coming soon</span>
         </div>
-        <a href="/landing" className={styles.demoLink}>full landing page →</a>
+        <a href="/flow" className={styles.demoLink}>start flow →</a>
+        <a href="/landing" className={styles.demoLink} style={{marginTop: '8px', fontSize: '13px', opacity: 0.7}}>full landing page →</a>
         <a href="/demo" className={styles.demoLink} style={{marginTop: '8px', fontSize: '13px', opacity: 0.7}}>see prototype →</a>
         <a href="/video-demo" className={styles.demoLink} style={{marginTop: '8px', fontSize: '13px', opacity: 0.5}}>video profile demo →</a>
         <a href="/admin" className={styles.demoLink} style={{marginTop: '8px', fontSize: '13px', opacity: 0.5}}>upload videos →</a>
