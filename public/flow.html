@@ -118,53 +118,199 @@
     .nav-btn.primary:hover { background: #9E4E4A; border-color: #9E4E4A; }
     .step-count { font-size: 12px; color: rgba(74,44,33,0.35); letter-spacing: 0.05em; }
 
-    /* ── coming soon ── */
-    .coming-soon-toggle {
-      display: inline-flex; align-items: center; gap: 6px;
+    /* ══════════════════════════════════════════════════
+       GAME TOGGLE & AREA
+    ══════════════════════════════════════════════════ */
+    .game-toggle-btn {
+      display: inline-flex; align-items: center; gap: 8px;
       background: transparent; border: 1px solid rgba(74,44,33,0.15);
-      border-radius: 99px; padding: 7px 16px;
-      font-size: 12px; color: rgba(74,44,33,0.40); cursor: pointer;
-      margin-top: 1.5rem;
+      border-radius: 99px; padding: 9px 20px;
+      font-size: 13px; color: rgba(74,44,33,0.50); cursor: pointer;
       font-family: 'Inter', sans-serif;
-      transition: all 0.15s;
+      transition: all 0.15s; margin-top: 1.5rem;
+      width: 100%; justify-content: center;
     }
-    .coming-soon-toggle:hover { border-color: rgba(74,44,33,0.30); color: rgba(74,44,33,0.65); }
+    .game-toggle-btn:hover { border-color: rgba(74,44,33,0.30); color: rgba(74,44,33,0.75); }
 
-    .coming-soon-area { display: none; margin-top: 1rem; border-top: 1px solid rgba(74,44,33,0.08); padding-top: 1rem; }
-    .coming-soon-area.open { display: block; }
-
-    .cs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .cs-card {
-      background: rgba(255,255,255,0.50);
-      border: 1px dashed rgba(74,44,33,0.15);
-      border-radius: 12px; padding: 1rem; text-align: center;
+    .game-area {
+      display: none; margin-top: 1rem;
+      border-top: 1px solid rgba(74,44,33,0.08);
+      padding-top: 1.5rem;
     }
-    .cs-card i { font-size: 20px; color: rgba(74,44,33,0.20); display: block; margin-bottom: 4px; }
-    .cs-label { font-size: 12px; color: rgba(74,44,33,0.35); font-weight: 500; }
-    .cs-desc  { font-size: 11px; color: rgba(74,44,33,0.25); margin-top: 4px; line-height: 1.4; }
+    .game-area.open { display: block; }
 
-    .cs-card.filled { background: rgba(194,111,106,0.07); border: 1px solid rgba(194,111,106,0.25); }
-    .cs-card.filled i { color: #C26F6A; }
-    .cs-card.filled .cs-label { color: #9E4E4A; }
-    .cs-card.filled .cs-desc  { color: rgba(158,78,74,0.70); }
+    /* ── Fantasy Matcher ── */
+    .fantasy-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #C26F6A; color: #fff;
+      border: none; border-radius: 99px;
+      padding: 10px 22px; font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all 0.15s; margin-top: 0.5rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .fantasy-btn:hover { background: #9E4E4A; }
+    .fantasy-btn.secondary {
+      background: transparent; border: 1px solid rgba(74,44,33,0.20); color: rgba(74,44,33,0.65);
+    }
+    .fantasy-btn.secondary:hover { background: rgba(74,44,33,0.05); }
+    .fantasy-btn.dark { background: #3A1F15; }
+    .fantasy-btn.dark:hover { background: #2a1510; }
 
-    /* ── done state ── */
-    .done-card {
-      display: none;
-      text-align: center;
-      padding: 3rem 2rem;
+    .fm-phase { display: none; }
+    .fm-phase.active { display: block; }
+
+    .fm-player-header {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(194,111,106,0.08);
+      border: 1px solid rgba(194,111,106,0.20);
+      border-radius: 12px; padding: 12px 16px; margin-bottom: 1.25rem;
     }
-    .done-card.active { display: block; }
-    .done-card .done-icon { font-size: 40px; margin-bottom: 1rem; }
-    .done-card h2 { font-family: 'Cormorant Garamond', serif; font-size: 36px; color: #4A2C21; margin-bottom: 0.5rem; }
-    .done-card p { font-size: 14px; color: rgba(74,44,33,0.55); margin-bottom: 1.5rem; }
-    .done-card a {
-      display: inline-block;
-      padding: 12px 28px; background: #C26F6A; color: #fff;
-      border-radius: 99px; font-size: 14px; text-decoration: none;
-      transition: background 0.15s;
+    .fm-player-header .player-name { font-weight: 600; font-size: 15px; color: #4A2C21; }
+    .fm-player-header .player-hint { font-size: 12px; color: rgba(194,111,106,0.75); margin-top: 2px; }
+
+    .fm-textarea {
+      width: 100%; min-height: 120px;
+      border: 1px solid rgba(74,44,33,0.15); border-radius: 10px;
+      padding: 12px; font-size: 14px; font-family: 'Inter', sans-serif;
+      color: #4A2C21; background: rgba(255,255,255,0.70);
+      resize: vertical; line-height: 1.6;
+      transition: border-color 0.15s;
     }
-    .done-card a:hover { background: #9E4E4A; }
+    .fm-textarea:focus { outline: none; border-color: #C26F6A; }
+
+    .fm-look-away {
+      background: #3A1F15; border-radius: 12px;
+      padding: 2rem; text-align: center; margin: 1rem 0;
+    }
+    .fm-look-away .laa-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 500; color: #F7EFE2;
+      margin-bottom: 0.5rem;
+    }
+    .fm-look-away .laa-sub { font-size: 14px; color: rgba(247,239,226,0.55); line-height: 1.6; }
+    .fm-look-away .laa-emoji { font-size: 40px; margin-bottom: 0.75rem; display: block; }
+
+    .fm-loading { text-align: center; padding: 2rem 0; }
+    .fm-loading .fm-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(194,111,106,0.15);
+      border-top-color: #C26F6A;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .fm-loading p { font-size: 14px; color: rgba(74,44,33,0.45); line-height: 1.7; }
+
+    .fm-matches-wrap { margin-top: 0.5rem; }
+    .fm-match-card {
+      background: linear-gradient(135deg, rgba(247,239,226,0.9) 0%, rgba(216,139,133,0.12) 100%);
+      border: 1px solid rgba(194,111,106,0.25);
+      border-radius: 12px; padding: 1rem 1.25rem;
+      margin-bottom: 10px;
+      animation: fadeIn 0.3s ease;
+    }
+    .fm-match-card .match-label {
+      font-size: 11px; font-weight: 600; color: #C26F6A;
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;
+    }
+    .fm-match-card .match-text { font-size: 14px; color: #4A2C21; line-height: 1.5; }
+    .fm-no-matches {
+      text-align: center; padding: 2rem;
+      background: rgba(247,239,226,0.6); border-radius: 12px;
+      font-size: 14px; color: rgba(74,44,33,0.55);
+    }
+    .fm-instructions {
+      font-size: 13px; color: rgba(74,44,33,0.50); line-height: 1.6;
+      background: rgba(247,239,226,0.6); border-radius: 8px;
+      padding: 10px 14px; margin-bottom: 1.25rem;
+    }
+
+    /* ── Truth or Flirt ── */
+    .tof-deck-area {
+      position: relative; height: 220px; margin: 1.5rem 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .tof-stack-card {
+      position: absolute; width: 300px; height: 180px;
+      border-radius: 16px; display: flex; align-items: center;
+      justify-content: center; font-size: 13px; cursor: default;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 20px rgba(74,44,33,0.08);
+    }
+    .tof-stack-card:nth-child(1) { transform: rotate(-4deg) translateY(8px); z-index: 1; }
+    .tof-stack-card:nth-child(2) { transform: rotate(-1.5deg) translateY(4px); z-index: 2; }
+    .tof-stack-card:nth-child(3) { transform: rotate(1deg); z-index: 3; }
+
+    .tof-active-card {
+      position: absolute; width: 320px; min-height: 180px;
+      border-radius: 16px; z-index: 10; padding: 1.5rem;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center;
+      box-shadow: 0 8px 32px rgba(74,44,33,0.12);
+      animation: cardReveal 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+    }
+    @keyframes cardReveal {
+      from { opacity: 0; transform: scale(0.85) rotate(-3deg); }
+      to   { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+
+    .tof-card-category {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; margin-bottom: 0.75rem; opacity: 0.7;
+    }
+    .tof-card-question {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; line-height: 1.5; color: inherit;
+    }
+    .tof-card-tap { font-size: 11px; margin-top: 1rem; opacity: 0.5; font-family: 'Inter', sans-serif; }
+
+    .theme-flirt { background: linear-gradient(135deg, #FDE8EE, #F8D7E8); color: #6B1A35; border: 1px solid #E8B4C8; }
+    .theme-fun   { background: linear-gradient(135deg, #FFF3E0, #FFE0B2); color: #5D3000; border: 1px solid #FFBA68; }
+    .theme-deep  { background: linear-gradient(135deg, #E8F5E9, #C8E6C9); color: #1B4332; border: 1px solid #81C784; }
+    .theme-spicy { background: linear-gradient(135deg, #2d1515, #3d1a1a); color: #F5C6C6; border: 1px solid #6B2B2B; }
+
+    .tof-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 1rem; }
+    .tof-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      border-radius: 99px; padding: 8px 18px;
+      font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all 0.15s;
+      border: 1px solid transparent;
+      font-family: 'Inter', sans-serif;
+    }
+    .tof-btn-draw { background: #C26F6A; color: #fff; border-color: #C26F6A; }
+    .tof-btn-draw:hover { background: #9E4E4A; border-color: #9E4E4A; }
+    .tof-btn-filter { background: transparent; border-color: rgba(74,44,33,0.18); color: rgba(74,44,33,0.55); }
+    .tof-btn-filter:hover { background: rgba(74,44,33,0.05); }
+    .tof-btn-filter.active { background: rgba(194,111,106,0.10); border-color: #C26F6A; color: #9E4E4A; }
+
+    .tof-counter { text-align: center; font-size: 12px; color: rgba(74,44,33,0.35); margin-top: 0.75rem; }
+
+    .tof-start-screen { text-align: center; padding: 1rem 0; }
+    .tof-start-screen .big-emoji { font-size: 48px; display: block; margin-bottom: 0.75rem; }
+    .tof-start-screen p { font-size: 14px; color: rgba(74,44,33,0.55); line-height: 1.6; margin-bottom: 1.25rem; }
+
+    .tof-filters { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 1rem; }
+
+    .tof-done-screen { text-align: center; padding: 1.5rem 0; }
+    .tof-done-screen .big-emoji { font-size: 48px; display: block; margin-bottom: 0.75rem; }
+    .tof-done-screen h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px; font-weight: 500; margin-bottom: 0.5rem; color: #4A2C21;
+    }
+    .tof-done-screen p { font-size: 14px; color: rgba(74,44,33,0.55); line-height: 1.6; margin-bottom: 1.25rem; }
+
+    /* ── Love Story ── */
+    .ls-name-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.25rem; }
+    .ls-name-input {
+      border: 1px solid rgba(74,44,33,0.15); border-radius: 8px;
+      padding: 10px 12px; font-size: 14px; font-family: 'Inter', sans-serif;
+      color: #4A2C21; background: rgba(255,255,255,0.70);
+      transition: border-color 0.15s;
+    }
+    .ls-name-input:focus { outline: none; border-color: #C26F6A; }
   </style>
 </head>
 <body>
@@ -203,7 +349,7 @@
     <p class="step-title">The AI interview</p>
     <p class="step-sub">Your personal AI avatar sits you down for a proper interview. "What's a green flag you never talk about?" "What do you actually do on a Sunday?" It asks the awkward things so your matches don't have to. Answers fill out your profile automatically.</p>
     <div class="tags">
-      <span class="tag">AI-driven Q&A</span>
+      <span class="tag">AI-driven Q&amp;A</span>
       <span class="tag">auto profile fill</span>
       <span class="tag">gets the real you</span>
     </div>
@@ -274,31 +420,231 @@
     </div>
   </div>
 
-  <!-- STEP 8 -->
+  <!-- STEP 8 — THE OVERLAP GAME -->
   <div class="step-card" data-step="7">
-    <div class="step-badge badge-sand"><i class="ti ti-lock"></i> Step 8</div>
-    <div class="step-icon"><i class="ti ti-lock" style="color:rgba(74,44,33,0.25);"></i></div>
-    <p class="step-title">Coming soon</p>
-    <p class="step-sub">This step is still being designed. Check back soon.</p>
-    <div class="tags"><span class="tag">in progress</span></div>
+    <div class="step-badge badge-rose"><i class="ti ti-flame"></i> Step 8</div>
+    <div class="step-icon"><i class="ti ti-flame" style="color:#C26F6A;"></i></div>
+    <p class="step-title">The overlap game</p>
+    <p class="step-sub">Both of you write down your fantasies, desires, and curiosities — privately, no peeking. Then the AI quietly finds what you have in common and only shows you that. No awkward mismatches, no judgment. Just the places where you already align.</p>
+    <div class="tags">
+      <span class="tag">private input</span>
+      <span class="tag">AI-matched</span>
+      <span class="tag">only shared interests</span>
+      <span class="tag">no judgment</span>
+    </div>
+
+    <button class="game-toggle-btn" id="fm-toggle-btn" onclick="toggleGame('fm')">
+      <i class="ti ti-lock-open"></i> Play this together
+    </button>
+
+    <div class="game-area" id="fm-game">
+      <div id="fantasy-matcher">
+
+        <!-- Phase 0: Person A input -->
+        <div class="fm-phase active" id="fm-phase-0">
+          <div class="fm-player-header">
+            <i class="ti ti-user-circle" style="color:#C26F6A;font-size:20px;"></i>
+            <div>
+              <div class="player-name">Person A — your turn</div>
+              <div class="player-hint">Person B, look away or hand over the screen</div>
+            </div>
+          </div>
+          <div class="fm-instructions">
+            Type anything — fantasies, desires, vibes, curiosities. One per line or comma-separated. This is completely private until the AI processes it.
+          </div>
+          <textarea class="fm-textarea" id="fm-input-a" placeholder="e.g. slow mornings in bed, being desired, spontaneous trips, trying new things together..."></textarea>
+          <div style="margin-top:1rem;display:flex;justify-content:flex-end;">
+            <button class="fantasy-btn" onclick="submitA()">
+              Lock in &amp; pass to B <i class="ti ti-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Phase 1: look-away screen -->
+        <div class="fm-phase" id="fm-phase-1">
+          <div class="fm-look-away">
+            <span class="laa-emoji">🙈</span>
+            <div class="laa-title">Person A, look away</div>
+            <div class="laa-sub">Hand the screen to Person B.<br>Their answers are completely private.</div>
+          </div>
+          <div style="display:flex;justify-content:center;margin-top:1rem;">
+            <button class="fantasy-btn" onclick="startB()">
+              I'm Person B, ready <i class="ti ti-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Phase 2: Person B input -->
+        <div class="fm-phase" id="fm-phase-2">
+          <div class="fm-player-header" style="background:rgba(74,44,33,0.06);border-color:rgba(74,44,33,0.15);">
+            <i class="ti ti-user-circle" style="color:#D88B85;font-size:20px;"></i>
+            <div>
+              <div class="player-name">Person B — your turn</div>
+              <div class="player-hint" style="color:#D88B85;">Person A can't see this</div>
+            </div>
+          </div>
+          <div class="fm-instructions">
+            Same deal — type your own desires, curiosities, fantasies. No peeking at each other's answers.
+          </div>
+          <textarea class="fm-textarea" id="fm-input-b" placeholder="e.g. deep conversations at 2am, feeling seen, outdoor adventures, playful tension..."></textarea>
+          <div style="margin-top:1rem;display:flex;justify-content:flex-end;">
+            <button class="fantasy-btn dark" onclick="findMatches()">
+              Find our overlap <i class="ti ti-sparkles"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Phase 3: loading -->
+        <div class="fm-phase" id="fm-phase-3">
+          <div class="fm-loading">
+            <div class="fm-spinner"></div>
+            <p>Finding your overlap...<br>Only shared interests will appear.</p>
+          </div>
+        </div>
+
+        <!-- Phase 4: results -->
+        <div class="fm-phase" id="fm-phase-4">
+          <div style="text-align:center;margin-bottom:1.25rem;">
+            <div style="font-size:28px;margin-bottom:6px;">✨</div>
+            <div style="font-size:18px;font-family:'Cormorant Garamond',serif;font-weight:500;color:#4A2C21;margin-bottom:4px;">Here's where you already align</div>
+            <div style="font-size:13px;color:rgba(74,44,33,0.45);">Only the things you both expressed interest in</div>
+          </div>
+          <div class="fm-matches-wrap" id="fm-matches-output"></div>
+          <div style="margin-top:1.25rem;display:flex;justify-content:center;">
+            <button class="fantasy-btn secondary" onclick="resetFM()">
+              <i class="ti ti-refresh"></i> Play again
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
   </div>
 
-  <!-- STEP 9 -->
+  <!-- STEP 9 — TRUTH OR FLIRT -->
   <div class="step-card" data-step="8">
-    <div class="step-badge badge-sand"><i class="ti ti-lock"></i> Step 9</div>
-    <div class="step-icon"><i class="ti ti-lock" style="color:rgba(74,44,33,0.25);"></i></div>
-    <p class="step-title">Coming soon</p>
-    <p class="step-sub">This step is still being designed. Check back soon.</p>
-    <div class="tags"><span class="tag">in progress</span></div>
+    <div class="step-badge badge-blush"><i class="ti ti-cards"></i> Step 9</div>
+    <div class="step-icon"><i class="ti ti-cards" style="color:#D88B85;"></i></div>
+    <p class="step-title">Truth or flirt</p>
+    <p class="step-sub">A card game for two. Draw a card, answer honestly or decline with a dare instead. Questions go from playful to surprisingly revealing. Some are funny, some make you pause, some make you lean in a little closer.</p>
+    <div class="tags">
+      <span class="tag">for two</span>
+      <span class="tag">takes turns</span>
+      <span class="tag">gets spicy</span>
+      <span class="tag">in person</span>
+    </div>
+
+    <button class="game-toggle-btn" id="tof-toggle-btn" onclick="toggleGame('tof')">
+      <i class="ti ti-cards"></i> Deal the cards
+    </button>
+
+    <div class="game-area" id="tof-game">
+
+      <!-- start screen -->
+      <div id="tof-start" class="tof-start-screen">
+        <span class="big-emoji">🃏</span>
+        <p>Take turns drawing cards. Answer the question honestly — or skip it, but your partner gets to ask you <em>anything</em> instead.</p>
+        <div class="tof-filters" id="tof-filters">
+          <button class="tof-btn tof-btn-filter active" data-mode="all" onclick="setTofMode('all',this)">All cards</button>
+          <button class="tof-btn tof-btn-filter" data-mode="flirt" onclick="setTofMode('flirt',this)">Flirty only</button>
+          <button class="tof-btn tof-btn-filter" data-mode="fun" onclick="setTofMode('fun',this)">Fun only</button>
+          <button class="tof-btn tof-btn-filter" data-mode="spicy" onclick="setTofMode('spicy',this)">Spicy only</button>
+        </div>
+        <button class="tof-btn tof-btn-draw" onclick="startTof()" style="padding:10px 28px;font-size:14px;">
+          <i class="ti ti-cards"></i> Start game
+        </button>
+      </div>
+
+      <!-- active game -->
+      <div id="tof-active" style="display:none;">
+        <div class="tof-deck-area" id="tof-deck-area">
+          <div class="tof-stack-card theme-flirt"></div>
+          <div class="tof-stack-card theme-fun"></div>
+          <div class="tof-stack-card theme-deep"></div>
+        </div>
+        <div class="tof-controls">
+          <button class="tof-btn tof-btn-draw" onclick="drawTofCard()">
+            <i class="ti ti-refresh"></i> Next card
+          </button>
+          <button class="tof-btn tof-btn-filter" onclick="resetTof()">
+            <i class="ti ti-x"></i> End game
+          </button>
+        </div>
+        <div class="tof-counter" id="tof-counter">Card 1</div>
+      </div>
+
+      <!-- done screen -->
+      <div id="tof-done" style="display:none;" class="tof-done-screen">
+        <span class="big-emoji">🔥</span>
+        <h3>And that's the deck.</h3>
+        <p>You made it through. Hope you learned something good — or at least something fun.</p>
+        <button class="tof-btn tof-btn-draw" onclick="resetTof()" style="padding:10px 28px;">
+          <i class="ti ti-refresh"></i> Shuffle &amp; play again
+        </button>
+      </div>
+
+    </div>
   </div>
 
-  <!-- STEP 10 -->
+  <!-- STEP 10 — YOUR LOVE STORY -->
   <div class="step-card" data-step="9">
-    <div class="step-badge badge-sand"><i class="ti ti-lock"></i> Step 10</div>
-    <div class="step-icon"><i class="ti ti-lock" style="color:rgba(74,44,33,0.25);"></i></div>
-    <p class="step-title">Coming soon</p>
-    <p class="step-sub">This step is still being designed. Check back soon.</p>
-    <div class="tags"><span class="tag">in progress</span></div>
+    <div class="step-badge badge-rose"><i class="ti ti-book-2"></i> Step 10</div>
+    <div class="step-icon"><i class="ti ti-book-2" style="color:#C26F6A;"></i></div>
+    <p class="step-title">Your love story</p>
+    <p class="step-sub">Based on everything you've shared tonight, the AI writes a short story — just for the two of you. Warm, playful, a little electric. Think romcom opening chapter, with your names in it.</p>
+    <div class="tags">
+      <span class="tag">AI-written</span>
+      <span class="tag">read together</span>
+      <span class="tag">based on your data</span>
+      <span class="tag">your moment</span>
+    </div>
+
+    <button class="game-toggle-btn" id="ls-toggle-btn" onclick="toggleGame('ls')">
+      <i class="ti ti-sparkles"></i> Write our story
+    </button>
+
+    <div class="game-area" id="ls-game">
+
+      <!-- input screen -->
+      <div id="ls-input">
+        <p style="font-size:13px;color:rgba(74,44,33,0.50);margin-bottom:1.25rem;line-height:1.6;">
+          The AI will use your names and anything you'd like to share about yourselves. Nothing from the overlap game is included.
+        </p>
+        <div class="ls-name-inputs">
+          <input class="ls-name-input" id="ls-name-a" placeholder="Your name" />
+          <input class="ls-name-input" id="ls-name-b" placeholder="Their name" />
+        </div>
+        <div style="margin-bottom:0.6rem;font-size:13px;color:rgba(74,44,33,0.60);font-weight:500;">
+          A little about each of you <span style="color:rgba(74,44,33,0.30);font-weight:400;">(optional — makes the story richer)</span>
+        </div>
+        <textarea class="fm-textarea" id="ls-about-a" placeholder="Person A — a few words. What do you love, what's your energy, what makes you you?" style="margin-bottom:10px;min-height:80px;"></textarea>
+        <textarea class="fm-textarea" id="ls-about-b" placeholder="Person B — hobbies, vibe, something that stood out tonight." style="min-height:80px;"></textarea>
+        <div style="margin-top:1.25rem;display:flex;justify-content:flex-end;">
+          <button class="fantasy-btn" onclick="generateStory()">
+            <i class="ti ti-wand"></i> Write our story
+          </button>
+        </div>
+      </div>
+
+      <!-- loading screen -->
+      <div id="ls-loading" style="display:none;">
+        <div class="fm-loading" style="padding:2.5rem 0;">
+          <div class="fm-spinner"></div>
+          <p>Writing your story...<br><span style="font-size:12px;opacity:0.7;">The good kind. With tension and everything.</span></p>
+        </div>
+      </div>
+
+      <!-- story screen -->
+      <div id="ls-story-screen" style="display:none;">
+        <div id="ls-story-wrap"></div>
+        <div style="display:flex;justify-content:center;gap:10px;margin-top:1.5rem;flex-wrap:wrap;">
+          <button class="fantasy-btn secondary" onclick="resetStory()">
+            <i class="ti ti-refresh"></i> Write another
+          </button>
+        </div>
+      </div>
+
+    </div>
   </div>
 
   <!-- NAV -->
@@ -312,69 +658,367 @@
     </button>
   </div>
 
-  <!-- coming soon toggle -->
-  <button class="coming-soon-toggle" id="cs-toggle" onclick="toggleCS()">
-    <i class="ti ti-chevron-down" id="cs-chevron"></i> Show steps 8–10
-  </button>
-
-  <div class="coming-soon-area" id="cs-area">
-    <p style="font-size:12px;color:rgba(74,44,33,0.35);margin-bottom:0.75rem;">These steps are still being designed.</p>
-    <div class="cs-grid">
-      <div class="cs-card"><i class="ti ti-lock"></i><div class="cs-label">Step 8</div><div class="cs-desc">Coming soon</div></div>
-      <div class="cs-card"><i class="ti ti-lock"></i><div class="cs-label">Step 9</div><div class="cs-desc">Coming soon</div></div>
-      <div class="cs-card"><i class="ti ti-lock"></i><div class="cs-label">Step 10</div><div class="cs-desc">Coming soon</div></div>
-    </div>
-  </div>
-
 </div>
 
 <script>
-  let current = 0;
-  const TOTAL = 10;
-  const cards = document.querySelectorAll('.step-card');
-  const prog  = document.getElementById('progress');
+/* ══════════════════════════════════════
+   PROGRESS / NAV
+══════════════════════════════════════ */
+let current = 0;
+const TOTAL = 10;
+const cards = document.querySelectorAll('.step-card');
+const prog  = document.getElementById('progress');
 
-  for (let i = 0; i < TOTAL; i++) {
-    const d = document.createElement('div');
-    d.className = 'prog-step';
-    prog.appendChild(d);
+for (let i = 0; i < TOTAL; i++) {
+  const d = document.createElement('div');
+  d.className = 'prog-step';
+  prog.appendChild(d);
+}
+
+function render() {
+  prog.querySelectorAll('.prog-step').forEach((s, i) => {
+    s.className = 'prog-step' + (i < current ? ' done' : i === current ? ' active' : '');
+  });
+  document.getElementById('step-count').textContent = (current + 1) + ' of ' + TOTAL;
+  document.getElementById('prev-btn').disabled = current === 0;
+  const nb = document.getElementById('next-btn');
+  if (current === TOTAL - 1) {
+    nb.innerHTML = 'Done';
+    nb.disabled = true;
+  } else {
+    nb.innerHTML = 'Next <i class="ti ti-arrow-right"></i>';
+    nb.disabled = false;
+    nb.onclick = () => go(1);
   }
+}
 
-  function render() {
-    prog.querySelectorAll('.prog-step').forEach((s, i) => {
-      s.className = 'prog-step' + (i < current ? ' done' : i === current ? ' active' : '');
-    });
-    document.getElementById('step-count').textContent = (current + 1) + ' of ' + TOTAL;
-    document.getElementById('prev-btn').disabled = current === 0;
-    const nb = document.getElementById('next-btn');
-    if (current === TOTAL - 1) {
-      nb.innerHTML = 'Done';
-      nb.disabled = true;
-    } else {
-      nb.innerHTML = 'Next <i class="ti ti-arrow-right"></i>';
-      nb.disabled = false;
-      nb.onclick = () => go(1);
-    }
-  }
-
-  function go(dir) {
-    cards[current].classList.remove('active');
-    current = Math.max(0, Math.min(TOTAL - 1, current + dir));
-    cards[current].classList.add('active');
-    render();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function toggleCS() {
-    const area = document.getElementById('cs-area');
-    const chevron = document.getElementById('cs-chevron');
-    const isOpen = area.classList.toggle('open');
-    chevron.className = isOpen ? 'ti ti-chevron-up' : 'ti ti-chevron-down';
-    document.getElementById('cs-toggle').innerHTML =
-      `<i class="${chevron.className}"></i> ${isOpen ? 'Hide' : 'Show'} steps 8–10`;
-  }
-
+function go(dir) {
+  cards[current].classList.remove('active');
+  current = Math.max(0, Math.min(TOTAL - 1, current + dir));
+  cards[current].classList.add('active');
   render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+render();
+
+/* ══════════════════════════════════════
+   SHARED: GAME TOGGLE
+══════════════════════════════════════ */
+function toggleGame(id) {
+  const area = document.getElementById(id + '-game');
+  const btn  = document.getElementById(id + '-toggle-btn');
+  const isOpen = area.classList.toggle('open');
+  if (id === 'fm') {
+    btn.innerHTML = isOpen
+      ? '<i class="ti ti-chevron-up"></i> Hide game'
+      : '<i class="ti ti-lock-open"></i> Play this together';
+  } else if (id === 'tof') {
+    btn.innerHTML = isOpen
+      ? '<i class="ti ti-chevron-up"></i> Hide game'
+      : '<i class="ti ti-cards"></i> Deal the cards';
+  } else if (id === 'ls') {
+    btn.innerHTML = isOpen
+      ? '<i class="ti ti-chevron-up"></i> Hide'
+      : '<i class="ti ti-sparkles"></i> Write our story';
+  }
+}
+
+/* ══════════════════════════════════════
+   SHARED: OPEN SOURCE LLM (Groq/Llama)
+══════════════════════════════════════ */
+async function callLLM(prompt, maxTokens) {
+  const res = await fetch('/api/llm', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt, max_tokens: maxTokens || 1000 })
+  });
+  if (!res.ok) throw new Error('LLM request failed: ' + res.status);
+  const data = await res.json();
+  return data.text || '';
+}
+
+/* ══════════════════════════════════════
+   CARD 8 — FANTASY MATCHER
+══════════════════════════════════════ */
+let fmDataA = '';
+
+function showPhase(n) {
+  document.querySelectorAll('.fm-phase').forEach((p, i) => {
+    p.classList.toggle('active', i === n);
+  });
+}
+
+function submitA() {
+  const val = document.getElementById('fm-input-a').value.trim();
+  if (!val) { alert('Type something first!'); return; }
+  fmDataA = val;
+  showPhase(1);
+}
+
+function startB() { showPhase(2); }
+
+async function findMatches() {
+  const valB = document.getElementById('fm-input-b').value.trim();
+  if (!valB) { alert("Person B hasn't typed anything yet!"); return; }
+  showPhase(3);
+
+  const prompt = `You are helping two people on a date discover their shared interests, desires, and fantasies in a safe and respectful way.
+
+Person A wrote: "${fmDataA}"
+Person B wrote: "${valB}"
+
+Your task: Find genuinely matching themes, desires, or interests between them. They don't need to be word-for-word identical — look for semantic overlap (e.g. "spontaneous trips" and "adventures" match; "being desired" and "feeling wanted" match).
+
+Return ONLY a JSON array of match objects. Each object: { "theme": "short label", "note": "1-sentence warm description of this shared interest" }
+
+If there are no real matches, return an empty array [].
+Return only valid JSON, no markdown, no preamble.`;
+
+  try {
+    const text = await callLLM(prompt, 800);
+    const clean = text.replace(/```json|```/g, '').trim();
+    let matches = [];
+    try {
+      matches = JSON.parse(clean);
+    } catch(e) {
+      const m = clean.match(/\[[\s\S]*\]/);
+      if (m) try { matches = JSON.parse(m[0]); } catch(e2) {}
+    }
+    renderMatches(matches);
+  } catch(e) {
+    renderMatches([]);
+  }
+}
+
+function renderMatches(matches) {
+  showPhase(4);
+  const out = document.getElementById('fm-matches-output');
+  if (!matches || !matches.length) {
+    out.innerHTML = `<div class="fm-no-matches">
+      <div style="font-size:28px;margin-bottom:8px;">🔍</div>
+      <div style="font-weight:500;margin-bottom:4px;color:#4A2C21;">No clear overlap found</div>
+      <div style="font-size:12px;">That's okay — now you know there's new territory to explore together.</div>
+    </div>`;
+    return;
+  }
+  out.innerHTML = matches.map(m => `
+    <div class="fm-match-card">
+      <div class="match-label"><i class="ti ti-sparkles"></i> ${m.theme}</div>
+      <div class="match-text">${m.note}</div>
+    </div>
+  `).join('');
+}
+
+function resetFM() {
+  fmDataA = '';
+  document.getElementById('fm-input-a').value = '';
+  document.getElementById('fm-input-b').value = '';
+  showPhase(0);
+}
+
+/* ══════════════════════════════════════
+   CARD 9 — TRUTH OR FLIRT
+══════════════════════════════════════ */
+const TOF_CARDS = [
+  { q: "What's the most embarrassing song on your most-played list?", theme: "fun", cat: "fun" },
+  { q: "What's something you're weirdly competitive about?", theme: "fun", cat: "fun" },
+  { q: "What's the last thing you lied about, even a small lie?", theme: "fun", cat: "fun" },
+  { q: "If you had to describe yourself as a snack, what would you be?", theme: "fun", cat: "fun" },
+  { q: "What's a weird habit you have that you'd be embarrassed to admit on a first date?", theme: "fun", cat: "fun" },
+  { q: "What's the most chaotic thing you've done on impulse?", theme: "fun", cat: "fun" },
+  { q: "What's your go-to karaoke song? Be honest.", theme: "fun", cat: "fun" },
+  { q: "What's a guilty pleasure you refuse to feel guilty about?", theme: "fun", cat: "fun" },
+  { q: "What's the first physical thing you noticed about me?", theme: "flirt", cat: "flirt" },
+  { q: "What's a compliment you've been thinking but haven't said yet?", theme: "flirt", cat: "flirt" },
+  { q: "What would you do differently if we'd met in a bar instead of here?", theme: "flirt", cat: "flirt" },
+  { q: "What kind of energy do you give off on a first kiss?", theme: "flirt", cat: "flirt" },
+  { q: "When did you first think 'okay, I might actually like this person'?", theme: "flirt", cat: "flirt" },
+  { q: "What's your move when you really want someone's attention?", theme: "flirt", cat: "flirt" },
+  { q: "Describe your perfect slow morning — who's in it?", theme: "flirt", cat: "flirt" },
+  { q: "What does someone have to do to genuinely impress you?", theme: "flirt", cat: "flirt" },
+  { q: "What's the most attractive non-physical thing about me so far?", theme: "flirt", cat: "flirt" },
+  { q: "What's something you want to try but haven't had the right person for?", theme: "spicy", cat: "spicy" },
+  { q: "What's your biggest green flag in a partner — the one you don't talk about?", theme: "spicy", cat: "spicy" },
+  { q: "Where's the most unexpected place you've been attracted to someone?", theme: "spicy", cat: "spicy" },
+  { q: "What's something someone could do in the first hour that would make you completely theirs?", theme: "spicy", cat: "spicy" },
+  { q: "What's a fantasy you've replayed more than once?", theme: "spicy", cat: "spicy" },
+  { q: "What's the line between teasing and too much for you?", theme: "spicy", cat: "spicy" },
+  { q: "What does feeling truly desired look like to you?", theme: "spicy", cat: "spicy" },
+  { q: "What's one thing you'd only tell someone you really trusted?", theme: "spicy", cat: "spicy" },
+  { q: "What's the best way someone could make you feel completely safe and completely turned on at the same time?", theme: "spicy", cat: "spicy" },
+  { q: "What do most people misread about you when they first meet you?", theme: "deep", cat: "deep" },
+  { q: "What's something you've changed your mind about in the last year?", theme: "deep", cat: "deep" },
+  { q: "What's the version of yourself you're still working toward?", theme: "deep", cat: "deep" },
+  { q: "What's something you need in a relationship that you used to pretend you didn't?", theme: "deep", cat: "deep" },
+  { q: "What does home feel like to you?", theme: "deep", cat: "deep" },
+];
+
+const THEME_CLASSES = { fun: 'theme-fun', flirt: 'theme-flirt', spicy: 'theme-spicy', deep: 'theme-deep' };
+
+let tofMode = 'all';
+let tofDeck = [];
+let tofIndex = 0;
+
+function setTofMode(mode, btn) {
+  tofMode = mode;
+  document.querySelectorAll('#tof-filters .tof-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function startTof() {
+  let deck = tofMode === 'all' ? [...TOF_CARDS] : TOF_CARDS.filter(c => c.cat === tofMode);
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  tofDeck = deck;
+  tofIndex = 0;
+  document.getElementById('tof-start').style.display = 'none';
+  document.getElementById('tof-active').style.display = 'block';
+  renderTofCard();
+}
+
+function renderTofCard() {
+  const area = document.getElementById('tof-deck-area');
+  const old = area.querySelector('.tof-active-card');
+  if (old) old.remove();
+
+  if (tofIndex >= tofDeck.length) {
+    document.getElementById('tof-active').style.display = 'none';
+    document.getElementById('tof-done').style.display = 'block';
+    return;
+  }
+
+  const card = tofDeck[tofIndex];
+  const themeClass = THEME_CLASSES[card.theme] || 'theme-fun';
+  const labels = { fun: '🎲 Just for fun', flirt: '💋 Flirty', spicy: '🌶 Spicy', deep: '💭 Deep' };
+
+  const el = document.createElement('div');
+  el.className = `tof-active-card ${themeClass}`;
+  el.innerHTML = `
+    <div class="tof-card-category">${labels[card.cat] || card.cat}</div>
+    <div class="tof-card-question">${card.q}</div>
+    <div class="tof-card-tap">tap next card when ready</div>
+  `;
+  area.appendChild(el);
+  document.getElementById('tof-counter').textContent = `Card ${tofIndex + 1} of ${tofDeck.length}`;
+}
+
+function drawTofCard() {
+  tofIndex++;
+  renderTofCard();
+}
+
+function resetTof() {
+  tofIndex = 0;
+  tofDeck = [];
+  document.getElementById('tof-start').style.display = 'block';
+  document.getElementById('tof-active').style.display = 'none';
+  document.getElementById('tof-done').style.display = 'none';
+  const old = document.querySelector('.tof-active-card');
+  if (old) old.remove();
+}
+
+/* ══════════════════════════════════════
+   CARD 10 — LOVE STORY GENERATOR
+══════════════════════════════════════ */
+async function generateStory() {
+  const nameA  = document.getElementById('ls-name-a').value.trim()  || 'them';
+  const nameB  = document.getElementById('ls-name-b').value.trim()  || 'you';
+  const aboutA = document.getElementById('ls-about-a').value.trim();
+  const aboutB = document.getElementById('ls-about-b').value.trim();
+
+  if (nameA === 'them' && nameB === 'you' && !aboutA && !aboutB) {
+    alert('Add at least a name or two so the story feels like yours.');
+    return;
+  }
+
+  document.getElementById('ls-input').style.display = 'none';
+  document.getElementById('ls-loading').style.display = 'block';
+
+  const tofContext = tofDeck.length
+    ? `They played a card game together covering topics like: ${[...new Set(tofDeck.slice(0,5).map(c => c.cat))].join(', ')}.`
+    : '';
+
+  const prompt = `You are a warm, witty, playful writer — think a romcom with real heart, not a Hallmark movie.
+
+Write a short romantic story (4–5 paragraphs, max 350 words) about two people meeting and clicking. Their names are ${nameA} and ${nameB}.
+
+${aboutA ? `About ${nameA}: ${aboutA}` : ''}
+${aboutB ? `About ${nameB}: ${aboutB}` : ''}
+${tofContext}
+
+Guidelines:
+- Write in third person ("${nameA} noticed..." / "${nameB} laughed...")
+- Warm, witty, playful — like the opening of a great romcom
+- Build tension naturally. Let them almost-but-not-quite say the obvious thing
+- One moment that's a little electric — implicit, not explicit. A held gaze, a brush of hands, a pause that says everything
+- End on possibility, not resolution. Leave them wanting more
+- Use their names frequently so it feels personal
+- Do NOT be generic. Make it feel like THEIR story.
+- No explicit content. Tastefully suggestive at most.
+
+Return only the story — no title, no preamble, no quotation marks around it.`;
+
+  try {
+    const story = await callLLM(prompt, 1000);
+    renderStory(story.trim(), nameA, nameB);
+  } catch(e) {
+    renderStory('Something went wrong writing your story. Try again in a moment.', nameA, nameB);
+  }
+}
+
+function renderStory(text, nameA, nameB) {
+  document.getElementById('ls-loading').style.display = 'none';
+  document.getElementById('ls-story-screen').style.display = 'block';
+
+  const paragraphs = text.split(/\n+/).filter(p => p.trim());
+
+  document.getElementById('ls-story-wrap').innerHTML = `
+    <div style="
+      background: linear-gradient(160deg, rgba(247,239,226,0.95) 0%, rgba(216,139,133,0.14) 100%);
+      border: 1px solid rgba(194,111,106,0.25);
+      border-radius: 16px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    ">
+      <div style="
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 96px; line-height: 1;
+        color: rgba(194,111,106,0.10);
+        position: absolute; top: -8px; left: 12px;
+        pointer-events: none; user-select: none;
+      ">"</div>
+      <div style="
+        font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+        text-transform: uppercase; color: #C26F6A;
+        margin-bottom: 1.25rem; opacity: 0.8;
+      ">✦ ${nameA} &amp; ${nameB}</div>
+      ${paragraphs.map((p, i) => `
+        <p style="
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 16px; line-height: 1.85;
+          color: #4A2C21;
+          margin-bottom: ${i < paragraphs.length - 1 ? '1.1rem' : '0'};
+        ">${p}</p>
+      `).join('')}
+      <div style="
+        text-align: right; margin-top: 1.5rem;
+        font-size: 12px; color: #C26F6A; opacity: 0.6;
+        font-style: italic;
+      ">written just for tonight ✦</div>
+    </div>
+  `;
+}
+
+function resetStory() {
+  document.getElementById('ls-input').style.display = 'block';
+  document.getElementById('ls-loading').style.display = 'none';
+  document.getElementById('ls-story-screen').style.display = 'none';
+  document.getElementById('ls-story-wrap').innerHTML = '';
+}
 </script>
 </body>
 </html>
