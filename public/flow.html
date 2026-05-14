@@ -693,26 +693,7 @@
     }
     .snap-starter-text { font-size: 13px; color: #4A2C21; line-height: 1.6; font-style: italic; }
 
-    /* ── Initiative (card 11) ── */
-    .ig-card {
-      border-radius: 10px; padding: 10px 12px; cursor: pointer;
-      transition: all 0.15s; border: 1px solid transparent; user-select: none;
-    }
-    .ig-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(74,44,33,0.10); }
-    .ig-card:active { transform: scale(0.97); }
-    .ig-card.played { opacity: 0.45; pointer-events: none; }
-    .ig-card-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
-    .ig-card-desc { font-size: 11px; line-height: 1.4; }
-    .ig-her { background: #FDE8EE; border-color: #F0B8CC; }
-    .ig-her:hover { background: #F5C6D8; border-color: #C26F6A; }
-    .ig-her .ig-card-title { color: #8B1A3A; }
-    .ig-her .ig-card-desc { color: rgba(139,26,58,0.60); }
-    .ig-him { background: #EAF4FF; border-color: #B8D8F0; }
-    .ig-him:hover { background: #C8E4F8; border-color: #5B9BD5; }
-    .ig-him .ig-card-title { color: #1A4A7A; }
-    .ig-him .ig-card-desc { color: rgba(26,74,122,0.60); }
-    .ig-tension-track { background: #E0D4C0; border-radius: 99px; height: 8px; overflow: hidden; }
-    .ig-tension-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg,#E0D4C0,#D88B85,#C26F6A); transition: width 0.5s ease; }
+    /* ── Date Game (card 11) ── */
 
     /* ── Tarot (card 12) ── */
     .tarot-card-wrap { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1.25rem; }
@@ -1819,124 +1800,112 @@
 
   <!-- STEP 11 — INITIATIVE -->
   <div class="step-card" data-step="10">
-    <div class="step-badge badge-rose"><i class="ti ti-flame"></i> Step 11</div>
-    <div class="step-icon"><i class="ti ti-flame" style="color:#C26F6A;"></i></div>
-    <p class="step-title">Initiative</p>
-    <p class="step-sub">A tension and escalation game. She controls the pace — always. He can mirror, tease, ask, hold space. The only rule: he can't go further than she's already gone. Watch the tension meter. See what happens when someone finally plays Freeze.</p>
+    <div class="step-badge badge-rose"><i class="ti ti-cards"></i> Step 11</div>
+    <div class="step-icon"><i class="ti ti-cards" style="color:#C9375A;"></i></div>
+    <p class="step-title">The date game</p>
+    <p class="step-sub">A card game for two, played in turns on the same screen. Each card gives you something to do, say, or ask — generated just for you, based on who you both are. Private cards, real moments.</p>
     <div class="tags">
-      <span class="tag">she leads</span>
-      <span class="tag">he mirrors</span>
-      <span class="tag">tension meter</span>
+      <span class="tag">take turns</span>
+      <span class="tag">AI-generated</span>
       <span class="tag">in person</span>
+      <span class="tag">gets interesting</span>
     </div>
 
     <button class="game-toggle-btn" id="ig-toggle-btn" onclick="toggleGame('ig')">
-      <i class="ti ti-flame"></i> Play Initiative
+      <i class="ti ti-cards"></i> Play the date game
     </button>
 
     <div class="game-area" id="ig-game">
 
-      <!-- tension meter -->
-      <div style="margin-bottom:1.5rem;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-          <span style="font-size:11px;font-weight:700;color:rgba(74,44,33,0.40);letter-spacing:0.07em;text-transform:uppercase;">Tension</span>
-          <span style="font-size:12px;color:#C26F6A;font-weight:600;">✦ <span id="ig-sparks">0</span> sparks</span>
+      <!-- SCREEN: setup -->
+      <div id="ig-setup">
+        <p style="font-size:13px; color:#888; line-height:1.7; margin-bottom:1.25rem;">Enter your names — the cards will be written just for you two.</p>
+        <div class="wyr-name-inputs">
+          <input class="wyr-name-input" id="ig-name-her" placeholder="Her name" />
+          <input class="wyr-name-input" id="ig-name-him" placeholder="His name" />
         </div>
-        <div class="ig-tension-track">
-          <div id="ig-tension-bar" class="ig-tension-fill" style="width:0%;"></div>
-        </div>
-        <div id="ig-tension-label" style="font-size:11px;color:rgba(74,44,33,0.35);text-align:right;margin-top:4px;">Waiting for first move…</div>
-      </div>
-
-      <!-- board -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem;">
-
-        <!-- HER CARDS -->
-        <div>
-          <div style="font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:#C26F6A;margin-bottom:10px;text-align:center;">Her cards</div>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <div class="ig-card ig-her" onclick="igPlay('her','escalate')">
-              <div class="ig-card-title">🔥 Escalate</div>
-              <div class="ig-card-desc">Move closer. Touch. Initiate.</div>
-            </div>
-            <div class="ig-card ig-her" onclick="igPlay('her','challenge')">
-              <div class="ig-card-title">🎭 Challenge</div>
-              <div class="ig-card-desc">Ask something bold or revealing.</div>
-            </div>
-            <div class="ig-card ig-her" onclick="igPlay('her','tempt')">
-              <div class="ig-card-title">👀 Tempt</div>
-              <div class="ig-card-desc">Eye contact. Silence. A slow smile.</div>
-            </div>
-            <div class="ig-card ig-her" onclick="igPlay('her','freeze')">
-              <div class="ig-card-title">🛑 Freeze</div>
-              <div class="ig-card-desc">Slow it all down. Reset the room.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- HIS CARDS -->
-        <div>
-          <div style="font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:#5B9BD5;margin-bottom:10px;text-align:center;">His cards</div>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <div class="ig-card ig-him" onclick="igPlay('him','mirror')">
-              <div class="ig-card-title">🎯 Mirror</div>
-              <div class="ig-card-desc">Match her energy — exactly, no more.</div>
-            </div>
-            <div class="ig-card ig-him" onclick="igPlay('him','curious')">
-              <div class="ig-card-title">🧠 Curious</div>
-              <div class="ig-card-desc">"What were you thinking just now?"</div>
-            </div>
-            <div class="ig-card ig-him" onclick="igPlay('him','tease')">
-              <div class="ig-card-title">😏 Tease</div>
-              <div class="ig-card-desc">"You started this." Then nothing.</div>
-            </div>
-            <div class="ig-card ig-him" onclick="igPlay('him','reveal')">
-              <div class="ig-card-title">🎲 Reveal</div>
-              <div class="ig-card-desc">Share something real and unexpected.</div>
-            </div>
-            <div class="ig-card ig-him" onclick="igPlay('him','hold')">
-              <div class="ig-card-title">🕯 Hold</div>
-              <div class="ig-card-desc">Say nothing. Let the silence work.</div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- status -->
-      <div id="ig-status" style="text-align:center;font-size:14px;font-weight:500;color:rgba(74,44,33,0.50);background:rgba(247,239,226,0.60);border-radius:10px;padding:12px;margin-bottom:1rem;min-height:44px;line-height:1.5;transition:color 0.3s;">
-        She goes first — only she can start the tension.
-      </div>
-
-      <!-- log -->
-      <div style="border-top:1px solid rgba(74,44,33,0.08);padding-top:1rem;">
-        <div style="font-size:10px;font-weight:700;color:rgba(74,44,33,0.30);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Game log</div>
-        <div id="ig-log" style="font-size:13px;color:rgba(74,44,33,0.55);line-height:1.9;min-height:40px;">No moves yet.</div>
-      </div>
-
-      <div style="display:flex;justify-content:center;margin-top:1.25rem;">
-        <button class="fantasy-btn secondary" onclick="igReset()"><i class="ti ti-refresh"></i> Reset</button>
-      </div>
-
-    </div>
-
-    <button class="devnote-toggle" onclick="toggleDevNote('ig-devnote')">
-      <i class="ti ti-code"></i> Dev notes
-    </button>
-    <div class="devnote-area" id="ig-devnote">
-      <h4>What's missing / future work</h4>
-      <div class="devnote-item">
-        <span class="devnote-tag partial">Partial</span>
-        <div class="devnote-text">
-          <strong>Session profile integration</strong> — The Initiative tension dynamics (peak tension %, sparks) could be fed into cards 12–13 as non-confidential context. Currently these are standalone.
+        <div style="margin-bottom:0.6rem; font-size:13px; color:#555; font-weight:500;">A line about each of you <span style="color:#bbb; font-weight:400;">(optional — makes the cards feel personal)</span></div>
+        <textarea class="fm-textarea" id="ig-about-her" placeholder="Her vibe, what she's into, how she comes across…" style="min-height:64px; margin-bottom:8px;"></textarea>
+        <textarea class="fm-textarea" id="ig-about-him" placeholder="His vibe, what he's into, what makes him interesting…" style="min-height:64px; margin-bottom:1.25rem;"></textarea>
+        <div style="display:flex; justify-content:flex-end;">
+          <button class="fantasy-btn" onclick="igStart()">
+            <i class="ti ti-sparkles"></i> Generate our cards
+          </button>
         </div>
       </div>
-      <div class="devnote-item">
-        <span class="devnote-tag missing">Missing</span>
-        <div class="devnote-text">
-          <strong>Customisable roles</strong> — Currently assumes her/him binary framing. A future version would let players choose their own labels before starting.
+
+      <!-- SCREEN: generating -->
+      <div id="ig-generating" style="display:none;">
+        <div class="fm-loading" style="padding:2.5rem 0;">
+          <div class="fm-spinner"></div>
+          <p style="font-size:14px; color:#888;">Writing your cards…<br><span style="font-size:12px; color:#bbb;">Making them personal takes a moment.</span></p>
         </div>
       </div>
+
+      <!-- SCREEN: whose turn -->
+      <div id="ig-whose-turn" style="display:none; text-align:center; padding:1.5rem 0;">
+        <div id="ig-turn-name" style="font-family:'Cormorant Garamond',serif; font-size:28px; color:#4A2C21; margin-bottom:0.5rem;"></div>
+        <div style="font-size:14px; color:#888; margin-bottom:2rem;">It's your turn</div>
+        <div id="ig-turn-tap" style="
+          background: linear-gradient(135deg, #FDE8EE, #F5E8FF);
+          border: 1px solid #E0C0D8; border-radius: 16px;
+          padding: 2.5rem 2rem; cursor: pointer;
+          transition: transform 0.15s, box-shadow 0.15s;
+          user-select: none;
+        " onclick="igRevealCard()">
+          <div style="font-size:40px; margin-bottom:0.75rem;">🃏</div>
+          <div style="font-size:15px; font-weight:500; color:#6B1A3A;">Tap to see your card</div>
+          <div style="font-size:12px; color:#C9A0B8; margin-top:6px;">The other person should look away</div>
+        </div>
+      </div>
+
+      <!-- SCREEN: active card -->
+      <div id="ig-card-screen" style="display:none;">
+        <div id="ig-card-display"></div>
+        <div style="display:flex; gap:10px; margin-top:1.25rem; justify-content:center; flex-wrap:wrap;">
+          <button class="fantasy-btn" id="ig-done-btn" onclick="igCardDone()">
+            Done <i class="ti ti-check"></i>
+          </button>
+          <button class="fantasy-btn secondary" onclick="igSkipCard()">
+            Skip this one
+          </button>
+        </div>
+      </div>
+
+      <!-- SCREEN: handoff -->
+      <div id="ig-handoff" style="display:none;">
+        <div style="
+          background: #4A2C21; border-radius: 16px;
+          padding: 3rem 2rem; text-align: center;
+          cursor: pointer; user-select: none;
+        " onclick="igNextTurn()">
+          <div style="font-size:36px; margin-bottom:0.75rem;">🙈</div>
+          <div id="ig-handoff-name" style="font-family:'Cormorant Garamond',serif; font-size:22px; color:#F7EFE2; margin-bottom:0.5rem;"></div>
+          <div style="font-size:13px; color:#a08070; line-height:1.6;">Hand the screen over.<br>Tap anywhere when ready.</div>
+        </div>
+      </div>
+
+      <!-- SCREEN: moment card -->
+      <div id="ig-moment-screen" style="display:none;">
+        <div style="
+          background: linear-gradient(160deg, #2d1a0e, #4A2C21);
+          border: 1px solid #8B3A2A; border-radius: 16px;
+          padding: 2rem; text-align: center;
+        ">
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:#C26F6A; margin-bottom:1rem;">✦ A moment for both of you</div>
+          <div id="ig-moment-text" style="font-family:'Cormorant Garamond',serif; font-size:18px; color:#F7EFE2; line-height:1.7;"></div>
+        </div>
+        <div style="display:flex; justify-content:center; gap:10px; margin-top:1.25rem;">
+          <button class="fantasy-btn" onclick="igAfterMoment()">Continue <i class="ti ti-arrow-right"></i></button>
+          <button class="fantasy-btn secondary" onclick="igResetFull()"><i class="ti ti-refresh"></i> Start over</button>
+        </div>
+      </div>
+
+      <!-- footer reset -->
+      <div id="ig-footer" style="display:none; text-align:center; margin-top:1.5rem; border-top:1px solid rgba(74,44,33,0.10); padding-top:1rem;">
+        <button class="fantasy-btn secondary" onclick="igResetFull()"><i class="ti ti-refresh"></i> Start over</button>
+      </div>
+
     </div>
 
   </div>
@@ -2473,7 +2442,7 @@ function toggleGame(id) {
   } else if (id === 'ig') {
     btn.innerHTML = isOpen
       ? '<i class="ti ti-chevron-up"></i> Hide game'
-      : '<i class="ti ti-flame"></i> Play Initiative';
+      : '<i class="ti ti-cards"></i> Play the date game';
   } else if (id === 'tr') {
     btn.innerHTML = isOpen
       ? '<i class="ti ti-chevron-up"></i> Hide'
@@ -3182,97 +3151,199 @@ function renderSnapshot(d, nameA, nameB) {
 }
 
 /* ══════════════════════════════════════
-   CARD 11 — INITIATIVE
+   CARD 11 — THE DATE GAME
+   Secret engine: hidden tension meter
+   Players see: a personal role-play card game
 ══════════════════════════════════════ */
-let igLastPlayer = null;
+
+let igNameHer = '', igNameHim = '';
+let igAboutHer = '', igAboutHim = '';
+let igTurn = 'her';
+let igRound = 0;
 let igTension = 0;
-let igSparks = 0;
-let igLog = [];
+let igMomentFired = false;
+let igCurrentCard = null;
+let igHandQueue = { her: [], him: [] };
 
-const IG_MOVES = {
-  her: {
-    escalate: { label: 'Escalate', msg: 'She moved the energy forward — closer, warmer, unmistakably intentional.', delta: 18 },
-    challenge: { label: 'Challenge', msg: 'She asked something that hangs in the air. No easy answer.', delta: 12 },
-    tempt:    { label: 'Tempt',    msg: 'She said nothing. She didn\'t have to.', delta: 15 },
-    freeze:   { label: 'Freeze',   msg: 'She pulled back. The whole room felt it.', delta: -40, reset: true }
-  },
-  him: {
-    mirror:  { label: 'Mirror',  msg: 'He matched her exactly — no more, no less. Steady.', delta: 10 },
-    curious: { label: 'Curious', msg: 'He asked. Genuinely. It landed.', delta: 8 },
-    tease:   { label: 'Tease',   msg: '"You started this." He left it right there.', delta: 12 },
-    reveal:  { label: 'Reveal',  msg: 'He said something real. Unexpected. She noticed.', delta: 10 },
-    hold:    { label: 'Hold',    msg: 'He said nothing. Held her gaze. The silence did all the work.', delta: 14 }
-  }
-};
-
-const IG_LABELS = [
-  [0,  20, '❄️ Ice cold — someone make a move.'],
-  [20, 40, '🌡️ Something\'s starting…'],
-  [40, 60, '🔥 The air is getting thick.'],
-  [60, 80, '💥 It\'s electric in here.'],
-  [80, 101,'🌋 Off the charts. What happens next is on you.'],
+const IG_HER_TYPES = [
+  { type: 'spark',   delta: 20, label: '✦ Spark'   },
+  { type: 'spark',   delta: 18, label: '✦ Spark'   },
+  { type: 'present', delta: 6,  label: '✦ Present' },
+  { type: 'present', delta: 5,  label: '✦ Present' },
+  { type: 'breathe', delta: -15,label: '✦ Breathe' },
+];
+const IG_HIM_TYPES = [
+  { type: 'lean',    delta: 12, label: '✦ Lean in'  },
+  { type: 'respond', delta: 5,  label: '✦ Respond'  },
+  { type: 'respond', delta: 4,  label: '✦ Respond'  },
+  { type: 'respond', delta: 6,  label: '✦ Respond'  },
+  { type: 'stepback',delta: -10,label: '✦ Step back'},
 ];
 
-function igTensionLabel(t) {
-  for (const [lo, hi, lbl] of IG_LABELS) { if (t >= lo && t < hi) return lbl; }
-  return IG_LABELS[IG_LABELS.length - 1][2];
+function igCardPrompt(who, type, round, tension) {
+  const her = igNameHer, him = igNameHim;
+  const warmth = tension < 30 ? 'light and playful'
+               : tension < 60 ? 'warm and a little charged'
+               : 'intimate and loaded with unspoken things';
+  const personas = `Her name is ${her}. ${igAboutHer ? `About her: ${igAboutHer}.` : ''}
+His name is ${him}. ${igAboutHim ? `About him: ${igAboutHim}.` : ''}
+Round ${round + 1}. The atmosphere is ${warmth}.`;
+  const prompts = {
+    her: {
+      spark:   `${personas}\nWrite ONE card instruction for ${her} — something she says, does, or initiates that naturally moves the energy forward. It should feel warm and a little electric, not clinical. Could be: lean in closer and say something, make a specific physical gesture, ask something bold. One sentence. Start with an action verb. Do NOT mention tension, games, or the word "escalate". Make it personal to ${him} if possible.`,
+      present: `${personas}\nWrite ONE card instruction for ${her} — something connective and revealing she can say or do. Light, human, curious. Could be: share something she hasn't said yet tonight, ask something she actually wants to know about ${him}. One sentence. Start with an action verb.`,
+      breathe: `${personas}\nWrite ONE card instruction for ${her} — a graceful way to shift or slow the energy without killing it. Something playful or surprising. Not a rejection, just a detour. One sentence. Start with an action verb.`,
+    },
+    him: {
+      lean:    `${personas}\nWrite ONE card instruction for ${him} — something he says or does that responds to her energy, holds the moment, and matches it without adding to it. Grounded, present, a little magnetic. One sentence. Start with an action verb. Do NOT use the words "mirror" or "match". Make it specific to ${her} if possible.`,
+      respond: `${personas}\nWrite ONE card instruction for ${him} — something curious, honest, or unexpected he can say or do. Warm, not performative. Could be: ask something genuine, share something real, make a small specific observation. One sentence. Start with an action verb.`,
+      stepback:`${personas}\nWrite ONE card instruction for ${him} — a quiet, confident way to create space. Not withdrawal, more like the pause before something interesting. One sentence. Start with an action verb.`,
+    }
+  };
+  return prompts[who][type];
 }
 
-function igPlay(player, move) {
-  if (igLastPlayer === player) {
-    document.getElementById('ig-status').textContent =
-      player === 'her' ? 'His turn — he has to respond before she can go again.' : 'Her turn — she sets the pace here.';
+async function igGenerateHand(who) {
+  const types = who === 'her' ? [...IG_HER_TYPES] : [...IG_HIM_TYPES];
+  for (let i = types.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [types[i], types[j]] = [types[j], types[i]];
+  }
+  const texts = await Promise.all(
+    types.map(t => callLLM(igCardPrompt(who, t.type, igRound, igTension), 120))
+  );
+  return types.map((t, i) => ({ ...t, text: texts[i] }));
+}
+
+async function igGenerateMomentCard() {
+  const her = igNameHer, him = igNameHim;
+  const prompt = `Her name is ${her}. His name is ${him}. ${igAboutHer ? `About her: ${igAboutHer}.` : ''} ${igAboutHim ? `About him: ${igAboutHim}.` : ''}
+
+Write ONE shared moment card — something both of them do together, right now. It should be simple, a little intimate, and feel like a natural peak to a date that's been building. Could be: make eye contact for a specific amount of time, one says something they've been holding back, a small physical thing they do together.
+Two sentences maximum. Warm, direct, slightly daring. Address both of them.`;
+  return callLLM(prompt, 150);
+}
+
+async function igStart() {
+  igNameHer = document.getElementById('ig-name-her').value.trim() || 'Her';
+  igNameHim = document.getElementById('ig-name-him').value.trim() || 'Him';
+  igAboutHer = document.getElementById('ig-about-her').value.trim();
+  igAboutHim = document.getElementById('ig-about-him').value.trim();
+  igTurn = 'her'; igRound = 0; igTension = 0; igMomentFired = false;
+  igCurrentCard = null; igHandQueue = { her: [], him: [] };
+
+  igShow('ig-generating');
+  const [herHand, himHand] = await Promise.all([
+    igGenerateHand('her'),
+    igGenerateHand('him'),
+  ]);
+  igHandQueue.her = herHand;
+  igHandQueue.him = himHand;
+
+  igShow('ig-whose-turn');
+  document.getElementById('ig-footer').style.display = 'block';
+  igSetTurnHeader();
+}
+
+function igShow(id) {
+  ['ig-setup','ig-generating','ig-whose-turn','ig-card-screen','ig-handoff','ig-moment-screen']
+    .forEach(s => { document.getElementById(s).style.display = s === id ? 'block' : 'none'; });
+}
+
+function igSetTurnHeader() {
+  document.getElementById('ig-turn-name').textContent = igTurn === 'her' ? igNameHer : igNameHim;
+}
+
+async function igRevealCard() {
+  const who = igTurn;
+  let card = igHandQueue[who].shift();
+  if (!card) {
+    igShow('ig-generating');
+    igHandQueue[who] = await igGenerateHand(who);
+    card = igHandQueue[who].shift();
+  }
+  igShow('ig-card-screen');
+  igCurrentCard = card;
+
+  const isHer = who === 'her';
+  const bg = isHer
+    ? 'linear-gradient(135deg, #FDE8EE 0%, #F5E0F5 100%)'
+    : 'linear-gradient(135deg, #EAF4FF 0%, #E8F0FF 100%)';
+  const border = isHer ? '#E0B0CC' : '#B0C8E8';
+  const labelColor = isHer ? '#8B1A3A' : '#1A3A6A';
+  const nameColor = isHer ? '#C9375A' : '#3A6AAA';
+
+  document.getElementById('ig-card-display').innerHTML = `
+    <div style="
+      background: ${bg}; border: 1px solid ${border};
+      border-radius: 16px; padding: 2rem 1.75rem;
+      min-height: 160px; display: flex; flex-direction: column; justify-content: center;
+    ">
+      <div style="font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:${labelColor}; margin-bottom:0.75rem; opacity:0.7;">
+        ${card.label} — ${isHer ? igNameHer : igNameHim}
+      </div>
+      <div style="font-family:'Cormorant Garamond',serif; font-size:18px; line-height:1.6; color:#4A2C21;">
+        ${card.text}
+      </div>
+      <div style="margin-top:1rem; font-size:11px; color:${nameColor}; opacity:0.6;">just for you</div>
+    </div>
+  `;
+
+  if (igHandQueue[who].length <= 1) {
+    igGenerateHand(who).then(hand => { igHandQueue[who] = [...igHandQueue[who], ...hand]; });
+  }
+}
+
+async function igCardDone() {
+  if (!igCurrentCard) return;
+  igTension = Math.max(0, Math.min(100, igTension + igCurrentCard.delta));
+
+  if (igTension >= 78 && !igMomentFired && igRound >= 3) {
+    igMomentFired = true;
+    igShow('ig-generating');
+    const momentText = await igGenerateMomentCard();
+    document.getElementById('ig-moment-text').textContent = momentText;
+    igShow('ig-moment-screen');
     return;
   }
-  if (player === 'him' && igLastPlayer === null) {
-    document.getElementById('ig-status').textContent = 'She goes first. Always.';
-    return;
-  }
+  igAdvanceTurn();
+}
 
-  const m = IG_MOVES[player][move];
-  igLastPlayer = player;
+function igSkipCard() { igAdvanceTurn(); }
 
-  if (player === 'him' && (move === 'mirror' || move === 'tease' || move === 'hold')) igSparks++;
-
-  const isFrozen = m.reset;
-  igTension = isFrozen ? Math.max(0, igTension + m.delta) : Math.min(100, igTension + m.delta);
-  if (isFrozen) igSparks = 0;
-
-  const who = player === 'her' ? '🔥 Her' : '🎯 Him';
-  igLog.unshift(`<span style="font-weight:600;color:${player==='her'?'#C26F6A':'#5B9BD5'}">${who} — ${m.label}:</span> ${m.msg}`);
-  if (igLog.length > 6) igLog.pop();
-  document.getElementById('ig-log').innerHTML = igLog.join('<br>');
-
-  document.getElementById('ig-tension-bar').style.width = igTension + '%';
-  document.getElementById('ig-tension-label').textContent = igTensionLabel(igTension);
-  document.getElementById('ig-sparks').textContent = igSparks;
-
-  const status = document.getElementById('ig-status');
-  if (isFrozen) {
-    status.style.color = 'rgba(74,44,33,0.45)';
-    status.textContent = '❄️ Frozen. The tension resets. She decides if anything restarts.';
-  } else if (igSparks >= 5) {
-    status.style.color = '#C26F6A';
-    status.textContent = '✦ Five sparks. This is something.';
-  } else if (igTension >= 80) {
-    status.style.color = '#C26F6A';
-    status.textContent = player === 'her' ? '🌋 His turn — this is almost too much.' : '🌋 Her turn — she can take this wherever she wants.';
+function igAdvanceTurn() {
+  if (igTurn === 'her') {
+    igTurn = 'him';
+    document.getElementById('ig-handoff-name').textContent = igNameHim;
   } else {
-    status.style.color = 'rgba(74,44,33,0.50)';
-    status.textContent = player === 'her'
-      ? 'His turn: mirror, tease, ask, or hold space.'
-      : 'Her turn — only she decides what happens next.';
+    igTurn = 'her';
+    igRound++;
+    document.getElementById('ig-handoff-name').textContent = igNameHer;
   }
+  igShow('ig-handoff');
 }
 
-function igReset() {
-  igLastPlayer = null; igTension = 0; igSparks = 0; igLog = [];
-  document.getElementById('ig-tension-bar').style.width = '0%';
-  document.getElementById('ig-tension-label').textContent = 'Waiting for first move…';
-  document.getElementById('ig-sparks').textContent = '0';
-  document.getElementById('ig-log').innerHTML = 'No moves yet.';
-  document.getElementById('ig-status').textContent = 'She goes first — only she can start the tension.';
-  document.getElementById('ig-status').style.color = 'rgba(74,44,33,0.50)';
+function igNextTurn() {
+  igShow('ig-whose-turn');
+  igSetTurnHeader();
+}
+
+function igAfterMoment() {
+  igTension = Math.max(0, igTension - 20);
+  igAdvanceTurn();
+}
+
+function igResetFull() {
+  igNameHer = ''; igNameHim = '';
+  igAboutHer = ''; igAboutHim = '';
+  igTurn = 'her'; igRound = 0; igTension = 0; igMomentFired = false;
+  igCurrentCard = null; igHandQueue = { her: [], him: [] };
+  document.getElementById('ig-name-her').value = '';
+  document.getElementById('ig-name-him').value = '';
+  document.getElementById('ig-about-her').value = '';
+  document.getElementById('ig-about-him').value = '';
+  igShow('ig-setup');
+  document.getElementById('ig-footer').style.display = 'none';
 }
 
 /* ══════════════════════════════════════
