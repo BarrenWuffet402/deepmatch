@@ -1505,9 +1505,404 @@
 
   </div>
 
-  <!-- STEP 8 — THE OVERLAP GAME -->
+  <!-- STEP 8 — INITIATIVE -->
   <div class="step-card" data-step="7">
-    <div class="step-badge badge-rose"><i class="ti ti-flame"></i> Step 8</div>
+    <div class="step-badge badge-rose"><i class="ti ti-cards"></i> Step 8</div>
+    <div class="step-icon"><i class="ti ti-cards" style="color:#C9375A;"></i></div>
+    <p class="step-title">The date game</p>
+    <p class="step-sub">A card game for two, played in turns on the same screen. Each card gives you something to do, say, or ask — generated just for you, based on who you both are. Private cards, real moments.</p>
+    <div class="tags">
+      <span class="tag">take turns</span>
+      <span class="tag">AI-generated</span>
+      <span class="tag">in person</span>
+      <span class="tag">gets interesting</span>
+    </div>
+
+    <button class="game-toggle-btn" id="ig-toggle-btn" onclick="toggleGame('ig')">
+      <i class="ti ti-cards"></i> Play the date game
+    </button>
+
+    <div class="game-area" id="ig-game">
+
+      <!-- SCREEN: setup -->
+      <div id="ig-setup">
+        <p style="font-size:13px; color:#888; line-height:1.7; margin-bottom:1.25rem;">Enter your names — the cards will be written just for you two.</p>
+        <div class="wyr-name-inputs">
+          <input class="wyr-name-input" id="ig-name-her" placeholder="Her name" />
+          <input class="wyr-name-input" id="ig-name-him" placeholder="His name" />
+        </div>
+        <div style="margin-bottom:0.6rem; font-size:13px; color:#555; font-weight:500;">A line about each of you <span style="color:#bbb; font-weight:400;">(optional — makes the cards feel personal)</span></div>
+        <textarea class="fm-textarea" id="ig-about-her" placeholder="Her vibe, what she's into, how she comes across…" style="min-height:64px; margin-bottom:8px;"></textarea>
+        <textarea class="fm-textarea" id="ig-about-him" placeholder="His vibe, what he's into, what makes him interesting…" style="min-height:64px; margin-bottom:1.25rem;"></textarea>
+        <div style="display:flex; justify-content:flex-end;">
+          <button class="fantasy-btn" onclick="igStart()">
+            <i class="ti ti-sparkles"></i> Generate our cards
+          </button>
+        </div>
+      </div>
+
+      <!-- SCREEN: generating -->
+      <div id="ig-generating" style="display:none;">
+        <div class="fm-loading" style="padding:2.5rem 0;">
+          <div class="fm-spinner"></div>
+          <p style="font-size:14px; color:#888;">Writing your cards…<br><span style="font-size:12px; color:#bbb;">Making them personal takes a moment.</span></p>
+        </div>
+      </div>
+
+      <!-- SCREEN: whose turn -->
+      <div id="ig-whose-turn" style="display:none; text-align:center; padding:1.5rem 0;">
+        <div id="ig-turn-name" style="font-family:'Cormorant Garamond',serif; font-size:28px; color:#4A2C21; margin-bottom:0.5rem;"></div>
+        <div style="font-size:14px; color:#888; margin-bottom:2rem;">It's your turn</div>
+        <div id="ig-turn-tap" style="
+          background: linear-gradient(135deg, #FDE8EE, #F5E8FF);
+          border: 1px solid #E0C0D8; border-radius: 16px;
+          padding: 2.5rem 2rem; cursor: pointer;
+          transition: transform 0.15s, box-shadow 0.15s;
+          user-select: none;
+        " onclick="igRevealCard()">
+          <div style="font-size:40px; margin-bottom:0.75rem;">🃏</div>
+          <div style="font-size:15px; font-weight:500; color:#6B1A3A;">Tap to see your card</div>
+          <div style="font-size:12px; color:#C9A0B8; margin-top:6px;">The other person should look away</div>
+        </div>
+      </div>
+
+      <!-- SCREEN: active card -->
+      <div id="ig-card-screen" style="display:none;">
+        <div id="ig-card-display"></div>
+        <div style="display:flex; gap:10px; margin-top:1.25rem; justify-content:center; flex-wrap:wrap;">
+          <button class="fantasy-btn" id="ig-done-btn" onclick="igCardDone()">
+            Done <i class="ti ti-check"></i>
+          </button>
+          <button class="fantasy-btn secondary" onclick="igSkipCard()">
+            Skip this one
+          </button>
+        </div>
+      </div>
+
+      <!-- SCREEN: handoff -->
+      <div id="ig-handoff" style="display:none;">
+        <div style="
+          background: #4A2C21; border-radius: 16px;
+          padding: 3rem 2rem; text-align: center;
+          cursor: pointer; user-select: none;
+        " onclick="igNextTurn()">
+          <div style="font-size:36px; margin-bottom:0.75rem;">🙈</div>
+          <div id="ig-handoff-name" style="font-family:'Cormorant Garamond',serif; font-size:22px; color:#F7EFE2; margin-bottom:0.5rem;"></div>
+          <div style="font-size:13px; color:#a08070; line-height:1.6;">Hand the screen over.<br>Tap anywhere when ready.</div>
+        </div>
+      </div>
+
+      <!-- SCREEN: moment card -->
+      <div id="ig-moment-screen" style="display:none;">
+        <div style="
+          background: linear-gradient(160deg, #2d1a0e, #4A2C21);
+          border: 1px solid #8B3A2A; border-radius: 16px;
+          padding: 2rem; text-align: center;
+        ">
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:#C26F6A; margin-bottom:1rem;">✦ A moment for both of you</div>
+          <div id="ig-moment-text" style="font-family:'Cormorant Garamond',serif; font-size:18px; color:#F7EFE2; line-height:1.7;"></div>
+        </div>
+        <div style="display:flex; justify-content:center; gap:10px; margin-top:1.25rem;">
+          <button class="fantasy-btn" onclick="igAfterMoment()">Continue <i class="ti ti-arrow-right"></i></button>
+          <button class="fantasy-btn secondary" onclick="igResetFull()"><i class="ti ti-refresh"></i> Start over</button>
+        </div>
+      </div>
+
+      <!-- footer reset -->
+      <div id="ig-footer" style="display:none; text-align:center; margin-top:1.5rem; border-top:1px solid rgba(74,44,33,0.10); padding-top:1rem;">
+        <button class="fantasy-btn secondary" onclick="igResetFull()"><i class="ti ti-refresh"></i> Start over</button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- STEP 9 — TAROT -->
+  <div class="step-card" data-step="8">
+    <div class="step-badge" style="background:#1E1035;color:#C9A7F5;"><i class="ti ti-moon-stars"></i> Step 9</div>
+    <div class="step-icon"><i class="ti ti-moon-stars" style="color:#9B59D4;"></i></div>
+    <p class="step-title">Tarot reading</p>
+    <p class="step-sub">Enter your birth details and draw three cards — past energy, present moment, what's unfolding. The AI reads them together, specifically for where you are right now. Honest about the shadows. Bright about the possibilities.</p>
+    <div class="tags">
+      <span class="tag">AI-powered</span>
+      <span class="tag">three-card spread</span>
+      <span class="tag">personal to you</span>
+      <span class="tag">real ephemeris</span>
+    </div>
+
+    <button class="game-toggle-btn" id="tr-toggle-btn" onclick="toggleGame('tr')" style="border-color:#9B59D4;color:#9B59D4;">
+      <i class="ti ti-moon-stars"></i> Read the cards
+    </button>
+
+    <div class="game-area" id="tr-game">
+
+      <!-- input -->
+      <div id="tr-input">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <input class="ls-name-input" id="tr-name" placeholder="Your name" />
+          <input class="ls-name-input" id="tr-sign" placeholder="Star sign (e.g. Scorpio)" />
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <input class="ls-name-input" id="tr-dob" placeholder="Date of birth (DD/MM/YYYY)" />
+          <input class="ls-name-input" id="tr-time" placeholder="Birth time optional (HH:MM)" />
+        </div>
+        <textarea class="fm-textarea" id="tr-question" placeholder="What's on your mind right now? (optional — gives the reading more focus)" style="min-height:70px;margin-bottom:1rem;"></textarea>
+        <div style="display:flex;justify-content:flex-end;">
+          <button class="fantasy-btn" style="background:#9B59D4;" onclick="drawTarot()">
+            <i class="ti ti-sparkles"></i> Draw three cards
+          </button>
+        </div>
+        <div class="fm-privacy-note">
+          <i class="ti ti-shield-lock"></i>
+          <span>Reading generated by open source AI (Llama 3.3 via Groq). Planetary positions calculated in your browser. Nothing stored.</span>
+        </div>
+      </div>
+
+      <!-- loading -->
+      <div id="tr-loading" style="display:none;">
+        <div style="text-align:center;padding:2.5rem 0;">
+          <div class="fm-spinner" style="border-top-color:#9B59D4;border-color:#E8D5F5;margin:0 auto 1rem;"></div>
+          <p style="font-size:14px;color:rgba(74,44,33,0.45);">Shuffling the deck…<br><span style="font-size:12px;opacity:0.7;">The cards know what they want to say.</span></p>
+        </div>
+      </div>
+
+      <!-- result -->
+      <div id="tr-result" style="display:none;"></div>
+
+    </div>
+
+    <button class="devnote-toggle" onclick="toggleDevNote('tr-devnote')">
+      <i class="ti ti-code"></i> Dev notes
+    </button>
+    <div class="devnote-area" id="tr-devnote">
+      <h4>What's working / what's missing</h4>
+      <div class="devnote-item">
+        <span class="devnote-tag partial">Partial</span>
+        <div class="devnote-text">
+          <strong>Ephemeris accuracy</strong> — Sun (~1°), Moon (~3°), inner planets (~5°) are calculated with simplified formulas in the browser. Good enough for astrology context; a production version would call a proper Swiss Ephemeris API.
+        </div>
+      </div>
+      <div class="devnote-item">
+        <span class="devnote-tag missing">Missing</span>
+        <div class="devnote-text">
+          <strong>Rising sign precision</strong> — Rising sign requires birth location (lat/lon) for accurate calculation. Current approximation uses time only. For real accuracy, add a location input and pass it to a server-side ephemeris endpoint.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- STEP 10 — ASTROLOGY COMPATIBILITY -->
+  <div class="step-card" data-step="9">
+    <div class="step-badge" style="background:#0E1A2E;color:#7EC8E3;"><i class="ti ti-stars"></i> Step 10</div>
+    <div class="step-icon"><i class="ti ti-stars" style="color:#4A9EBF;"></i></div>
+    <p class="step-title">Astrology compatibility</p>
+    <p class="step-sub">Both of you enter your birth details. The AI reads your charts together — where you naturally align, where you'll push each other, and what this pairing is actually good at. Playful and honest. No sugarcoating, no doom either.</p>
+    <div class="tags">
+      <span class="tag">both charts</span>
+      <span class="tag">AI-powered</span>
+      <span class="tag">synastry aspects</span>
+      <span class="tag">read together</span>
+    </div>
+
+    <button class="game-toggle-btn" id="ac-toggle-btn" onclick="toggleGame('ac')" style="border-color:#4A9EBF;color:#4A9EBF;">
+      <i class="ti ti-stars"></i> Read our compatibility
+    </button>
+
+    <div class="game-area" id="ac-game">
+
+      <!-- input -->
+      <div id="ac-input">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1rem;">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#4A9EBF;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Person A</div>
+            <input class="ls-name-input" id="ac-name-a" placeholder="Name" style="margin-bottom:8px;display:block;width:100%;" />
+            <input class="ls-name-input" id="ac-sign-a" placeholder="Star sign" style="margin-bottom:8px;display:block;width:100%;" />
+            <input class="ls-name-input" id="ac-dob-a" placeholder="Date of birth (DD/MM/YYYY)" style="margin-bottom:8px;display:block;width:100%;" />
+            <input class="ls-name-input" id="ac-time-a" placeholder="Birth time optional (HH:MM)" style="display:block;width:100%;" />
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#C26F6A;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Person B</div>
+            <input class="ls-name-input" id="ac-name-b" placeholder="Name" style="margin-bottom:8px;display:block;width:100%;" />
+            <input class="ls-name-input" id="ac-sign-b" placeholder="Star sign" style="margin-bottom:8px;display:block;width:100%;" />
+            <input class="ls-name-input" id="ac-dob-b" placeholder="Date of birth (DD/MM/YYYY)" style="margin-bottom:8px;display:block;width:100%;" />
+            <input class="ls-name-input" id="ac-time-b" placeholder="Birth time optional (HH:MM)" style="display:block;width:100%;" />
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;">
+          <button class="fantasy-btn" style="background:#4A9EBF;" onclick="readCompatibility()">
+            <i class="ti ti-stars"></i> Read our charts
+          </button>
+        </div>
+        <div class="fm-privacy-note">
+          <i class="ti ti-shield-lock"></i>
+          <span>Charts calculated in your browser. Reading generated by open source AI (Llama 3.3 via Groq). Nothing stored.</span>
+        </div>
+      </div>
+
+      <!-- loading -->
+      <div id="ac-loading" style="display:none;">
+        <div style="text-align:center;padding:2.5rem 0;">
+          <div class="fm-spinner" style="border-top-color:#4A9EBF;border-color:#C8E8F5;margin:0 auto 1rem;"></div>
+          <p style="font-size:14px;color:rgba(74,44,33,0.45);">Reading your charts together…<br><span style="font-size:12px;opacity:0.7;">The stars have opinions.</span></p>
+        </div>
+      </div>
+
+      <!-- result -->
+      <div id="ac-result" style="display:none;"></div>
+
+    </div>
+
+    <button class="devnote-toggle" onclick="toggleDevNote('ac-devnote')">
+      <i class="ti ti-code"></i> Dev notes
+    </button>
+    <div class="devnote-area" id="ac-devnote">
+      <h4>What's missing / future work</h4>
+      <div class="devnote-item">
+        <span class="devnote-tag partial">Partial</span>
+        <div class="devnote-text">
+          <strong>Synastry aspects</strong> — Venus–Mars, Moon–Moon, Mercury–Mercury cross-aspects are auto-detected and fed into the prompt. House positions require birth location — not calculated here.
+        </div>
+      </div>
+      <div class="devnote-item">
+        <span class="devnote-tag missing">Missing</span>
+        <div class="devnote-text">
+          <strong>Save & share</strong> — The reading only lives in the browser. A shareable URL (stored in R2) would let both people read the same analysis separately and reference it later.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- STEP 11 — YOUR LOVE STORY -->
+  <div class="step-card" data-step="10">
+    <div class="step-badge badge-rose"><i class="ti ti-book-2"></i> Step 11</div>
+    <div class="step-icon"><i class="ti ti-book-2" style="color:#C26F6A;"></i></div>
+    <p class="step-title">Your love story</p>
+    <p class="step-sub">Based on everything you've shared tonight, the AI writes a short story — just for the two of you. Warm, playful, a little electric. Think romcom opening chapter, with your names in it.</p>
+    <div class="tags">
+      <span class="tag">AI-written</span>
+      <span class="tag">read together</span>
+      <span class="tag">based on your data</span>
+      <span class="tag">your moment</span>
+    </div>
+
+    <button class="game-toggle-btn" id="ls-toggle-btn" onclick="toggleGame('ls')">
+      <i class="ti ti-sparkles"></i> Write our story
+    </button>
+
+    <div class="game-area" id="ls-game">
+
+      <!-- input screen -->
+      <div id="ls-input">
+        <p style="font-size:13px;color:rgba(74,44,33,0.50);margin-bottom:1.25rem;line-height:1.6;">
+          The AI will use your names and anything you'd like to share about yourselves. Nothing from the overlap game is included.
+        </p>
+        <div class="ls-name-inputs">
+          <input class="ls-name-input" id="ls-name-a" placeholder="Your name" />
+          <input class="ls-name-input" id="ls-name-b" placeholder="Their name" />
+        </div>
+        <div style="margin-bottom:0.6rem;font-size:13px;color:rgba(74,44,33,0.60);font-weight:500;">
+          A little about each of you <span style="color:rgba(74,44,33,0.30);font-weight:400;">(optional — makes the story richer)</span>
+        </div>
+        <textarea class="fm-textarea" id="ls-about-a" placeholder="Person A — a few words. What do you love, what's your energy, what makes you you?" style="margin-bottom:10px;min-height:80px;"></textarea>
+        <textarea class="fm-textarea" id="ls-about-b" placeholder="Person B — hobbies, vibe, something that stood out tonight." style="min-height:80px;"></textarea>
+        <div style="margin-top:1.25rem;display:flex;justify-content:flex-end;">
+          <button class="fantasy-btn" onclick="generateStory()">
+            <i class="ti ti-wand"></i> Write our story
+          </button>
+        </div>
+      </div>
+
+      <!-- loading screen -->
+      <div id="ls-loading" style="display:none;">
+        <div class="fm-loading" style="padding:2.5rem 0;">
+          <div class="fm-spinner"></div>
+          <p>Writing your story...<br><span style="font-size:12px;opacity:0.7;">The good kind. With tension and everything.</span></p>
+        </div>
+      </div>
+
+      <!-- story screen -->
+      <div id="ls-story-screen" style="display:none;">
+        <div id="ls-story-wrap"></div>
+        <div style="display:flex;justify-content:center;gap:10px;margin-top:1.5rem;flex-wrap:wrap;">
+          <button class="fantasy-btn secondary" onclick="resetStory()">
+            <i class="ti ti-refresh"></i> Write another
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 12 — TRUTH OR FLIRT -->
+  <div class="step-card" data-step="11">
+    <div class="step-badge badge-blush"><i class="ti ti-cards"></i> Step 12</div>
+    <div class="step-icon"><i class="ti ti-cards" style="color:#D88B85;"></i></div>
+    <p class="step-title">Truth or flirt</p>
+    <p class="step-sub">A card game for two. Draw a card, answer honestly or decline with a dare instead. Questions go from playful to surprisingly revealing. Some are funny, some make you pause, some make you lean in a little closer.</p>
+    <div class="tags">
+      <span class="tag">for two</span>
+      <span class="tag">takes turns</span>
+      <span class="tag">gets spicy</span>
+      <span class="tag">in person</span>
+    </div>
+
+    <button class="game-toggle-btn" id="tof-toggle-btn" onclick="toggleGame('tof')">
+      <i class="ti ti-cards"></i> Deal the cards
+    </button>
+
+    <div class="game-area" id="tof-game">
+
+      <!-- start screen -->
+      <div id="tof-start" class="tof-start-screen">
+        <span class="big-emoji">🃏</span>
+        <p>Take turns drawing cards. Answer the question honestly — or skip it, but your partner gets to ask you <em>anything</em> instead.</p>
+        <div class="tof-filters" id="tof-filters">
+          <button class="tof-btn tof-btn-filter active" data-mode="all" onclick="setTofMode('all',this)">All cards</button>
+          <button class="tof-btn tof-btn-filter" data-mode="flirt" onclick="setTofMode('flirt',this)">Flirty only</button>
+          <button class="tof-btn tof-btn-filter" data-mode="fun" onclick="setTofMode('fun',this)">Fun only</button>
+          <button class="tof-btn tof-btn-filter" data-mode="spicy" onclick="setTofMode('spicy',this)">Spicy only</button>
+        </div>
+        <button class="tof-btn tof-btn-draw" onclick="startTof()" style="padding:10px 28px;font-size:14px;">
+          <i class="ti ti-cards"></i> Start game
+        </button>
+      </div>
+
+      <!-- active game -->
+      <div id="tof-active" style="display:none;">
+        <div class="tof-deck-area" id="tof-deck-area">
+          <div class="tof-stack-card theme-flirt"></div>
+          <div class="tof-stack-card theme-fun"></div>
+          <div class="tof-stack-card theme-deep"></div>
+        </div>
+        <div class="tof-controls">
+          <button class="tof-btn tof-btn-draw" onclick="drawTofCard()">
+            <i class="ti ti-refresh"></i> Next card
+          </button>
+          <button class="tof-btn tof-btn-filter" onclick="resetTof()">
+            <i class="ti ti-x"></i> End game
+          </button>
+        </div>
+        <div class="tof-counter" id="tof-counter">Card 1</div>
+      </div>
+
+      <!-- done screen -->
+      <div id="tof-done" style="display:none;" class="tof-done-screen">
+        <span class="big-emoji">🔥</span>
+        <h3>And that's the deck.</h3>
+        <p>You made it through. Hope you learned something good — or at least something fun.</p>
+        <button class="tof-btn tof-btn-draw" onclick="resetTof()" style="padding:10px 28px;">
+          <i class="ti ti-refresh"></i> Shuffle &amp; play again
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 13 — THE OVERLAP GAME -->
+  <div class="step-card" data-step="12">
+    <div class="step-badge badge-rose"><i class="ti ti-flame"></i> Step 13</div>
     <div class="step-icon"><i class="ti ti-flame" style="color:#C26F6A;"></i></div>
     <p class="step-title">The overlap game</p>
     <p class="step-sub">Pick a topic — vibes, desires, fantasies, kinks, curiosities. Each of you answers privately. The AI finds only what you share and shows you that. No mismatches revealed, no judgment. Just the places where you already align.</p>
@@ -1670,401 +2065,6 @@
 
       </div>
     </div>
-  </div>
-
-  <!-- STEP 9 — TRUTH OR FLIRT -->
-  <div class="step-card" data-step="8">
-    <div class="step-badge badge-blush"><i class="ti ti-cards"></i> Step 9</div>
-    <div class="step-icon"><i class="ti ti-cards" style="color:#D88B85;"></i></div>
-    <p class="step-title">Truth or flirt</p>
-    <p class="step-sub">A card game for two. Draw a card, answer honestly or decline with a dare instead. Questions go from playful to surprisingly revealing. Some are funny, some make you pause, some make you lean in a little closer.</p>
-    <div class="tags">
-      <span class="tag">for two</span>
-      <span class="tag">takes turns</span>
-      <span class="tag">gets spicy</span>
-      <span class="tag">in person</span>
-    </div>
-
-    <button class="game-toggle-btn" id="tof-toggle-btn" onclick="toggleGame('tof')">
-      <i class="ti ti-cards"></i> Deal the cards
-    </button>
-
-    <div class="game-area" id="tof-game">
-
-      <!-- start screen -->
-      <div id="tof-start" class="tof-start-screen">
-        <span class="big-emoji">🃏</span>
-        <p>Take turns drawing cards. Answer the question honestly — or skip it, but your partner gets to ask you <em>anything</em> instead.</p>
-        <div class="tof-filters" id="tof-filters">
-          <button class="tof-btn tof-btn-filter active" data-mode="all" onclick="setTofMode('all',this)">All cards</button>
-          <button class="tof-btn tof-btn-filter" data-mode="flirt" onclick="setTofMode('flirt',this)">Flirty only</button>
-          <button class="tof-btn tof-btn-filter" data-mode="fun" onclick="setTofMode('fun',this)">Fun only</button>
-          <button class="tof-btn tof-btn-filter" data-mode="spicy" onclick="setTofMode('spicy',this)">Spicy only</button>
-        </div>
-        <button class="tof-btn tof-btn-draw" onclick="startTof()" style="padding:10px 28px;font-size:14px;">
-          <i class="ti ti-cards"></i> Start game
-        </button>
-      </div>
-
-      <!-- active game -->
-      <div id="tof-active" style="display:none;">
-        <div class="tof-deck-area" id="tof-deck-area">
-          <div class="tof-stack-card theme-flirt"></div>
-          <div class="tof-stack-card theme-fun"></div>
-          <div class="tof-stack-card theme-deep"></div>
-        </div>
-        <div class="tof-controls">
-          <button class="tof-btn tof-btn-draw" onclick="drawTofCard()">
-            <i class="ti ti-refresh"></i> Next card
-          </button>
-          <button class="tof-btn tof-btn-filter" onclick="resetTof()">
-            <i class="ti ti-x"></i> End game
-          </button>
-        </div>
-        <div class="tof-counter" id="tof-counter">Card 1</div>
-      </div>
-
-      <!-- done screen -->
-      <div id="tof-done" style="display:none;" class="tof-done-screen">
-        <span class="big-emoji">🔥</span>
-        <h3>And that's the deck.</h3>
-        <p>You made it through. Hope you learned something good — or at least something fun.</p>
-        <button class="tof-btn tof-btn-draw" onclick="resetTof()" style="padding:10px 28px;">
-          <i class="ti ti-refresh"></i> Shuffle &amp; play again
-        </button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- STEP 10 — YOUR LOVE STORY -->
-  <div class="step-card" data-step="9">
-    <div class="step-badge badge-rose"><i class="ti ti-book-2"></i> Step 10</div>
-    <div class="step-icon"><i class="ti ti-book-2" style="color:#C26F6A;"></i></div>
-    <p class="step-title">Your love story</p>
-    <p class="step-sub">Based on everything you've shared tonight, the AI writes a short story — just for the two of you. Warm, playful, a little electric. Think romcom opening chapter, with your names in it.</p>
-    <div class="tags">
-      <span class="tag">AI-written</span>
-      <span class="tag">read together</span>
-      <span class="tag">based on your data</span>
-      <span class="tag">your moment</span>
-    </div>
-
-    <button class="game-toggle-btn" id="ls-toggle-btn" onclick="toggleGame('ls')">
-      <i class="ti ti-sparkles"></i> Write our story
-    </button>
-
-    <div class="game-area" id="ls-game">
-
-      <!-- input screen -->
-      <div id="ls-input">
-        <p style="font-size:13px;color:rgba(74,44,33,0.50);margin-bottom:1.25rem;line-height:1.6;">
-          The AI will use your names and anything you'd like to share about yourselves. Nothing from the overlap game is included.
-        </p>
-        <div class="ls-name-inputs">
-          <input class="ls-name-input" id="ls-name-a" placeholder="Your name" />
-          <input class="ls-name-input" id="ls-name-b" placeholder="Their name" />
-        </div>
-        <div style="margin-bottom:0.6rem;font-size:13px;color:rgba(74,44,33,0.60);font-weight:500;">
-          A little about each of you <span style="color:rgba(74,44,33,0.30);font-weight:400;">(optional — makes the story richer)</span>
-        </div>
-        <textarea class="fm-textarea" id="ls-about-a" placeholder="Person A — a few words. What do you love, what's your energy, what makes you you?" style="margin-bottom:10px;min-height:80px;"></textarea>
-        <textarea class="fm-textarea" id="ls-about-b" placeholder="Person B — hobbies, vibe, something that stood out tonight." style="min-height:80px;"></textarea>
-        <div style="margin-top:1.25rem;display:flex;justify-content:flex-end;">
-          <button class="fantasy-btn" onclick="generateStory()">
-            <i class="ti ti-wand"></i> Write our story
-          </button>
-        </div>
-      </div>
-
-      <!-- loading screen -->
-      <div id="ls-loading" style="display:none;">
-        <div class="fm-loading" style="padding:2.5rem 0;">
-          <div class="fm-spinner"></div>
-          <p>Writing your story...<br><span style="font-size:12px;opacity:0.7;">The good kind. With tension and everything.</span></p>
-        </div>
-      </div>
-
-      <!-- story screen -->
-      <div id="ls-story-screen" style="display:none;">
-        <div id="ls-story-wrap"></div>
-        <div style="display:flex;justify-content:center;gap:10px;margin-top:1.5rem;flex-wrap:wrap;">
-          <button class="fantasy-btn secondary" onclick="resetStory()">
-            <i class="ti ti-refresh"></i> Write another
-          </button>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- STEP 11 — INITIATIVE -->
-  <div class="step-card" data-step="10">
-    <div class="step-badge badge-rose"><i class="ti ti-cards"></i> Step 11</div>
-    <div class="step-icon"><i class="ti ti-cards" style="color:#C9375A;"></i></div>
-    <p class="step-title">The date game</p>
-    <p class="step-sub">A card game for two, played in turns on the same screen. Each card gives you something to do, say, or ask — generated just for you, based on who you both are. Private cards, real moments.</p>
-    <div class="tags">
-      <span class="tag">take turns</span>
-      <span class="tag">AI-generated</span>
-      <span class="tag">in person</span>
-      <span class="tag">gets interesting</span>
-    </div>
-
-    <button class="game-toggle-btn" id="ig-toggle-btn" onclick="toggleGame('ig')">
-      <i class="ti ti-cards"></i> Play the date game
-    </button>
-
-    <div class="game-area" id="ig-game">
-
-      <!-- SCREEN: setup -->
-      <div id="ig-setup">
-        <p style="font-size:13px; color:#888; line-height:1.7; margin-bottom:1.25rem;">Enter your names — the cards will be written just for you two.</p>
-        <div class="wyr-name-inputs">
-          <input class="wyr-name-input" id="ig-name-her" placeholder="Her name" />
-          <input class="wyr-name-input" id="ig-name-him" placeholder="His name" />
-        </div>
-        <div style="margin-bottom:0.6rem; font-size:13px; color:#555; font-weight:500;">A line about each of you <span style="color:#bbb; font-weight:400;">(optional — makes the cards feel personal)</span></div>
-        <textarea class="fm-textarea" id="ig-about-her" placeholder="Her vibe, what she's into, how she comes across…" style="min-height:64px; margin-bottom:8px;"></textarea>
-        <textarea class="fm-textarea" id="ig-about-him" placeholder="His vibe, what he's into, what makes him interesting…" style="min-height:64px; margin-bottom:1.25rem;"></textarea>
-        <div style="display:flex; justify-content:flex-end;">
-          <button class="fantasy-btn" onclick="igStart()">
-            <i class="ti ti-sparkles"></i> Generate our cards
-          </button>
-        </div>
-      </div>
-
-      <!-- SCREEN: generating -->
-      <div id="ig-generating" style="display:none;">
-        <div class="fm-loading" style="padding:2.5rem 0;">
-          <div class="fm-spinner"></div>
-          <p style="font-size:14px; color:#888;">Writing your cards…<br><span style="font-size:12px; color:#bbb;">Making them personal takes a moment.</span></p>
-        </div>
-      </div>
-
-      <!-- SCREEN: whose turn -->
-      <div id="ig-whose-turn" style="display:none; text-align:center; padding:1.5rem 0;">
-        <div id="ig-turn-name" style="font-family:'Cormorant Garamond',serif; font-size:28px; color:#4A2C21; margin-bottom:0.5rem;"></div>
-        <div style="font-size:14px; color:#888; margin-bottom:2rem;">It's your turn</div>
-        <div id="ig-turn-tap" style="
-          background: linear-gradient(135deg, #FDE8EE, #F5E8FF);
-          border: 1px solid #E0C0D8; border-radius: 16px;
-          padding: 2.5rem 2rem; cursor: pointer;
-          transition: transform 0.15s, box-shadow 0.15s;
-          user-select: none;
-        " onclick="igRevealCard()">
-          <div style="font-size:40px; margin-bottom:0.75rem;">🃏</div>
-          <div style="font-size:15px; font-weight:500; color:#6B1A3A;">Tap to see your card</div>
-          <div style="font-size:12px; color:#C9A0B8; margin-top:6px;">The other person should look away</div>
-        </div>
-      </div>
-
-      <!-- SCREEN: active card -->
-      <div id="ig-card-screen" style="display:none;">
-        <div id="ig-card-display"></div>
-        <div style="display:flex; gap:10px; margin-top:1.25rem; justify-content:center; flex-wrap:wrap;">
-          <button class="fantasy-btn" id="ig-done-btn" onclick="igCardDone()">
-            Done <i class="ti ti-check"></i>
-          </button>
-          <button class="fantasy-btn secondary" onclick="igSkipCard()">
-            Skip this one
-          </button>
-        </div>
-      </div>
-
-      <!-- SCREEN: handoff -->
-      <div id="ig-handoff" style="display:none;">
-        <div style="
-          background: #4A2C21; border-radius: 16px;
-          padding: 3rem 2rem; text-align: center;
-          cursor: pointer; user-select: none;
-        " onclick="igNextTurn()">
-          <div style="font-size:36px; margin-bottom:0.75rem;">🙈</div>
-          <div id="ig-handoff-name" style="font-family:'Cormorant Garamond',serif; font-size:22px; color:#F7EFE2; margin-bottom:0.5rem;"></div>
-          <div style="font-size:13px; color:#a08070; line-height:1.6;">Hand the screen over.<br>Tap anywhere when ready.</div>
-        </div>
-      </div>
-
-      <!-- SCREEN: moment card -->
-      <div id="ig-moment-screen" style="display:none;">
-        <div style="
-          background: linear-gradient(160deg, #2d1a0e, #4A2C21);
-          border: 1px solid #8B3A2A; border-radius: 16px;
-          padding: 2rem; text-align: center;
-        ">
-          <div style="font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:#C26F6A; margin-bottom:1rem;">✦ A moment for both of you</div>
-          <div id="ig-moment-text" style="font-family:'Cormorant Garamond',serif; font-size:18px; color:#F7EFE2; line-height:1.7;"></div>
-        </div>
-        <div style="display:flex; justify-content:center; gap:10px; margin-top:1.25rem;">
-          <button class="fantasy-btn" onclick="igAfterMoment()">Continue <i class="ti ti-arrow-right"></i></button>
-          <button class="fantasy-btn secondary" onclick="igResetFull()"><i class="ti ti-refresh"></i> Start over</button>
-        </div>
-      </div>
-
-      <!-- footer reset -->
-      <div id="ig-footer" style="display:none; text-align:center; margin-top:1.5rem; border-top:1px solid rgba(74,44,33,0.10); padding-top:1rem;">
-        <button class="fantasy-btn secondary" onclick="igResetFull()"><i class="ti ti-refresh"></i> Start over</button>
-      </div>
-
-    </div>
-
-  </div>
-
-  <!-- STEP 12 — TAROT -->
-  <div class="step-card" data-step="11">
-    <div class="step-badge" style="background:#1E1035;color:#C9A7F5;"><i class="ti ti-moon-stars"></i> Step 12</div>
-    <div class="step-icon"><i class="ti ti-moon-stars" style="color:#9B59D4;"></i></div>
-    <p class="step-title">Tarot reading</p>
-    <p class="step-sub">Enter your birth details and draw three cards — past energy, present moment, what's unfolding. The AI reads them together, specifically for where you are right now. Honest about the shadows. Bright about the possibilities.</p>
-    <div class="tags">
-      <span class="tag">AI-powered</span>
-      <span class="tag">three-card spread</span>
-      <span class="tag">personal to you</span>
-      <span class="tag">real ephemeris</span>
-    </div>
-
-    <button class="game-toggle-btn" id="tr-toggle-btn" onclick="toggleGame('tr')" style="border-color:#9B59D4;color:#9B59D4;">
-      <i class="ti ti-moon-stars"></i> Read the cards
-    </button>
-
-    <div class="game-area" id="tr-game">
-
-      <!-- input -->
-      <div id="tr-input">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-          <input class="ls-name-input" id="tr-name" placeholder="Your name" />
-          <input class="ls-name-input" id="tr-sign" placeholder="Star sign (e.g. Scorpio)" />
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-          <input class="ls-name-input" id="tr-dob" placeholder="Date of birth (DD/MM/YYYY)" />
-          <input class="ls-name-input" id="tr-time" placeholder="Birth time optional (HH:MM)" />
-        </div>
-        <textarea class="fm-textarea" id="tr-question" placeholder="What's on your mind right now? (optional — gives the reading more focus)" style="min-height:70px;margin-bottom:1rem;"></textarea>
-        <div style="display:flex;justify-content:flex-end;">
-          <button class="fantasy-btn" style="background:#9B59D4;" onclick="drawTarot()">
-            <i class="ti ti-sparkles"></i> Draw three cards
-          </button>
-        </div>
-        <div class="fm-privacy-note">
-          <i class="ti ti-shield-lock"></i>
-          <span>Reading generated by open source AI (Llama 3.3 via Groq). Planetary positions calculated in your browser. Nothing stored.</span>
-        </div>
-      </div>
-
-      <!-- loading -->
-      <div id="tr-loading" style="display:none;">
-        <div style="text-align:center;padding:2.5rem 0;">
-          <div class="fm-spinner" style="border-top-color:#9B59D4;border-color:#E8D5F5;margin:0 auto 1rem;"></div>
-          <p style="font-size:14px;color:rgba(74,44,33,0.45);">Shuffling the deck…<br><span style="font-size:12px;opacity:0.7;">The cards know what they want to say.</span></p>
-        </div>
-      </div>
-
-      <!-- result -->
-      <div id="tr-result" style="display:none;"></div>
-
-    </div>
-
-    <button class="devnote-toggle" onclick="toggleDevNote('tr-devnote')">
-      <i class="ti ti-code"></i> Dev notes
-    </button>
-    <div class="devnote-area" id="tr-devnote">
-      <h4>What's working / what's missing</h4>
-      <div class="devnote-item">
-        <span class="devnote-tag partial">Partial</span>
-        <div class="devnote-text">
-          <strong>Ephemeris accuracy</strong> — Sun (~1°), Moon (~3°), inner planets (~5°) are calculated with simplified formulas in the browser. Good enough for astrology context; a production version would call a proper Swiss Ephemeris API.
-        </div>
-      </div>
-      <div class="devnote-item">
-        <span class="devnote-tag missing">Missing</span>
-        <div class="devnote-text">
-          <strong>Rising sign precision</strong> — Rising sign requires birth location (lat/lon) for accurate calculation. Current approximation uses time only. For real accuracy, add a location input and pass it to a server-side ephemeris endpoint.
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- STEP 13 — ASTROLOGY COMPATIBILITY -->
-  <div class="step-card" data-step="12">
-    <div class="step-badge" style="background:#0E1A2E;color:#7EC8E3;"><i class="ti ti-stars"></i> Step 13</div>
-    <div class="step-icon"><i class="ti ti-stars" style="color:#4A9EBF;"></i></div>
-    <p class="step-title">Astrology compatibility</p>
-    <p class="step-sub">Both of you enter your birth details. The AI reads your charts together — where you naturally align, where you'll push each other, and what this pairing is actually good at. Playful and honest. No sugarcoating, no doom either.</p>
-    <div class="tags">
-      <span class="tag">both charts</span>
-      <span class="tag">AI-powered</span>
-      <span class="tag">synastry aspects</span>
-      <span class="tag">read together</span>
-    </div>
-
-    <button class="game-toggle-btn" id="ac-toggle-btn" onclick="toggleGame('ac')" style="border-color:#4A9EBF;color:#4A9EBF;">
-      <i class="ti ti-stars"></i> Read our compatibility
-    </button>
-
-    <div class="game-area" id="ac-game">
-
-      <!-- input -->
-      <div id="ac-input">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1rem;">
-          <div>
-            <div style="font-size:11px;font-weight:700;color:#4A9EBF;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Person A</div>
-            <input class="ls-name-input" id="ac-name-a" placeholder="Name" style="margin-bottom:8px;display:block;width:100%;" />
-            <input class="ls-name-input" id="ac-sign-a" placeholder="Star sign" style="margin-bottom:8px;display:block;width:100%;" />
-            <input class="ls-name-input" id="ac-dob-a" placeholder="Date of birth (DD/MM/YYYY)" style="margin-bottom:8px;display:block;width:100%;" />
-            <input class="ls-name-input" id="ac-time-a" placeholder="Birth time optional (HH:MM)" style="display:block;width:100%;" />
-          </div>
-          <div>
-            <div style="font-size:11px;font-weight:700;color:#C26F6A;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Person B</div>
-            <input class="ls-name-input" id="ac-name-b" placeholder="Name" style="margin-bottom:8px;display:block;width:100%;" />
-            <input class="ls-name-input" id="ac-sign-b" placeholder="Star sign" style="margin-bottom:8px;display:block;width:100%;" />
-            <input class="ls-name-input" id="ac-dob-b" placeholder="Date of birth (DD/MM/YYYY)" style="margin-bottom:8px;display:block;width:100%;" />
-            <input class="ls-name-input" id="ac-time-b" placeholder="Birth time optional (HH:MM)" style="display:block;width:100%;" />
-          </div>
-        </div>
-        <div style="display:flex;justify-content:flex-end;">
-          <button class="fantasy-btn" style="background:#4A9EBF;" onclick="readCompatibility()">
-            <i class="ti ti-stars"></i> Read our charts
-          </button>
-        </div>
-        <div class="fm-privacy-note">
-          <i class="ti ti-shield-lock"></i>
-          <span>Charts calculated in your browser. Reading generated by open source AI (Llama 3.3 via Groq). Nothing stored.</span>
-        </div>
-      </div>
-
-      <!-- loading -->
-      <div id="ac-loading" style="display:none;">
-        <div style="text-align:center;padding:2.5rem 0;">
-          <div class="fm-spinner" style="border-top-color:#4A9EBF;border-color:#C8E8F5;margin:0 auto 1rem;"></div>
-          <p style="font-size:14px;color:rgba(74,44,33,0.45);">Reading your charts together…<br><span style="font-size:12px;opacity:0.7;">The stars have opinions.</span></p>
-        </div>
-      </div>
-
-      <!-- result -->
-      <div id="ac-result" style="display:none;"></div>
-
-    </div>
-
-    <button class="devnote-toggle" onclick="toggleDevNote('ac-devnote')">
-      <i class="ti ti-code"></i> Dev notes
-    </button>
-    <div class="devnote-area" id="ac-devnote">
-      <h4>What's missing / future work</h4>
-      <div class="devnote-item">
-        <span class="devnote-tag partial">Partial</span>
-        <div class="devnote-text">
-          <strong>Synastry aspects</strong> — Venus–Mars, Moon–Moon, Mercury–Mercury cross-aspects are auto-detected and fed into the prompt. House positions require birth location — not calculated here.
-        </div>
-      </div>
-      <div class="devnote-item">
-        <span class="devnote-tag missing">Missing</span>
-        <div class="devnote-text">
-          <strong>Save & share</strong> — The reading only lives in the browser. A shareable URL (stored in R2) would let both people read the same analysis separately and reference it later.
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <!-- NAV -->
